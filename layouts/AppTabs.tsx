@@ -10,6 +10,9 @@ export const AppTabs = () => {
       <Stack.Screen
         name="Main"
         getComponent={() => require('../pages/ProductsMain').default}
+        options={{
+          header: () => null,
+        }}
       />
       {addProductRoutes(Stack)}
     </Stack.Navigator>

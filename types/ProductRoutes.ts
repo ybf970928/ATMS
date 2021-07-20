@@ -5,6 +5,11 @@ export type AuthProductList = {
   Main: undefined;
   TrackIn: undefined;
   TrackOut: undefined;
+  Handover: undefined;
+  OnMachine: undefined;
+  ReplaceScoket: undefined;
+  SaveSummary: undefined;
+  ScanQRCode: undefined;
 };
 
 export type AuthNavProps<T extends keyof AuthProductList> = {

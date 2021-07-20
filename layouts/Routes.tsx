@@ -6,7 +6,7 @@ import {useEffect} from 'react';
 import {getToken} from '../utils/auth';
 import {AppTabs} from './AppTabs';
 import {Center} from './Center';
-import {ActivityIndicator} from 'react-native';
+import {Spinner} from 'native-base';
 import {navigationRef} from '../utils/RootNavigation';
 export const Routes = () => {
   const {user, login} = useContext(AuthContext);
@@ -30,7 +30,7 @@ export const Routes = () => {
   if (loading) {
     return (
       <Center>
-        <ActivityIndicator size="large" />
+        <Spinner color="blue.500" />
       </Center>
     );
   }

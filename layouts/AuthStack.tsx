@@ -8,6 +8,11 @@ export const AuthStack: React.FC = () => {
       <Stack.Screen
         name="Login"
         getComponent={() => require('../pages/Login').default}
+        options={{
+          headerTitle: '登录页',
+          headerTitleAlign: 'center',
+          headerTitleStyle: {color: '#1890FF'},
+        }}
       />
     </Stack.Navigator>
   );

@@ -1,7 +1,6 @@
 import React, {useState, useContext} from 'react';
 import {Center} from '../../layouts/Center';
 import {
-  NativeBaseProvider,
   Box,
   Heading,
   VStack,
@@ -22,9 +21,9 @@ const Login: React.FC = () => {
   const toast = useToast();
 
   const doLogin = () => {
+    setIsLoading(true);
     accountLogin({username, password})
       .then(res => {
-        setIsLoading(true);
         if (res.code === 1) {
           const {token} = res.data;
           login(token);
@@ -42,57 +41,52 @@ const Login: React.FC = () => {
     <SafeAreaView>
       <ScrollView style={{height: '100%'!}}>
         <Center>
-          <NativeBaseProvider>
-            <Box flex={1} p={2} w="90%" mx="auto">
-              <Heading size="lg" color="primary.500">
-                Welcome
-              </Heading>
-              <Heading color="muted.400" size="xs">
-                Sign up to continue!
-              </Heading>
-
+          <Box flex={1} p={2} w="90%" mx="auto">
+            <Heading size="lg">Welcome</Heading>
+            <Heading color="muted.400" size="xs">
+              Sign up to continue!
+            </Heading>
+            <VStack space={2} mt={5}>
+              <FormControl>
+                <FormControl.Label
+                  _text={{
+                    color: 'muted.700',
+                    fontSize: 'sm',
+                    fontWeight: 600,
+                  }}>
+                  用户名
+                </FormControl.Label>
+                <Input
+                  value={username}
+                  onChangeText={(value: string) => setUsername(value)}
+                />
+              </FormControl>
+              <FormControl>
+                <FormControl.Label
+                  _text={{
+                    color: 'muted.700',
+                    fontSize: 'sm',
+                    fontWeight: 600,
+                  }}>
+                  密码
+                </FormControl.Label>
+                <Input
+                  type="password"
+                  value={password}
+                  onChangeText={(value: string) => setPassword(value)}
+                />
+              </FormControl>
               <VStack space={2} mt={5}>
-                <FormControl>
-                  <FormControl.Label
-                    _text={{
-                      color: 'muted.700',
-                      fontSize: 'sm',
-                      fontWeight: 600,
-                    }}>
-                    用户名
-                  </FormControl.Label>
-                  <Input
-                    value={username}
-                    onChangeText={(value: string) => setUsername(value)}
-                  />
-                </FormControl>
-                <FormControl>
-                  <FormControl.Label
-                    _text={{
-                      color: 'muted.700',
-                      fontSize: 'sm',
-                      fontWeight: 600,
-                    }}>
-                    密码
-                  </FormControl.Label>
-                  <Input
-                    type="password"
-                    value={password}
-                    onChangeText={(value: string) => setPassword(value)}
-                  />
-                </FormControl>
-                <VStack space={2} mt={5}>
-                  <Button
-                    colorScheme="cyan"
-                    _text={{color: 'white'}}
-                    isLoading={isLoading}
-                    onPress={doLogin}>
-                    登陆
-                  </Button>
-                </VStack>
+                <Button
+                  // colorScheme="cyan"
+                  _text={{color: 'white'}}
+                  isLoading={isLoading}
+                  onPress={doLogin}>
+                  登录
+                </Button>
               </VStack>
-            </Box>
-          </NativeBaseProvider>
+            </VStack>
+          </Box>
         </Center>
       </ScrollView>
     </SafeAreaView>
