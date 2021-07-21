@@ -6,8 +6,10 @@ import {useEffect} from 'react';
 import {getToken} from '../utils/auth';
 import {AppTabs} from './AppTabs';
 import {Center} from './Center';
+// react native ActivityIndicator组件 在华为pad无法运行😅😅😅😅
 import {Spinner} from 'native-base';
 import {navigationRef} from '../utils/RootNavigation';
+
 export const Routes = () => {
   const {user, login} = useContext(AuthContext);
   const [loading, setLoading] = useState(true);

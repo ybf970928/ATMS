@@ -37,10 +37,6 @@ export const AuthProvider: React.FC = ({children}) => {
           };
         },
       },
-      FormControl: {
-        baseStyle: {},
-        defaultProps: {},
-      },
       Input: {
         baseStyle: {
           _android: {

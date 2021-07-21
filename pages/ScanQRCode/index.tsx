@@ -1,18 +1,20 @@
-import {BarCodeReadEvent, RNCamera} from 'react-native-camera';
 import React from 'react';
+import {BarCodeReadEvent, RNCamera} from 'react-native-camera';
 import {StyleSheet, View, Text} from 'react-native';
 import {navigate} from '../../utils/RootNavigation';
-const ScanQRCode = () => {
+import {useRoute} from '@react-navigation/native';
+
+const ScanQRCode: React.FC = () => {
+  const route = useRoute<any>();
   const onBarCodeRead = (event: BarCodeReadEvent) => {
-    const {data} = event; //只要拿到data就可以了
+    const {data} = event;
     //扫码后的操作
     if (data) {
-      navigate('TrackIn', {
-        code: data,
+      navigate(route.params.formRoute, {
+        [route.params.Keyword]: data,
       });
     }
   };
-
   return (
     <View style={styles.container}>
       <RNCamera

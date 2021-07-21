@@ -61,7 +61,7 @@ const ProductsMain: React.FC = () => {
     );
   };
 
-  const SecondRoute = () => <Button title={'退出登陆'} onPress={logout} />;
+  const SecondRoute = () => <Button title={'重置路由'} onPress={logout} />;
 
   const renderScene = SceneMap({
     ProductionManagement: ProductionProjects,
