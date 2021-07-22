@@ -3,6 +3,7 @@ import {StackNavigationOptions} from '@react-navigation/stack';
 import {StackNavigationEventMap} from '@react-navigation/stack/lib/typescript/src/types';
 import React from 'react';
 import {AuthProductList} from '../types/ProductRoutes';
+import {headerStyle} from './AppTabs';
 
 export const addProductRoutes = (
   Stack: TypedNavigator<
@@ -20,6 +21,7 @@ export const addProductRoutes = (
         getComponent={() => require('../pages/TrackIn').default}
         options={{
           headerTitle: '开批',
+          ...headerStyle,
         }}
       />
       <Stack.Screen
@@ -27,6 +29,7 @@ export const addProductRoutes = (
         getComponent={() => require('../pages/TrackOut').default}
         options={{
           headerTitle: '结批',
+          ...headerStyle,
         }}
       />
       <Stack.Screen
@@ -34,6 +37,7 @@ export const addProductRoutes = (
         getComponent={() => require('../pages/SaveSummary').default}
         options={{
           headerTitle: '保存summary',
+          ...headerStyle,
         }}
       />
       <Stack.Screen
@@ -41,6 +45,7 @@ export const addProductRoutes = (
         getComponent={() => require('../pages/Handover').default}
         options={{
           headerTitle: '交接班',
+          ...headerStyle,
         }}
       />
       <Stack.Screen
@@ -48,6 +53,7 @@ export const addProductRoutes = (
         getComponent={() => require('../pages/ReplaceScoket').default}
         options={{
           headerTitle: '更换socket',
+          ...headerStyle,
         }}
       />
       <Stack.Screen
@@ -55,14 +61,16 @@ export const addProductRoutes = (
         getComponent={() => require('../pages/OnMachine').default}
         options={{
           headerTitle: '材料上机',
+          ...headerStyle,
         }}
       />
       <Stack.Screen
         name="ScanQRCode"
         getComponent={() => require('../pages/ScanQRCode').default}
         options={{
-          headerTitle: '扫描二维码',
+          headerTitle: '扫描设备条码',
           headerTitleAlign: 'center',
+          ...headerStyle,
         }}
       />
     </>

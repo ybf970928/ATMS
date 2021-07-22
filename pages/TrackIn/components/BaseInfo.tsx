@@ -1,48 +1,61 @@
 import {IconOutline} from '@ant-design/icons-react-native';
 import {Box, Heading, Input, Stack, Text, Select, CheckIcon} from 'native-base';
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {navigate} from '../../../utils/RootNavigation';
-import {useIsFocused, useRoute} from '@react-navigation/native';
+import {TrackinFormProps} from '..';
 
 interface ColumnProps {
   label: string;
-  prop: string;
+  prop: keyof TrackinFormProps;
   render?: () => JSX.Element;
 }
+
+interface IProps {
+  onOk: () => void;
+}
+
 interface FormProps {
   handleId?: string;
   testerId?: string;
 }
-const BaseInfoTrackIn: React.FC = () => {
-  const [formValue, setFormValue] = useState<FormProps>({});
-  const isFocused = useIsFocused();
-  const route = useRoute<any>();
-  useEffect(() => {
-    if (isFocused) {
-      if (route.params) {
-        setFormValue({
-          ...formValue,
-          ...route.params,
-        });
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isFocused, route.params]);
+
+interface TrackInForm {
+  form: TrackinFormProps;
+  setFormValue: React.Dispatch<React.SetStateAction<TrackinFormProps>>;
+}
+const BaseInfoTrackIn: React.FC<TrackInForm> = ({form, setFormValue}) => {
+  // const [formValue, setFormValue] = useState<FormProps>({});
+  // const isFocused = useIsFocused();
+  // const route = useRoute<any>();
+  // useEffect(() => {
+  //   if (isFocused) {
+  //     if (route.params) {
+  //       setFormValue({
+  //         ...formValue,
+  //         ...route.params,
+  //       });
+  //     }
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [isFocused, route.params]);
   const TableColumn: ColumnProps[] = [
     {
       label: '分选机编号: ',
-      prop: '',
+      prop: 'handleId',
+    },
+    {
+      label: '测试随工单号: ',
+      prop: 'handleId',
       render: () => {
         return (
           <Box>
             <Input
               style={{height: 40!}}
-              w={250}
               placeholder="扫描或者输入测试随工单号"
               size="xs"
-              value={formValue.handleId}
+              value={form.handleId}
               onChangeText={(value: string) =>
-                setFormValue({...formValue, handleId: value})
+                setFormValue({...form, handleId: value})
               }
               InputRightElement={
                 <IconOutline
@@ -58,12 +71,21 @@ const BaseInfoTrackIn: React.FC = () => {
                 />
               }
             />
+          </Box>
+        );
+      },
+    },
+    {
+      label: '测试机编号: ',
+      prop: 'testerId',
+      render: () => {
+        return (
+          <Box>
             <Input
               style={{height: 40!}}
-              w={250}
-              value={formValue.testerId}
+              value={form.testerId}
               onChangeText={(value: string) =>
-                setFormValue({...formValue, testerId: value})
+                setFormValue({...form, testerId: value})
               }
               placeholder="扫描或者输入测试机编号"
               size="xs"
@@ -87,15 +109,14 @@ const BaseInfoTrackIn: React.FC = () => {
     },
     {
       label: '测试步骤: ',
-      prop: 'test',
+      prop: 'testerId',
       render: () => {
         return (
           <Select
-            w={250}
             style={{height: 40!}}
             // selectedValue={language}
-            minWidth={200}
-            maxWidth={300}
+            // minWidth={200}
+            // maxWidth={300}
             size="xs"
             placeholder="请选择测试步骤"
             // onValueChange={itemValue => setLanguage(itemValue)}
@@ -112,16 +133,16 @@ const BaseInfoTrackIn: React.FC = () => {
         );
       },
     },
-    {label: '生产流程: ', prop: 'test'},
-    {label: '产品型号: ', prop: 'test'},
-    {label: '封装形式: ', prop: 'test'},
-    {label: '客户批号: ', prop: 'test'},
-    {label: '客户名称: ', prop: 'test'},
+    {label: '生产流程: ', prop: 'testerId'},
+    {label: '产品型号: ', prop: 'testerId'},
+    {label: '封装形式: ', prop: 'testerId'},
+    {label: '客户批号: ', prop: 'testerId'},
+    {label: '客户名称: ', prop: 'testerId'},
     {
       label: '工单号: ',
-      prop: '自动换行自动换行自动换行自动换行自动换行自动换行自动换行自动换行自动换行动换行自动换行自动换行自动换行自动换行自动换行自动换行自动换行自动换行自动换行自动换行自动换行自动换行自动换行',
+      prop: 'testerId',
     },
-    {label: '测试程序: ', prop: 'test'},
+    {label: '测试程序: ', prop: 'testerId'},
   ];
   return (
     <Box bg="white" shadow={2} maxWidth="100%" marginBottom={5}>
@@ -141,7 +162,7 @@ const BaseInfoTrackIn: React.FC = () => {
                 <Box w="80%">{node.render()}</Box>
               ) : (
                 <Text w="80%" textAlign="left">
-                  {node.prop}
+                  {form[node.prop]}
                 </Text>
               )}
             </Box>

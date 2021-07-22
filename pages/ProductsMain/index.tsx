@@ -61,7 +61,7 @@ const ProductsMain: React.FC = () => {
     );
   };
 
-  const SecondRoute = () => <Button title={'重置路由'} onPress={logout} />;
+  const SecondRoute = () => <Button title={'退出登陆'} onPress={logout} />;
 
   const renderScene = SceneMap({
     ProductionManagement: ProductionProjects,
@@ -81,6 +81,7 @@ const ProductsMain: React.FC = () => {
             });
 
             return (
+              // bg={'#3b82f6'}
               <Box flex={1} alignItems="center" p={2} key={i}>
                 <Pressable
                   style={styles.tabItem}
@@ -88,9 +89,10 @@ const ProductsMain: React.FC = () => {
                     setIndex(i);
                   }}>
                   <Animated.Text
-                    style={{opacity, textAlign: 'center'!, color: '#1890FF'!}}>
+                    style={{opacity, textAlign: 'center'!, color: '#333'!}}>
                     {route.title}
                   </Animated.Text>
+                  {i === index ? <View style={styles.line} /> : null}
                 </Pressable>
               </Box>
             );
@@ -137,6 +139,16 @@ const styles = StyleSheet.create({
   tabItem: {
     width: '100%',
     paddingVertical: 10,
+    position: 'relative',
+  },
+  line: {
+    position: 'absolute',
+    left: 0,
+    bottom: 0,
+    width: '100%',
+    height: 2,
+    borderRadius: 2,
+    backgroundColor: '#3b82f6',
   },
 });
 export default ProductsMain;

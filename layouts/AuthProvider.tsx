@@ -45,7 +45,9 @@ export const AuthProvider: React.FC = ({children}) => {
             },
           },
         },
-        defaultProps: {},
+        defaultProps: {
+          size: 'xs',
+        },
       },
     },
   });

@@ -1,16 +1,9 @@
 import React, {useEffect} from 'react';
-import {
-  Box,
-  FormControl,
-  Text,
-  Stack,
-  Button,
-  AlertDialog,
-  ScrollView,
-} from 'native-base';
+import {Box, FormControl, Text, Stack, ScrollView} from 'native-base';
 import {useState} from 'react';
-import {useIsFocused, useRoute, useNavigation} from '@react-navigation/native';
-
+import {useIsFocused, useRoute} from '@react-navigation/native';
+import HandoverAlert from './components/HandoverAlert';
+import Personnel from './components/Personnel';
 interface FormProps {
   handleId?: string;
   xinghao?: string;
@@ -51,40 +44,9 @@ const OnMachineStack: React.FC = ({children}) => {
   );
 };
 
-const HandoverAlert: React.FC<{isOpen: boolean}> = ({isOpen}) => {
-  const navigation = useNavigation();
-  const cancelRef = React.useRef();
-  return (
-    <AlertDialog leastDestructiveRef={cancelRef} isOpen={isOpen}>
-      <AlertDialog.Content>
-        <AlertDialog.Body>需要扫描分选机编号</AlertDialog.Body>
-        <AlertDialog.Footer>
-          <Button ref={cancelRef} onPress={() => navigation.goBack()}>
-            取消
-          </Button>
-          <Button
-            colorScheme="red"
-            _text={{
-              color: 'white',
-            }}
-            onPress={() =>
-              navigation.navigate('ScanQRCode', {
-                formRoute: 'Handover',
-                Keyword: 'handleId',
-              })
-            }
-            ml={3}>
-            去扫描
-          </Button>
-        </AlertDialog.Footer>
-      </AlertDialog.Content>
-    </AlertDialog>
-  );
-};
-
 const Handover: React.FC = () => {
   const [formValue, setFormValue] = useState<FormProps>({});
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = React.useState(true);
   const isFocused = useIsFocused();
   const route = useRoute<any>();
   useEffect(() => {
@@ -100,13 +62,10 @@ const Handover: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFocused, route.params]);
 
-  const doSave = () => {
-    console.log(formValue);
-  };
   return (
     <>
       {isOpen ? (
-        <HandoverAlert isOpen={isOpen} />
+        <HandoverAlert />
       ) : (
         <ScrollView
           flex={1}
@@ -126,35 +85,9 @@ const Handover: React.FC = () => {
                 })}
               </Box>
               <Box bg="white" rounded="lg" width="100%" marginTop={5} py={5}>
-                {formItem.slice(8).map((node, i) => {
-                  return (
-                    <OnMachineStack key={i}>
-                      <FormControl.Label>{node.title}: </FormControl.Label>
-                      <Text>{formValue[node.prop]}</Text>
-                    </OnMachineStack>
-                  );
-                })}
+                <Personnel />
               </Box>
             </FormControl>
-            <Stack
-              mx={6}
-              p={2}
-              flexDirection="row"
-              alignItems="center"
-              justifyContent="space-between">
-              <Button
-                onPress={doSave}
-                marginTop={10}
-                colorScheme="danger"
-                _text={{
-                  color: 'white',
-                }}>
-                强制交接
-              </Button>
-              <Button onPress={doSave} marginTop={10}>
-                确认交接
-              </Button>
-            </Stack>
           </Box>
         </ScrollView>
       )}

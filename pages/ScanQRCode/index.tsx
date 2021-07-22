@@ -60,9 +60,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0)',
     width: '100%',
     alignItems: 'center',
+    justifyContent: 'flex-end',
   },
   rectangleText: {
     color: '#fff',
+    marginBottom: 60,
   },
 });
 export default ScanQRCode;

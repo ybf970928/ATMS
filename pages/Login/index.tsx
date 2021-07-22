@@ -1,5 +1,4 @@
 import React, {useState, useContext} from 'react';
-import {Center} from '../../layouts/Center';
 import {
   Box,
   Heading,
@@ -11,8 +10,16 @@ import {
 } from 'native-base';
 import {accountLogin} from '../../services/login';
 import {AuthContext} from '../../layouts/AuthProvider';
-import {SafeAreaView, ScrollView} from 'react-native';
+import {
+  SafeAreaView,
+  KeyboardAvoidingView,
+  ImageBackground,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  Keyboard,
+} from 'react-native';
 import {codeMessage} from '../../utils/request';
+import {Platform} from 'react-native';
 const Login: React.FC = () => {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -38,58 +45,78 @@ const Login: React.FC = () => {
       });
   };
   return (
-    <SafeAreaView>
-      <ScrollView style={{height: '100%'!}}>
-        <Center>
-          <Box flex={1} p={2} w="90%" mx="auto">
-            <Heading size="lg">Welcome</Heading>
-            <Heading color="muted.400" size="xs">
-              Sign up to continue!
-            </Heading>
-            <VStack space={2} mt={5}>
-              <FormControl>
-                <FormControl.Label
-                  _text={{
-                    color: 'muted.700',
-                    fontSize: 'sm',
-                    fontWeight: 600,
-                  }}>
-                  用户名
-                </FormControl.Label>
-                <Input
-                  value={username}
-                  onChangeText={(value: string) => setUsername(value)}
-                />
-              </FormControl>
-              <FormControl>
-                <FormControl.Label
-                  _text={{
-                    color: 'muted.700',
-                    fontSize: 'sm',
-                    fontWeight: 600,
-                  }}>
-                  密码
-                </FormControl.Label>
-                <Input
-                  type="password"
-                  value={password}
-                  onChangeText={(value: string) => setPassword(value)}
-                />
-              </FormControl>
+    <SafeAreaView style={{height: '100%'!}}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={styles.container}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <ImageBackground
+            style={styles.image}
+            source={require('./img/login_bg.jpg')}>
+            <Box p={2} w="35%" bg="#fff" rounded="lg" mr={10}>
+              <Heading size="md">Welcome</Heading>
+              <Heading color="muted.400" size="xs">
+                欢迎使用赛美特智能制造系统
+              </Heading>
               <VStack space={2} mt={5}>
-                <Button
-                  // colorScheme="cyan"
-                  _text={{color: 'white'}}
-                  isLoading={isLoading}
-                  onPress={doLogin}>
-                  登录
-                </Button>
+                <FormControl>
+                  <FormControl.Label
+                    _text={{
+                      color: 'muted.700',
+                      fontSize: 'sm',
+                      fontWeight: 600,
+                    }}>
+                    用户名
+                  </FormControl.Label>
+                  <Input
+                    p={1}
+                    value={username}
+                    onChangeText={(value: string) => setUsername(value)}
+                  />
+                </FormControl>
+                <FormControl>
+                  <FormControl.Label
+                    _text={{
+                      color: 'muted.700',
+                      fontSize: 'sm',
+                      fontWeight: 600,
+                    }}>
+                    密码
+                  </FormControl.Label>
+                  <Input
+                    p={1}
+                    type="password"
+                    value={password}
+                    onChangeText={(value: string) => setPassword(value)}
+                  />
+                </FormControl>
+                <VStack space={2} mt={5}>
+                  <Button
+                    // colorScheme="cyan"
+                    _text={{color: 'white'}}
+                    isLoading={isLoading}
+                    onPress={doLogin}>
+                    登录
+                  </Button>
+                </VStack>
               </VStack>
-            </VStack>
-          </Box>
-        </Center>
-      </ScrollView>
+            </Box>
+          </ImageBackground>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  image: {
+    flex: 1,
+    resizeMode: 'cover',
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+  },
+});
 export default Login;

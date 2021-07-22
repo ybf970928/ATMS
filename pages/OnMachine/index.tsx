@@ -70,7 +70,6 @@ const OnMachine: React.FC = () => {
               style={{height: 40!}}
               w={'70%'}
               placeholder="扫描或者输入机台编号"
-              size="xs"
               value={formValue.handleId}
               onChangeText={(value: string) =>
                 setFormValue({...formValue, handleId: value})
@@ -95,7 +94,6 @@ const OnMachine: React.FC = () => {
             <Select
               w={'70%'}
               style={{height: 40!}}
-              size="xs"
               selectedValue={formValue.biandai}
               placeholder="请选择编带站"
               onValueChange={value =>
@@ -117,7 +115,6 @@ const OnMachine: React.FC = () => {
             <Select
               w={'70%'}
               style={{height: 40!}}
-              size="xs"
               selectedValue={formValue.wuliao}
               placeholder="请选择物料类型"
               onValueChange={value =>
@@ -140,7 +137,6 @@ const OnMachine: React.FC = () => {
               style={{height: 40!}}
               w={'70%'}
               placeholder="扫描或者输入测试随工单号"
-              size="xs"
               value={formValue.suigong}
               onChangeText={(value: string) =>
                 setFormValue({...formValue, suigong: value})
@@ -166,7 +162,6 @@ const OnMachine: React.FC = () => {
               style={{height: 40!}}
               w={'70%'}
               placeholder="扫描或者输入物料编码"
-              size="xs"
               value={formValue.wuliaoCode}
               onChangeText={(value: string) =>
                 setFormValue({...formValue, wuliaoCode: value})
