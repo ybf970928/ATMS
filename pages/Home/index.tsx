@@ -13,12 +13,14 @@ import {
 import {TabView, SceneMap} from 'react-native-tab-view';
 import {IconOutline, OutlineGlyphMapType} from '@ant-design/icons-react-native';
 import {Box} from 'native-base';
-import {navigate} from '../../utils/RootNavigation';
+import {useNavigation, StackActions} from '@react-navigation/native';
 import {AuthContext} from '../../layouts/AuthProvider';
 
 const initialLayout = {width: Dimensions.get('window').width};
 
-const ProductsMain: React.FC = () => {
+const Home: React.FC = () => {
+  const navigation = useNavigation();
+
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
     {key: 'ProductionManagement', title: '生产管理'},
@@ -46,7 +48,9 @@ const ProductsMain: React.FC = () => {
               <TouchableOpacity
                 key={i}
                 style={styles.productionRoutesItem}
-                onPress={() => navigate(node.route)}>
+                onPress={() =>
+                  navigation.dispatch(StackActions.push(node.route))
+                }>
                 <IconOutline name={node.icon} size={26} />
                 <Text>{node.title}</Text>
               </TouchableOpacity>
@@ -124,8 +128,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   productionRoutesItem: {
-    width: 150,
-    height: 150,
+    width: 100,
+    height: 100,
     borderWidth: 1,
     borderColor: '#ccc',
     marginBottom: 20,
@@ -151,4 +155,4 @@ const styles = StyleSheet.create({
     backgroundColor: '#3b82f6',
   },
 });
-export default ProductsMain;
+export default Home;

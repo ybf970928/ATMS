@@ -24,24 +24,38 @@ interface TrackInForm {
   setFormValue: React.Dispatch<React.SetStateAction<TrackinFormProps>>;
 }
 const BaseInfoTrackIn: React.FC<TrackInForm> = ({form, setFormValue}) => {
-  // const [formValue, setFormValue] = useState<FormProps>({});
-  // const isFocused = useIsFocused();
-  // const route = useRoute<any>();
-  // useEffect(() => {
-  //   if (isFocused) {
-  //     if (route.params) {
-  //       setFormValue({
-  //         ...formValue,
-  //         ...route.params,
-  //       });
-  //     }
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [isFocused, route.params]);
   const TableColumn: ColumnProps[] = [
     {
       label: '分选机编号: ',
       prop: 'handleId',
+      render: () => {
+        return (
+          <Box>
+            <Input
+              style={{height: 40!}}
+              placeholder="扫描或者输入分选机编号"
+              size="xs"
+              value={form.handleId}
+              onChangeText={(value: string) =>
+                setFormValue({...form, handleId: value})
+              }
+              InputRightElement={
+                <IconOutline
+                  size={20}
+                  name="scan"
+                  style={{padding: 10!}}
+                  onPress={() =>
+                    navigate('ScanQRCode', {
+                      formRoute: 'TrackIn',
+                      Keyword: 'handleId',
+                    })
+                  }
+                />
+              }
+            />
+          </Box>
+        );
+      },
     },
     {
       label: '测试随工单号: ',
@@ -145,7 +159,7 @@ const BaseInfoTrackIn: React.FC<TrackInForm> = ({form, setFormValue}) => {
     {label: '测试程序: ', prop: 'testerId'},
   ];
   return (
-    <Box bg="white" shadow={2} maxWidth="100%" marginBottom={5}>
+    <Box bg="white" maxWidth="100%" marginBottom={5} rounded="lg">
       <Stack space={2} p={[4, 4, 4, 2]}>
         <Heading size="md" noOfLines={2} fontSize="sm">
           基础信息

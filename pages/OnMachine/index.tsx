@@ -1,61 +1,33 @@
+import {useForm, Controller} from 'react-hook-form';
 import React, {useEffect} from 'react';
-import {
-  Box,
-  FormControl,
-  Input,
-  Stack,
-  Button,
-  Select,
-  CheckIcon,
-  ScrollView,
-} from 'native-base';
-import {IconOutline} from '@ant-design/icons-react-native';
-import {navigate} from '../../utils/RootNavigation';
-import {useState} from 'react';
+import {Box, FormControl, ScrollView, Button, TextArea} from 'native-base';
+import {ScanCodeInput} from '../../components/ScanCodeInput';
+import {FormSelect} from '../../components';
+import {OnMachineStack} from '../../components/StackBW';
 import {useIsFocused, useRoute} from '@react-navigation/native';
-
-// 字段到时候再具体定义
-interface FormProps {
-  handleId?: string;
-  biandai?: string;
-  wuliao?: string;
-  suigong?: string;
-  wuliaoCode?: string;
-}
-
-const OnMachineStack: React.FC = ({children}) => {
-  return (
-    <Stack
-      mx={6}
-      p={2}
-      direction="row"
-      justifyContent="space-between"
-      alignItems="center">
-      {children}
-    </Stack>
-  );
+type FormData = {
+  jitai: string;
+  biandai: string;
+  wuliao: string;
+  suigong: string;
+  wuliao2: string;
 };
 
 const OnMachine: React.FC = () => {
-  const [formValue, setFormValue] = useState<FormProps>({});
+  const {setValue, handleSubmit, control} = useForm<FormData>();
   const isFocused = useIsFocused();
   const route = useRoute<any>();
   useEffect(() => {
-    if (isFocused) {
-      if (route.params) {
-        setFormValue({
-          ...formValue,
-          ...route.params,
-        });
-      }
+    if (isFocused && route.params) {
+      Object.keys(route.params).forEach((key: any) => {
+        setValue(key, route.params[key]);
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFocused, route.params]);
-
-  const doSave = () => {
-    console.log(formValue);
+  const onSubmit = (data: FormData) => {
+    console.log(data);
   };
-
   return (
     <ScrollView
       flex={1}
@@ -64,129 +36,96 @@ const OnMachine: React.FC = () => {
       }}>
       <Box bg="white" rounded="lg" width="90%" marginTop={5}>
         <FormControl>
-          <OnMachineStack>
-            <FormControl.Label w={'30%'}>机台编号: </FormControl.Label>
-            <Input
-              style={{height: 40!}}
-              w={'70%'}
-              placeholder="扫描或者输入机台编号"
-              value={formValue.handleId}
-              onChangeText={(value: string) =>
-                setFormValue({...formValue, handleId: value})
-              }
-              InputRightElement={
-                <IconOutline
-                  size={20}
-                  name="scan"
-                  style={{padding: 10!}}
-                  onPress={() =>
-                    navigate('ScanQRCode', {
-                      formRoute: 'OnMachine',
-                      Keyword: 'handleId',
-                    })
-                  }
+          <Controller
+            control={control}
+            render={({field: {onChange, value}}) => (
+              <ScanCodeInput
+                w={'70%'}
+                onChangeText={onChange}
+                value={value}
+                label="机台编号:"
+                prop="jitai"
+                fromRoute="OnMachine">
+                <FormControl.Label w={'30%'}>机台编号: </FormControl.Label>
+              </ScanCodeInput>
+            )}
+            name="jitai"
+          />
+          <Controller
+            control={control}
+            render={({field: {onChange, value}}) => (
+              <FormSelect
+                w={'70%'}
+                value={value}
+                onValueChange={onChange}
+                label="编带站"
+                option={[
+                  {id: 'js', name: 'JavaScript'},
+                  {id: 'ts', name: 'TypeScript'},
+                  {id: 'java', name: 'Java'},
+                ]}>
+                <FormControl.Label w={'30%'}>编带站: </FormControl.Label>
+              </FormSelect>
+            )}
+            name="biandai"
+          />
+          <Controller
+            control={control}
+            render={({field: {onChange, value}}) => (
+              <FormSelect
+                w={'70%'}
+                value={value}
+                onValueChange={onChange}
+                label="物料类型"
+                option={[
+                  {id: 'js', name: 'JavaScript'},
+                  {id: 'ts', name: 'TypeScript'},
+                  {id: 'java', name: 'Java'},
+                ]}>
+                <FormControl.Label w={'30%'}>物料类型: </FormControl.Label>
+              </FormSelect>
+            )}
+            name="wuliao"
+          />
+          <Controller
+            control={control}
+            render={({field: {onChange, value}}) => (
+              <ScanCodeInput
+                w={'70%'}
+                onChangeText={onChange}
+                value={value}
+                label="随工单编号:"
+                prop="suigong"
+                fromRoute="OnMachine">
+                <FormControl.Label w={'30%'}>随工单编号: </FormControl.Label>
+              </ScanCodeInput>
+            )}
+            name="suigong"
+          />
+          <Controller
+            control={control}
+            render={({field: {onChange, value}}) => (
+              <OnMachineStack>
+                <FormControl.Label w={'30%'}>物料编码: </FormControl.Label>
+                <TextArea
+                  w={'70%'}
+                  onChangeText={val => onChange(val)}
+                  value={value}
+                  placeholder="请输入物料编码"
                 />
-              }
-            />
-          </OnMachineStack>
-          <OnMachineStack>
-            <FormControl.Label w={'30%'}>编带站: </FormControl.Label>
-            <Select
-              w={'70%'}
-              style={{height: 40!}}
-              selectedValue={formValue.biandai}
-              placeholder="请选择编带站"
-              onValueChange={value =>
-                setFormValue({...formValue, biandai: value})
-              }
-              _selectedItem={{
-                bg: 'cyan.600',
-                endIcon: <CheckIcon size={4} />,
-              }}>
-              <Select.Item label="JavaScript" value="js" />
-              <Select.Item label="TypeScript" value="ts" />
-              <Select.Item label="C" value="c" />
-              <Select.Item label="Python" value="py" />
-              <Select.Item label="Java" value="java" />
-            </Select>
-          </OnMachineStack>
-          <OnMachineStack>
-            <FormControl.Label w={'30%'}>物料类型: </FormControl.Label>
-            <Select
-              w={'70%'}
-              style={{height: 40!}}
-              selectedValue={formValue.wuliao}
-              placeholder="请选择物料类型"
-              onValueChange={value =>
-                setFormValue({...formValue, wuliao: value})
-              }
-              _selectedItem={{
-                bg: 'cyan.600',
-                endIcon: <CheckIcon size={4} />,
-              }}>
-              <Select.Item label="JavaScript2" value="js" />
-              <Select.Item label="TypeScript2" value="ts" />
-              <Select.Item label="C2" value="c" />
-              <Select.Item label="Python2" value="py" />
-              <Select.Item label="Java2" value="java" />
-            </Select>
-          </OnMachineStack>
-          <OnMachineStack>
-            <FormControl.Label w={'30%'}>随工单编号: </FormControl.Label>
-            <Input
-              style={{height: 40!}}
-              w={'70%'}
-              placeholder="扫描或者输入测试随工单号"
-              value={formValue.suigong}
-              onChangeText={(value: string) =>
-                setFormValue({...formValue, suigong: value})
-              }
-              InputRightElement={
-                <IconOutline
-                  size={20}
-                  name="scan"
-                  style={{padding: 10!}}
-                  onPress={() =>
-                    navigate('ScanQRCode', {
-                      formRoute: 'OnMachine',
-                      Keyword: 'suigong',
-                    })
-                  }
-                />
-              }
-            />
-          </OnMachineStack>
-          <OnMachineStack>
-            <FormControl.Label w={'30%'}>物料编码: </FormControl.Label>
-            <Input
-              style={{height: 40!}}
-              w={'70%'}
-              placeholder="扫描或者输入物料编码"
-              value={formValue.wuliaoCode}
-              onChangeText={(value: string) =>
-                setFormValue({...formValue, wuliaoCode: value})
-              }
-              InputRightElement={
-                <IconOutline
-                  size={20}
-                  name="scan"
-                  style={{padding: 10!}}
-                  onPress={() =>
-                    navigate('ScanQRCode', {
-                      formRoute: 'OnMachine',
-                      Keyword: 'wuliaoCode',
-                    })
-                  }
-                />
-              }
-            />
-          </OnMachineStack>
+              </OnMachineStack>
+            )}
+            name="wuliao2"
+          />
         </FormControl>
-        <Stack mx={6} p={2} alignItems="center">
-          <Button onPress={doSave} w={200} marginTop={10}>
-            确认
-          </Button>
-        </Stack>
+        <Button
+          onPress={handleSubmit(onSubmit)}
+          w={200}
+          mx="auto"
+          marginBottom={5}
+          marginTop={5}>
+          确认
+        </Button>
       </Box>
     </ScrollView>
   );

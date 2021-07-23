@@ -1,10 +1,11 @@
 import React from 'react';
 import {
-  createStackNavigator,
+  CardStyleInterpolators,
   StackNavigationOptions,
 } from '@react-navigation/stack';
-import {addProductRoutes} from '../layouts/addProductRoutes';
-import {AuthProductList} from '../types/ProductRoutes';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {IconOutline} from '@ant-design/icons-react-native';
+import {AppParamList} from './AppParamList';
 
 export const headerStyle: StackNavigationOptions = {
   headerTitleStyle: {color: '#fff'},
@@ -12,21 +13,43 @@ export const headerStyle: StackNavigationOptions = {
     backgroundColor: '#3b82f6',
   },
   headerTintColor: '#fff', //Tint color for the header 箭头颜色啥的
+  cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
 };
 
 export const AppTabs = () => {
-  const Stack = createStackNavigator<AuthProductList>();
+  const Tab = createBottomTabNavigator<AppParamList>();
   return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="Main"
-        getComponent={() => require('../pages/ProductsMain').default}
+    <Tab.Navigator>
+      <Tab.Screen
+        name="Home"
+        getComponent={() => require('../pages/ProductsStack').default}
         options={{
-          headerTitle: 'ATMS',
-          ...headerStyle,
+          tabBarLabel: '首页',
+          tabBarIcon: ({color}) => {
+            return <IconOutline name="home" size={26} color={color} />;
+          },
         }}
       />
-      {addProductRoutes(Stack)}
-    </Stack.Navigator>
+      <Tab.Screen
+        name="Message"
+        getComponent={() => require('../pages/Message').default}
+        options={{
+          tabBarLabel: '消息列表',
+          tabBarIcon: ({color}) => {
+            return <IconOutline name="message" size={26} color={color} />;
+          },
+        }}
+      />
+      <Tab.Screen
+        name="My"
+        getComponent={() => require('../pages/My').default}
+        options={{
+          tabBarLabel: '我的',
+          tabBarIcon: ({color}) => {
+            return <IconOutline name="user" size={26} color={color} />;
+          },
+        }}
+      />
+    </Tab.Navigator>
   );
 };

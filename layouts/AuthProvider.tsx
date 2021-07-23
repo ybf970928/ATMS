@@ -49,6 +49,9 @@ export const AuthProvider: React.FC = ({children}) => {
           size: 'xs',
         },
       },
+      Select: {
+        sizes: 'xs',
+      },
     },
   });
   return (

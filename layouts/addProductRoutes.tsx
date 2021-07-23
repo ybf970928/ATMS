@@ -17,6 +17,14 @@ export const addProductRoutes = (
   return (
     <>
       <Stack.Screen
+        name="Home"
+        getComponent={() => require('../pages/Home').default}
+        options={{
+          headerTitle: 'ATMS',
+          ...headerStyle,
+        }}
+      />
+      <Stack.Screen
         name="TrackIn"
         getComponent={() => require('../pages/TrackIn').default}
         options={{
@@ -71,6 +79,7 @@ export const addProductRoutes = (
           headerTitle: '扫描设备条码',
           headerTitleAlign: 'center',
           ...headerStyle,
+          cardStyleInterpolator: undefined,
         }}
       />
     </>

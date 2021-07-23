@@ -17,9 +17,10 @@ import {
   StyleSheet,
   TouchableWithoutFeedback,
   Keyboard,
+  Platform,
+  Image,
 } from 'react-native';
 import {codeMessage} from '../../utils/request';
-import {Platform} from 'react-native';
 const Login: React.FC = () => {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -33,9 +34,9 @@ const Login: React.FC = () => {
       .then(res => {
         if (res.code === 1) {
           const {token} = res.data;
+          setIsLoading(false);
           login(token);
         }
-        setIsLoading(false);
         toast.show({
           title: codeMessage[res.message],
         });
@@ -53,6 +54,10 @@ const Login: React.FC = () => {
           <ImageBackground
             style={styles.image}
             source={require('./img/login_bg.jpg')}>
+            <Image
+              source={require('./img/semi-logo.png')}
+              style={styles.logo}
+            />
             <Box p={2} w="35%" bg="#fff" rounded="lg" mr={10}>
               <Heading size="md">Welcome</Heading>
               <Heading color="muted.400" size="xs">
@@ -112,11 +117,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  logo: {
+    width: 171,
+    height: 108,
+    marginBottom: 300,
+    marginLeft: 140,
+  },
   image: {
     flex: 1,
     resizeMode: 'cover',
-    justifyContent: 'center',
-    alignItems: 'flex-end',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
 });
 export default Login;

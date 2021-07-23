@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react';
 import {ScrollView, StyleSheet} from 'react-native';
 import BaseInfoTrackIn from './components/BaseInfo';
 import MaterialInfoTrackIn from './components/MaterialInfo';
-import HandleIdAlert from './components/HandleIdAlert';
 import {useIsFocused, useRoute} from '@react-navigation/native';
 
 export interface TrackinFormProps {
@@ -11,7 +10,6 @@ export interface TrackinFormProps {
 }
 
 const TrackIn: React.FC = () => {
-  const [isOpen, setIsOpen] = React.useState(true);
   const [formValue, setFormValue] = useState<TrackinFormProps>({});
   const isFocused = useIsFocused();
   const route = useRoute<any>();
@@ -22,22 +20,15 @@ const TrackIn: React.FC = () => {
           ...formValue,
           ...route.params,
         });
-        setIsOpen(false);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFocused, route.params]);
   return (
-    <>
-      {isOpen ? (
-        <HandleIdAlert />
-      ) : (
-        <ScrollView style={styles.scrollView}>
-          <BaseInfoTrackIn form={formValue} setFormValue={setFormValue} />
-          <MaterialInfoTrackIn />
-        </ScrollView>
-      )}
-    </>
+    <ScrollView style={styles.scrollView}>
+      <BaseInfoTrackIn form={formValue} setFormValue={setFormValue} />
+      <MaterialInfoTrackIn />
+    </ScrollView>
   );
 };
 
