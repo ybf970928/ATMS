@@ -44,6 +44,11 @@ export const AuthProvider: React.FC = ({children}) => {
               borderColor: 'blue.500',
             },
           },
+          _ios: {
+            _focus: {
+              borderColor: 'blue.500',
+            },
+          },
         },
         defaultProps: {
           size: 'xs',

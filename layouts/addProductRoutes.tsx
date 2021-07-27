@@ -4,7 +4,6 @@ import {StackNavigationEventMap} from '@react-navigation/stack/lib/typescript/sr
 import React from 'react';
 import {AuthProductList} from '../types/ProductRoutes';
 import {headerStyle} from './AppTabs';
-
 export const addProductRoutes = (
   Stack: TypedNavigator<
     AuthProductList,
@@ -18,7 +17,7 @@ export const addProductRoutes = (
     <>
       <Stack.Screen
         name="Home"
-        getComponent={() => require('../pages/Home').default}
+        getComponent={() => require('./AppTabs').default}
         options={{
           headerTitle: 'ATMS',
           ...headerStyle,

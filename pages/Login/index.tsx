@@ -36,6 +36,8 @@ const Login: React.FC = () => {
           const {token} = res.data;
           setIsLoading(false);
           login(token);
+        } else {
+          setIsLoading(false);
         }
         toast.show({
           title: codeMessage[res.message],
@@ -117,18 +119,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  logo: {
-    width: 171,
-    height: 108,
-    marginBottom: 300,
-    marginLeft: 140,
-  },
   image: {
     flex: 1,
     resizeMode: 'cover',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  logo: {
+    width: 171,
+    height: 108,
+    marginBottom: 300,
   },
 });
 export default Login;

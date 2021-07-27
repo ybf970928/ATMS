@@ -128,12 +128,12 @@ const BaseInfoTrackIn: React.FC<TrackInForm> = ({form, setFormValue}) => {
         return (
           <Select
             style={{height: 40!}}
-            // selectedValue={language}
+            // selectedValue={''}
             // minWidth={200}
             // maxWidth={300}
             size="xs"
             placeholder="请选择测试步骤"
-            // onValueChange={itemValue => setLanguage(itemValue)}
+            // onValueChange={() => {}}
             _selectedItem={{
               bg: 'cyan.600',
               endIcon: <CheckIcon size={4} />,

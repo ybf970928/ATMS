@@ -1,6 +1,6 @@
-import {useIsFocused, useRoute} from '@react-navigation/native';
+import {useFocusEffect, useRoute} from '@react-navigation/native';
 import {Box, Button, FormControl, Input, ScrollView, Text} from 'native-base';
-import React, {useEffect} from 'react';
+import React, {useCallback} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import {ScanCodeInput} from '../../components/ScanCodeInput';
 import {OnMachineStack} from '../../components/StackBW';
@@ -31,18 +31,19 @@ const formItem: {label: string; prop: keyof FormProps}[] = [
 ];
 
 const Handover: React.FC = () => {
-  const {setValue, handleSubmit, control} = useForm<FormProps>();
-  const isFocused = useIsFocused();
+  const {setValue, handleSubmit, control} = useForm<FormProps>({});
   const route = useRoute<any>();
-  useEffect(() => {
-    if (isFocused && route.params) {
-      Object.keys(route.params).forEach((key: any) => {
-        setValue(key, route.params[key]);
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isFocused, route.params]);
 
+  useFocusEffect(
+    useCallback(() => {
+      if (route.params) {
+        Object.keys(route.params).forEach((key: any) => {
+          setValue(key, route.params[key]);
+        });
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [route.params]),
+  );
   const onSubmit = (data: FormProps) => console.log(data);
   return (
     <ScrollView

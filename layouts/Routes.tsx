@@ -4,7 +4,8 @@ import {AuthStack} from './AuthStack';
 import {AuthContext} from './AuthProvider';
 import {useEffect} from 'react';
 import {getToken} from '../utils/auth';
-import {AppTabs} from './AppTabs';
+// import {AppTabs} from './AppTabs';
+import {AppStack} from './AppStack';
 import {Center} from './Center';
 // react native ActivityIndicator组件 在华为pad无法运行😅😅😅😅
 import {Spinner} from 'native-base';
@@ -40,7 +41,7 @@ export const Routes = () => {
   return (
     <NavigationContainer ref={navigationRef}>
       <StatusBar backgroundColor="rgba(0, 0, 0, 0)" translucent />
-      {user ? <AppTabs /> : <AuthStack />}
+      {user ? <AppStack /> : <AuthStack />}
     </NavigationContainer>
   );
 };

@@ -1,10 +1,10 @@
 import {useForm, Controller} from 'react-hook-form';
-import React, {useEffect} from 'react';
+import React, {useCallback} from 'react';
 import {Box, FormControl, ScrollView, Button, TextArea} from 'native-base';
 import {ScanCodeInput} from '../../components/ScanCodeInput';
 import {FormSelect} from '../../components';
 import {OnMachineStack} from '../../components/StackBW';
-import {useIsFocused, useRoute} from '@react-navigation/native';
+import {useFocusEffect, useRoute} from '@react-navigation/native';
 type FormData = {
   jitai: string;
   biandai: string;
@@ -15,16 +15,17 @@ type FormData = {
 
 const OnMachine: React.FC = () => {
   const {setValue, handleSubmit, control} = useForm<FormData>();
-  const isFocused = useIsFocused();
   const route = useRoute<any>();
-  useEffect(() => {
-    if (isFocused && route.params) {
-      Object.keys(route.params).forEach((key: any) => {
-        setValue(key, route.params[key]);
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isFocused, route.params]);
+  useFocusEffect(
+    useCallback(() => {
+      if (route.params) {
+        Object.keys(route.params).forEach((key: any) => {
+          setValue(key, route.params[key]);
+        });
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [route.params]),
+  );
   const onSubmit = (data: FormData) => {
     console.log(data);
   };

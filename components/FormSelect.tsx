@@ -1,5 +1,5 @@
 import React from 'react';
-import {Select} from 'native-base';
+import {CheckIcon, Select} from 'native-base';
 import {OnMachineStack} from './StackBW';
 
 type SelectData = {
@@ -22,11 +22,14 @@ export const FormSelect: React.FC<SelectData> = ({
     <OnMachineStack>
       {children}
       <Select
-        h={10}
-        p={1}
+        style={{height: 40!}}
         w={w}
         placeholder={`请选择${label}`}
         selectedValue={value}
+        _selectedItem={{
+          bg: 'cyan.600',
+          endIcon: <CheckIcon size={4} />,
+        }}
         onValueChange={(itemValue: string) => {
           onValueChange(itemValue);
         }}>

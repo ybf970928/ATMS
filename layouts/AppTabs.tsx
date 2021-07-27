@@ -15,14 +15,13 @@ export const headerStyle: StackNavigationOptions = {
   headerTintColor: '#fff', //Tint color for the header 箭头颜色啥的
   cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
 };
-
-export const AppTabs = () => {
+const AppTabs = () => {
   const Tab = createBottomTabNavigator<AppParamList>();
   return (
     <Tab.Navigator>
       <Tab.Screen
         name="Home"
-        getComponent={() => require('../pages/ProductsStack').default}
+        getComponent={() => require('../pages/Home').default}
         options={{
           tabBarLabel: '首页',
           tabBarIcon: ({color}) => {
@@ -53,3 +52,5 @@ export const AppTabs = () => {
     </Tab.Navigator>
   );
 };
+
+export default AppTabs;
