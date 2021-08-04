@@ -27,7 +27,6 @@ export const ScanCodeInput: React.FC<FormData> = ({
       {children}
       <Input
         h={10}
-        p={1}
         w={w}
         onChangeText={(str: string) => onChangeText(str)}
         value={value}

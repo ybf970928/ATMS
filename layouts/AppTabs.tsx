@@ -1,4 +1,6 @@
 import React from 'react';
+import {View, Text} from 'native-base';
+import {StyleSheet} from 'react-native';
 import {
   CardStyleInterpolators,
   StackNavigationOptions,
@@ -25,7 +27,7 @@ const AppTabs = () => {
         options={{
           tabBarLabel: '首页',
           tabBarIcon: ({color}) => {
-            return <IconOutline name="home" size={26} color={color} />;
+            return <IconOutline name="home" size={30} color={color} />;
           },
         }}
       />
@@ -35,7 +37,16 @@ const AppTabs = () => {
         options={{
           tabBarLabel: '消息列表',
           tabBarIcon: ({color}) => {
-            return <IconOutline name="message" size={26} color={color} />;
+            return (
+              <>
+                <View style={styles.messageTips}>
+                  <View ml={1} rounded="md" style={styles.messageBadge}>
+                    <Text style={[styles.badge__content]}>99</Text>
+                  </View>
+                  <IconOutline name="message" size={30} color={color} />
+                </View>
+              </>
+            );
           },
         }}
       />
@@ -45,7 +56,7 @@ const AppTabs = () => {
         options={{
           tabBarLabel: '我的',
           tabBarIcon: ({color}) => {
-            return <IconOutline name="user" size={26} color={color} />;
+            return <IconOutline name="user" size={30} color={color} />;
           },
         }}
       />
@@ -53,4 +64,23 @@ const AppTabs = () => {
   );
 };
 
+const styles = StyleSheet.create({
+  messageTips: {
+    position: 'relative',
+  },
+  messageBadge: {
+    position: 'absolute',
+    top: -4,
+    right: -14,
+    backgroundColor: '#f56c6c',
+    zIndex: 2,
+    borderRadius: 10,
+    paddingHorizontal: 4,
+  },
+  badge__content: {
+    color: '#fff',
+    fontSize: 12,
+    textAlign: 'center',
+  },
+});
 export default AppTabs;
