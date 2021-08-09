@@ -15,7 +15,13 @@ import {IconOutline, OutlineGlyphMapType} from '@ant-design/icons-react-native';
 import {Box} from 'native-base';
 import {useNavigation, StackActions} from '@react-navigation/native';
 import {AuthContext} from '../../layouts/AuthProvider';
-
+import Collapse from './Collapse';
+import {UIManager, Platform} from 'react-native';
+if (Platform.OS === 'android') {
+  if (UIManager.setLayoutAnimationEnabledExperimental) {
+    UIManager.setLayoutAnimationEnabledExperimental(true);
+  }
+}
 const initialLayout = {width: Dimensions.get('window').width};
 
 const Home: React.FC = () => {
@@ -42,25 +48,27 @@ const Home: React.FC = () => {
     ];
     return (
       <ScrollView style={styles.scrollView}>
-        <View style={styles.container}>
-          {ProductionRoutes.map((node, i) => {
-            return (
-              <TouchableOpacity
-                key={i}
-                style={styles.productionRoutesItem}
-                onPress={() =>
-                  navigation.dispatch(StackActions.push(node.route))
-                }>
-                <IconOutline name={node.icon} size={26} />
-                <Text>{node.title}</Text>
-              </TouchableOpacity>
-            );
-          })}
-          {/* 保证space-between；最后一行靠左对齐 */}
-          {ProductionRoutes.map(item => {
-            return <View style={styles.placeholderItem} key={item.route} />;
-          })}
-        </View>
+        <Collapse>
+          <View style={styles.container}>
+            {ProductionRoutes.map((node, i) => {
+              return (
+                <TouchableOpacity
+                  key={i}
+                  style={styles.productionRoutesItem}
+                  onPress={() =>
+                    navigation.dispatch(StackActions.push(node.route))
+                  }>
+                  <IconOutline name={node.icon} size={26} />
+                  <Text>{node.title}</Text>
+                </TouchableOpacity>
+              );
+            })}
+            {/* 保证space-between；最后一行靠左对齐 */}
+            {ProductionRoutes.map(item => {
+              return <View style={styles.placeholderItem} key={item.route} />;
+            })}
+          </View>
+        </Collapse>
       </ScrollView>
     );
   };
