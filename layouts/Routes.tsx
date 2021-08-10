@@ -41,7 +41,7 @@ export const Routes = () => {
   return (
     <NavigationContainer ref={navigationRef}>
       <StatusBar backgroundColor="rgba(0, 0, 0, 0)" translucent />
-      {user ? <AppStack /> : <AppStack />}
+      {user ? <AppStack /> : <AuthStack />}
     </NavigationContainer>
   );
 };

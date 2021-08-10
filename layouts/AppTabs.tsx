@@ -26,8 +26,8 @@ const AppTabs = () => {
         getComponent={() => require('../pages/Home').default}
         options={{
           tabBarLabel: '首页',
-          tabBarIcon: ({color}) => {
-            return <IconOutline name="home" size={30} color={color} />;
+          tabBarIcon: ({color, size}) => {
+            return <IconOutline name="home" size={size} color={color} />;
           },
         }}
       />
@@ -36,14 +36,14 @@ const AppTabs = () => {
         getComponent={() => require('../pages/Message').default}
         options={{
           tabBarLabel: '消息列表',
-          tabBarIcon: ({color}) => {
+          tabBarIcon: ({color, size}) => {
             return (
               <>
                 <View style={styles.messageTips}>
-                  <View ml={1} rounded="md" style={styles.messageBadge}>
+                  <View rounded="md" style={styles.messageBadge}>
                     <Text style={[styles.badge__content]}>99</Text>
                   </View>
-                  <IconOutline name="message" size={30} color={color} />
+                  <IconOutline name="message" size={size} color={color} />
                 </View>
               </>
             );
@@ -55,8 +55,8 @@ const AppTabs = () => {
         getComponent={() => require('../pages/My').default}
         options={{
           tabBarLabel: '我的',
-          tabBarIcon: ({color}) => {
-            return <IconOutline name="user" size={30} color={color} />;
+          tabBarIcon: ({color, size}) => {
+            return <IconOutline name="user" size={size} color={color} />;
           },
         }}
       />
@@ -74,13 +74,13 @@ const styles = StyleSheet.create({
     right: -14,
     backgroundColor: '#f56c6c',
     zIndex: 2,
+    alignItems: 'center',
     borderRadius: 10,
     paddingHorizontal: 4,
   },
   badge__content: {
     color: '#fff',
     fontSize: 12,
-    textAlign: 'center',
   },
 });
 export default AppTabs;

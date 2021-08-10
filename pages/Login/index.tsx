@@ -21,6 +21,8 @@ import {
   Image,
 } from 'react-native';
 import {codeMessage} from '../../utils/request';
+import {getMacAddress} from 'react-native-device-info';
+
 const Login: React.FC = () => {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -28,24 +30,24 @@ const Login: React.FC = () => {
   const {login} = useContext(AuthContext);
   const toast = useToast();
 
-  const doLogin = () => {
+  const doLogin = async () => {
     setIsLoading(true);
-    accountLogin({username, password})
-      .then(res => {
-        if (res.code === 1) {
-          const {token} = res.data;
-          setIsLoading(false);
-          login(token);
-        } else {
-          setIsLoading(false);
-        }
-        toast.show({
-          title: codeMessage[res.message],
-        });
-      })
-      .catch(() => {
+    try {
+      const macAdress = await getMacAddress();
+      const res = await accountLogin({username, password, macAdress});
+      if (res.code === 1) {
+        const {token} = res.data;
         setIsLoading(false);
+        login(token);
+      } else {
+        setIsLoading(false);
+      }
+      toast.show({
+        title: codeMessage[res.message],
       });
+    } catch (error) {
+      setIsLoading(false);
+    }
   };
   return (
     <SafeAreaView style={{height: '100%'!}}>
