@@ -10,6 +10,9 @@ export type AuthProductList = {
   ReplaceScoket: undefined;
   SaveSummary: undefined;
   ScanQRCode: undefined;
+  Setting: undefined;
+  CraftCard: undefined;
+  ChangeOEE: undefined;
 };
 
 export type AuthNavProps<T extends keyof AuthProductList> = {

@@ -1,6 +1,6 @@
 import React from 'react';
 import {View, Text} from 'native-base';
-import {StyleSheet} from 'react-native';
+import {StyleSheet, StatusBar} from 'react-native';
 import {
   CardStyleInterpolators,
   StackNavigationOptions,
@@ -14,6 +14,7 @@ export const headerStyle: StackNavigationOptions = {
   headerStyle: {
     backgroundColor: '#3b82f6',
   },
+  headerStatusBarHeight: StatusBar.currentHeight,
   headerTintColor: '#fff', //Tint color for the header 箭头颜色啥的
   cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
 };

@@ -19,8 +19,7 @@ export const addProductRoutes = (
         name="Home"
         getComponent={() => require('./AppTabs').default}
         options={{
-          headerTitle: 'ATMS',
-          ...headerStyle,
+          header: () => null,
         }}
       />
       <Stack.Screen
@@ -51,7 +50,8 @@ export const addProductRoutes = (
         name="Handover"
         getComponent={() => require('../pages/Handover').default}
         options={{
-          headerTitle: '交接班',
+          headerTitle: '产量交接',
+          headerTitleAlign: 'center',
           ...headerStyle,
         }}
       />
@@ -79,6 +79,33 @@ export const addProductRoutes = (
           headerTitleAlign: 'center',
           ...headerStyle,
           cardStyleInterpolator: undefined,
+        }}
+      />
+      <Stack.Screen
+        name="CraftCard"
+        getComponent={() => require('../pages/CraftCard').default}
+        options={{
+          headerTitle: '工艺卡片',
+          headerTitleAlign: 'center',
+          ...headerStyle,
+        }}
+      />
+      <Stack.Screen
+        name="ChangeOEE"
+        getComponent={() => require('../pages/ChangeOEE').default}
+        options={{
+          headerTitle: 'OEE切换',
+          headerTitleAlign: 'center',
+          ...headerStyle,
+        }}
+      />
+      <Stack.Screen
+        name="Setting"
+        getComponent={() => require('../pages/Setting').default}
+        options={{
+          headerTitle: '设置',
+          headerTitleAlign: 'center',
+          ...headerStyle,
         }}
       />
     </>

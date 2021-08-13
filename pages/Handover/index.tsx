@@ -1,159 +1,90 @@
-import {useFocusEffect, useRoute} from '@react-navigation/native';
-import {Box, Button, FormControl, Input, ScrollView, Text} from 'native-base';
-import React, {useCallback} from 'react';
-import {Controller, useForm} from 'react-hook-form';
-import {ScanCodeInput} from '../../components/ScanCodeInput';
-import {OnMachineStack} from '../../components/StackBW';
+import {Box, Input, Text, Button} from 'native-base';
+import React from 'react';
+import {StyleSheet, View} from 'react-native';
+import {Controller, useForm, SubmitHandler, Control} from 'react-hook-form';
 
 interface FormProps {
-  handleId: string;
-  xinghao: string;
-  wuliao: string;
-  suigong: string;
-  testerId: string;
-  pihao: string;
-  mingcheng: string;
-  gongdan: string;
-  chengxu: string;
-  dangban: string;
-  mima: string;
-  jieban: string;
-  mima2: string;
+  batchNumber: string;
+  eqpId: string;
+  user: string;
+  code: string;
+  systemNum: string;
+  eqpNum: string;
 }
-const formItem: {label: string; prop: keyof FormProps}[] = [
-  {label: '测试机', prop: 'testerId'},
-  {label: '随工单', prop: 'suigong'},
-  {label: '产品型号', prop: 'xinghao'},
-  {label: '客户批号', prop: 'pihao'},
-  {label: '客户名称', prop: 'mingcheng'},
-  {label: '工单号', prop: 'gongdan'},
-  {label: '测试程序', prop: 'chengxu'},
-];
+
+interface FormItemValue {
+  label: string;
+  name: keyof FormProps;
+}
+
+const FormItem = ({
+  control,
+  item,
+}: {
+  control: Control<FormProps>;
+  item: FormItemValue;
+}) => {
+  return (
+    <View>
+      <Controller
+        control={control}
+        render={({field: {onChange, value}}) => (
+          <View style={styles.formItemLayout}>
+            <Text w={'30%'} pl={2} textAlign="left">
+              {item.label}:{' '}
+            </Text>
+            <Input w="70%" value={value} onChangeText={onChange} />
+          </View>
+        )}
+        name={item.name}
+      />
+    </View>
+  );
+};
 
 const Handover: React.FC = () => {
-  const {setValue, handleSubmit, control} = useForm<FormProps>({});
-  const route = useRoute<any>();
-
-  useFocusEffect(
-    useCallback(() => {
-      if (route.params) {
-        Object.keys(route.params).forEach((key: any) => {
-          setValue(key, route.params[key]);
-        });
-      }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [route.params]),
-  );
-  const onSubmit = (data: FormProps) => console.log(data);
+  const {handleSubmit, control} = useForm<FormProps>({});
+  const Forms: FormItemValue[] = [
+    {label: '作业批号', name: 'batchNumber'},
+    {label: '机台号', name: 'eqpId'},
+    {label: '作业员', name: 'user'},
+    {label: '定额代码', name: 'code'},
+    {label: '系统数量', name: 'systemNum'},
+    {label: '实物数量', name: 'eqpNum'},
+  ];
+  const onSubmit: SubmitHandler<FormProps> = data => console.log(data);
   return (
-    <ScrollView
-      flex={1}
-      _contentContainerStyle={{
-        alignItems: 'center'!,
-      }}>
-      <Box bg="white" rounded="lg" width="90%" marginTop={5}>
-        <FormControl>
-          <Controller
-            control={control}
-            render={({field: {onChange, value}}) => (
-              <ScanCodeInput
-                w={'70%'}
-                onChangeText={onChange}
-                value={value}
-                label="分选机:"
-                prop="handleId"
-                fromRoute="Handover">
-                <FormControl.Label w={'30%'}>分选机: </FormControl.Label>
-              </ScanCodeInput>
-            )}
-            name="handleId"
-          />
-          {formItem.map((item, index) => {
-            return (
-              <Controller
-                key={index}
-                control={control}
-                render={({field: {value}}) => (
-                  <OnMachineStack>
-                    <FormControl.Label w={'30%'}>
-                      {item.label}:
-                    </FormControl.Label>
-                    <Text w="70%">{value}</Text>
-                  </OnMachineStack>
-                )}
-                name={item.prop}
-              />
-            );
-          })}
-        </FormControl>
-      </Box>
+    <View style={styles.layout}>
       <Box
         bg="white"
         rounded="lg"
-        width="90%"
+        width="100%"
         marginTop={5}
-        marginBottom={5}
-        p={2}>
-        <FormControl>
-          <Controller
-            control={control}
-            render={({field: {value}}) => (
-              <OnMachineStack>
-                <FormControl.Label w={'30%'}>当班人员:</FormControl.Label>
-                <Text w="70%">{value}</Text>
-              </OnMachineStack>
-            )}
-            name="dangban"
-          />
-          <Controller
-            control={control}
-            render={({field: {value, onChange}}) => (
-              <OnMachineStack>
-                <FormControl.Label w={'30%'}>密码:</FormControl.Label>
-                <Input
-                  w={'70%'}
-                  p={1}
-                  value={value}
-                  onChangeText={onChange}
-                  type="password"
-                />
-              </OnMachineStack>
-            )}
-            name="mima"
-          />
-          <Controller
-            control={control}
-            render={({field: {value, onChange}}) => (
-              <OnMachineStack>
-                <FormControl.Label w={'30%'}>接班人员:</FormControl.Label>
-                <Input w={'70%'} p={1} value={value} onChangeText={onChange} />
-              </OnMachineStack>
-            )}
-            name="jieban"
-          />
-          <Controller
-            control={control}
-            render={({field: {value, onChange}}) => (
-              <OnMachineStack>
-                <FormControl.Label w={'30%'}>密码:</FormControl.Label>
-                <Input
-                  w={'70%'}
-                  p={1}
-                  value={value}
-                  onChangeText={onChange}
-                  type="password"
-                />
-              </OnMachineStack>
-            )}
-            name="mima2"
-          />
-        </FormControl>
-        <Button onPress={handleSubmit(onSubmit)} w={200} mx="auto">
-          确认
-        </Button>
+        p={2}
+        flexDirection="row"
+        flexWrap="wrap">
+        {Forms.map((item, index) => {
+          return <FormItem control={control} item={item} key={index} />;
+        })}
       </Box>
-    </ScrollView>
+      <Button onPress={handleSubmit(onSubmit)} mt={10}>
+        确认交接
+      </Button>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  layout: {
+    flex: 1,
+    padding: 10,
+  },
+  formItemLayout: {
+    height: 40,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+});
 
 export default Handover;
