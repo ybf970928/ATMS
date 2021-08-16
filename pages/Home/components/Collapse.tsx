@@ -1,13 +1,12 @@
 import {IconOutline} from '@ant-design/icons-react-native';
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {
   TouchableOpacity,
   Text,
   StyleSheet,
-  // View,
   LayoutAnimation,
   Animated,
-  // Easing,
+  Easing,
 } from 'react-native';
 
 interface ICollapseTypes {
@@ -17,26 +16,24 @@ interface ICollapseTypes {
 const Collapse: React.FC<ICollapseTypes> = ({children, title}) => {
   const [open, setOpen] = useState<boolean>(false);
   const height = open ? 'auto' : 0;
-  // const opacity = new Animated.Value(0);
+  const rotate = useRef<Animated.Value>(new Animated.Value(0)).current;
 
   const toggleBox = () => {
+    setOpen(pre => !pre);
     LayoutAnimation.configureNext(
       LayoutAnimation.create(200, 'easeInEaseOut', 'opacity'),
     );
-    // open = !open;
-    // opacity.setValue(open ? 0 : 1);
-    // Animated.timing(opacity, {
-    //   toValue: open ? 1 : 0,
-    //   duration: 400,
-    //   easing: Easing.linear,
-    //   useNativeDriver: true,
-    // }).start();
-    setOpen(pre => !pre);
+    Animated.timing(rotate, {
+      toValue: open ? 0 : 1,
+      duration: 200,
+      easing: Easing.linear,
+      useNativeDriver: true,
+    }).start();
   };
-  // const rotate = opacity.interpolate({
-  //   inputRange: [0, 1],
-  //   outputRange: ['270deg', '360deg'],
-  // });
+  const rotateX = rotate.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['270deg', '360deg'],
+  });
   return (
     <>
       <TouchableOpacity
@@ -46,7 +43,7 @@ const Collapse: React.FC<ICollapseTypes> = ({children, title}) => {
         <Text>{title}</Text>
         <Animated.View
           style={{
-            transform: [{rotate: open ? '360deg' : '270deg'}],
+            transform: [{rotate: rotateX}],
           }}>
           <IconOutline name="caret-down" size={24} />
         </Animated.View>

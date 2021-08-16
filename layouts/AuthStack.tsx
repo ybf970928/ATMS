@@ -10,9 +10,6 @@ export const AuthStack: React.FC = () => {
         getComponent={() => require('../pages/Login').default}
         options={{
           header: () => null,
-          // headerTitle: '欢迎使用赛美特智能制造系统',
-          // headerTitleAlign: 'center',
-          // headerTitleStyle: {color: '#1890FF'},
         }}
       />
     </Stack.Navigator>

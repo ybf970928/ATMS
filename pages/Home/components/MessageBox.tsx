@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useCallback, useRef} from 'react';
 import {
   Text,
   ScrollView,
@@ -8,6 +8,9 @@ import {
   Easing,
 } from 'react-native';
 
+const SHOWSIZE = 5;
+const ITEMH = 40;
+
 const Item = ({title}: {title: string}) => {
   return (
     <View style={styles.item}>
@@ -16,9 +19,8 @@ const Item = ({title}: {title: string}) => {
   );
 };
 const MessageBox: React.FC = () => {
-  let count: number = 0;
-  let stopAnimation: boolean = false;
-  const translateValue = new Animated.Value(0);
+  const count = useRef<number>(0);
+  const translateValue = useRef(new Animated.Value(0)).current;
   const DATA: {id: string; title: string}[] = [
     {id: 'bd7acbea-aed5-3ad53abb28ba', title: 'First Item'},
     {id: '3ac68afc-a4f8-fbd91aa97f63', title: 'Second Item'},
@@ -27,39 +29,38 @@ const MessageBox: React.FC = () => {
     {id: '58694a0f-c605-48d3-bd96-145571e29d72', title: 'Five Item'},
     {id: '58694a0f1f-bd96-145571e29d72', title: 'Six Item'},
     {id: '58694a0f-45571e29d72', title: 'Ten1 Item'},
-    {id: '58694a0f-45571e29d72', title: 'Ten2 Item'},
-    {id: '58694a0f-45571e29d72', title: 'Ten3 Item'},
-    {id: '58694a0f-45571e29d72', title: 'Ten4 Item'},
-    {id: '58694a0f-45571e29d72', title: 'Ten5 Item'},
-    {id: '58694a0f-45571e29d72', title: 'Ten6 Item'},
-    {id: '58694a0f-45571e29d72', title: 'Ten7 Item'},
+    {id: '58694a0f-45571e2qwtrv9d72', title: 'Ten2 Item'},
+    {id: '58694a0f-dsada', title: 'Ten3 Item'},
+    {id: '58694a0f-dsdsa', title: 'Ten4 Item'},
+    {id: '58694a0f-4557fr1e29d72', title: 'Ten5 Item'},
+    {id: '58694a0f-455wre71e29d72', title: 'Ten6 Item'},
+    {id: '58694a0f-45571e29d72qeew', title: 'Ten7 Item'},
   ];
-  const startAnimated = () => {
-    if (DATA.length <= 5) {
+  const startAnimated = useCallback(() => {
+    if (DATA.length <= SHOWSIZE) {
       return;
     }
-    if (count === DATA.length - 5) {
-      count = 0;
+    if (count.current === DATA.length - SHOWSIZE) {
+      count.current = 0;
     } else {
-      count++;
+      count.current++;
     }
     Animated.timing(translateValue, {
-      toValue: count * -40,
+      toValue: count.current * -ITEMH,
       duration: 1500,
       delay: 1500,
       easing: Easing.linear,
       useNativeDriver: true,
     }).start(() => {
-      if (!stopAnimation) {
-        startAnimated();
-      }
+      // if (!stopAnimation) {
+      startAnimated();
+      // }
     });
-  };
+  }, [DATA.length, translateValue]);
 
   useEffect(() => {
     startAnimated();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [startAnimated]);
   return (
     <ScrollView scrollEnabled={false} style={styles.messageBox}>
       <View style={styles.translateBox}>
@@ -90,8 +91,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
   },
   title: {
-    height: 40,
-    lineHeight: 40,
+    height: ITEMH,
+    lineHeight: ITEMH,
   },
 });
 export default MessageBox;
