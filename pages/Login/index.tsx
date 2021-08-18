@@ -21,7 +21,7 @@ import {
   Image,
 } from 'react-native';
 import {codeMessage} from '../../utils/request';
-import {getMacAddress} from 'react-native-device-info';
+import {getUniqueId} from 'react-native-device-info';
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState<string>('');
@@ -33,8 +33,8 @@ const Login: React.FC = () => {
   const doLogin = async () => {
     setIsLoading(true);
     try {
-      const macAdress = await getMacAddress();
-      const res = await accountLogin({username, password, macAdress});
+      const uniqueId = getUniqueId();
+      const res = await accountLogin({username, password, uniqueId, type: 3});
       if (res.code === 1) {
         const {token} = res.data;
         setIsLoading(false);

@@ -1,8 +1,7 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {ScrollView, StyleSheet} from 'react-native';
 import BaseInfoTrackIn from './components/BaseInfo';
-import MaterialInfoTrackIn from './components/MaterialInfo';
-// import {useFocusEffect, useRoute} from '@react-navigation/native';
+import CardTable from './components/CardTable';
 
 export interface TrackinFormProps {
   handleId?: string;
@@ -10,18 +9,17 @@ export interface TrackinFormProps {
 }
 
 const TrackIn: React.FC = () => {
-  const [formValue, setFormValue] = useState<TrackinFormProps>({});
   return (
     <ScrollView style={styles.scrollView}>
-      <BaseInfoTrackIn form={formValue} setFormValue={setFormValue} />
-      <MaterialInfoTrackIn />
+      <BaseInfoTrackIn />
+      <CardTable />
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   scrollView: {
-    padding: 10,
+    paddingHorizontal: 10,
   },
 });
 export default TrackIn;

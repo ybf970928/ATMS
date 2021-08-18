@@ -20,9 +20,9 @@ interface IFormItemProps {
 }
 
 const formItems: IFormItemProps[] = [
-  {label: '作业员', prop: 'user'},
-  {label: '机台号', prop: 'eqpId'},
-  {label: '批号', prop: 'pihao'},
+  {label: '机台号', prop: 'user'},
+  {label: '批号', prop: 'eqpId'},
+  {label: '剩余数量', prop: 'pihao'},
   {label: '工序', prop: 'user'},
   {label: '组装批号', prop: 'user'},
   {label: '芯片名', prop: 'user'},
@@ -32,7 +32,7 @@ const formItems: IFormItemProps[] = [
   {label: '料盒条码信息', prop: 'user'},
 ];
 
-const BaseInfoTrackIn: React.FC = () => {
+const UserCard: React.FC = () => {
   return (
     <Box
       bg="white"
@@ -72,4 +72,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default BaseInfoTrackIn;
+export default UserCard;

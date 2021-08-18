@@ -39,35 +39,31 @@ export const addProductRoutes = (
         }}
       />
       <Stack.Screen
-        name="SaveSummary"
-        getComponent={() => require('../pages/SaveSummary').default}
+        name="MaterialChange"
+        getComponent={() => require('../pages/MaterialChange').default}
         options={{
-          headerTitle: '保存summary',
-          ...headerStyle,
-        }}
-      />
-      <Stack.Screen
-        name="Handover"
-        getComponent={() => require('../pages/Handover').default}
-        options={{
-          headerTitle: '产量交接',
+          headerTitle: '物料更换与对比',
           headerTitleAlign: 'center',
           ...headerStyle,
         }}
       />
       <Stack.Screen
-        name="ReplaceScoket"
-        getComponent={() => require('../pages/ReplaceScoket').default}
+        name="MaterialsHistory"
+        getComponent={() =>
+          require('../pages/MaterialChange/components/MaterialsHistory').default
+        }
         options={{
-          headerTitle: '更换socket',
+          headerTitle: '物料历史记录',
+          headerTitleAlign: 'center',
           ...headerStyle,
         }}
       />
       <Stack.Screen
-        name="OnMachine"
-        getComponent={() => require('../pages/OnMachine').default}
+        name="Discontinue"
+        getComponent={() => require('../pages/Discontinue').default}
         options={{
-          headerTitle: '材料上机',
+          headerTitle: '作业中止',
+          headerTitleAlign: 'center',
           ...headerStyle,
         }}
       />
@@ -95,6 +91,15 @@ export const addProductRoutes = (
         getComponent={() => require('../pages/ChangeOEE').default}
         options={{
           headerTitle: 'OEE切换',
+          headerTitleAlign: 'center',
+          ...headerStyle,
+        }}
+      />
+      <Stack.Screen
+        name="Handover"
+        getComponent={() => require('../pages/Handover').default}
+        options={{
+          headerTitle: '产量交接',
           headerTitleAlign: 'center',
           ...headerStyle,
         }}

@@ -12,13 +12,17 @@ const MoreFeatures: React.FC = () => {
   }[] = [
     {title: '工艺卡片', icon: 'idcard', route: 'CraftCard'},
     {title: 'OEE切换', icon: 'one-to-one', route: 'ChangeOEE'},
-    {title: '作业中止', icon: 'stop', route: 'zuoye'},
-    {title: '换劈刀', icon: 'trademark-circle', route: 'pidao'},
-    {title: '换导丝管', icon: 'sync', route: 'daosi'},
+    {title: '作业中止', icon: 'stop', route: 'Discontinue'},
+    {
+      title: '物料更换与对比',
+      icon: 'trademark-circle',
+      route: 'MaterialChange',
+    },
+    // {title: '换导丝管', icon: 'sync', route: 'daosi'},
 
     {title: '开批', icon: 'fork', route: 'TrackIn'},
     {title: '结批', icon: 'stop', route: 'TrackOut'},
-    {title: '物料对比', icon: 'mac-command', route: 'wuliao'},
+    // {title: '物料对比', icon: 'mac-command', route: 'wuliao'},
     {title: '产量交班', icon: 'usergroup-add', route: 'Handover'},
     {title: 'RMS', icon: 'sort-descending', route: 'RMS'},
     // {title: '保存summary', icon: 'cloud-upload', route: 'SaveSummary'},

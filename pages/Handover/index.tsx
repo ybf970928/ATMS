@@ -1,58 +1,22 @@
-import {Box, Input, Text, Button} from 'native-base';
 import React from 'react';
-import {StyleSheet, View} from 'react-native';
-import {Controller, useForm, SubmitHandler, Control} from 'react-hook-form';
-
-interface FormProps {
-  batchNumber: string;
-  eqpId: string;
-  user: string;
+import {View, StyleSheet} from 'react-native';
+import {Box, Text, Input, Button} from 'native-base';
+import {useForm, Controller, SubmitHandler} from 'react-hook-form';
+interface OEEForm {
+  type: string;
+  number: string;
+  eqpstatus: string;
+  status: string;
   code: string;
-  systemNum: string;
-  eqpNum: string;
+  user: string;
+  remark: string;
 }
-
-interface FormItemValue {
-  label: string;
-  name: keyof FormProps;
-}
-
-const FormItem = ({
-  control,
-  item,
-}: {
-  control: Control<FormProps>;
-  item: FormItemValue;
-}) => {
-  return (
-    <View>
-      <Controller
-        control={control}
-        render={({field: {onChange, value}}) => (
-          <View style={styles.formItemLayout}>
-            <Text w={'30%'} pl={2} textAlign="left">
-              {item.label}:{' '}
-            </Text>
-            <Input w="70%" value={value} onChangeText={onChange} />
-          </View>
-        )}
-        name={item.name}
-      />
-    </View>
-  );
-};
-
 const Handover: React.FC = () => {
-  const {handleSubmit, control} = useForm<FormProps>({});
-  const Forms: FormItemValue[] = [
-    {label: '作业批号', name: 'batchNumber'},
-    {label: '机台号', name: 'eqpId'},
-    {label: '作业员', name: 'user'},
-    {label: '定额代码', name: 'code'},
-    {label: '系统数量', name: 'systemNum'},
-    {label: '实物数量', name: 'eqpNum'},
-  ];
-  const onSubmit: SubmitHandler<FormProps> = data => console.log(data);
+  const {handleSubmit, control} = useForm<OEEForm>();
+
+  const onSubmit: SubmitHandler<OEEForm> = data => {
+    console.log(data);
+  };
   return (
     <View style={styles.layout}>
       <Box
@@ -63,13 +27,94 @@ const Handover: React.FC = () => {
         p={2}
         flexDirection="row"
         flexWrap="wrap">
-        {Forms.map((item, index) => {
-          return <FormItem control={control} item={item} key={index} />;
-        })}
+        <View>
+          <Controller
+            control={control}
+            render={({field: {onChange, value}}) => (
+              <View style={styles.formItemLayout}>
+                <Text w={'30%'} pl={2} textAlign="left">
+                  作业批号:{' '}
+                </Text>
+                <Input w="70%" value={value} onChangeText={onChange} />
+              </View>
+            )}
+            name="type"
+          />
+        </View>
+        <View>
+          <Controller
+            control={control}
+            render={({field: {onChange, value}}) => (
+              <View style={styles.formItemLayout}>
+                <Text w={'30%'} pl={2} textAlign="left">
+                  机台号:{' '}
+                </Text>
+                <Input w="70%" value={value} onChangeText={onChange} />
+              </View>
+            )}
+            name="number"
+          />
+        </View>
+        <View>
+          <Controller
+            control={control}
+            render={({field: {onChange, value}}) => (
+              <View style={styles.formItemLayout}>
+                <Text w={'30%'} pl={2} textAlign="left">
+                  作业员:{' '}
+                </Text>
+                <Input w="70%" value={value} onChangeText={onChange} />
+              </View>
+            )}
+            name="eqpstatus"
+          />
+        </View>
+        <View>
+          <Controller
+            control={control}
+            render={({field: {onChange, value}}) => (
+              <View style={styles.formItemLayout}>
+                <Text w={'30%'} pl={2} textAlign="left">
+                  定额代码:{' '}
+                </Text>
+                <Input w="70%" value={value} onChangeText={onChange} />
+              </View>
+            )}
+            name="status"
+          />
+        </View>
+        <View>
+          <Controller
+            control={control}
+            render={({field: {onChange, value}}) => (
+              <View style={styles.formItemLayout}>
+                <Text w={'30%'} pl={2} textAlign="left">
+                  系统数量:{' '}
+                </Text>
+                <Input w="70%" value={value} onChangeText={onChange} />
+              </View>
+            )}
+            name="code"
+          />
+        </View>
+        <View>
+          <Controller
+            control={control}
+            render={({field: {onChange, value}}) => (
+              <View style={styles.formItemLayout}>
+                <Text w={'30%'} pl={2} textAlign="left">
+                  实物数量:{' '}
+                </Text>
+                <Input w="70%" value={value} onChangeText={onChange} />
+              </View>
+            )}
+            name="user"
+          />
+        </View>
       </Box>
-      <Button onPress={handleSubmit(onSubmit)} mt={10}>
-        确认交接
-      </Button>
+      <Box bg="white" rounded="lg" width="100%" marginTop={5}>
+        <Button onPress={handleSubmit(onSubmit)}>确认交接</Button>
+      </Box>
     </View>
   );
 };
@@ -79,6 +124,9 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
   },
+  // formItem: {
+  //   width: '50%',
+  // },
   formItemLayout: {
     height: 40,
     flexDirection: 'row',
@@ -86,5 +134,4 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
 });
-
 export default Handover;
