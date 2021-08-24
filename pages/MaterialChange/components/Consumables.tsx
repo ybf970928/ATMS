@@ -1,20 +1,45 @@
-import {Box, Input, Text, Button, Select, Switch} from 'native-base';
-import React from 'react';
+import {Box, Input, Text, Button, Switch} from 'native-base';
+import React, {useState} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {useForm, Controller, SubmitHandler} from 'react-hook-form';
+import {ConsumablesProps} from '../index';
+import {doUpdate} from '../../../services/materials';
+type ConsumableType = {
+  item: ConsumablesProps;
+};
 
-interface IFormProps {
-  type: string;
-  spe: string;
-  code: string;
-  head: string;
-  isChecked: boolean;
-}
-
-const Consumables: React.FC = () => {
-  const {handleSubmit, control} = useForm<IFormProps>();
-  const onSubmit: SubmitHandler<IFormProps> = data => {
-    console.log(data);
+const Consumables: React.FC<ConsumableType> = ({
+  item: {
+    checked,
+    consumablesType,
+    consumablesBarCode,
+    innerThread,
+    bondingHead,
+  },
+}) => {
+  const {handleSubmit, control} = useForm<ConsumablesProps>({
+    defaultValues: {
+      consumablesType,
+      innerThread,
+      bondingHead,
+      consumablesBarCode,
+      checked: checked ? true : false,
+    },
+  });
+  const [isUpdate, setIsUpdate] = useState<boolean>(false);
+  const onSubmit: SubmitHandler<ConsumablesProps> = data => {
+    doUpdate({
+      cType: data.consumablesType,
+      innerThread: data.innerThread,
+      barCode: data.consumablesBarCode,
+      bondingHead: data.bondingHead,
+      oldBarCode: consumablesBarCode,
+      check: data.checked ? 1 : 0,
+    }).then(res => {
+      if (res.code === 1) {
+        setIsUpdate(!isUpdate);
+      }
+    });
   };
   return (
     <Box
@@ -33,19 +58,10 @@ const Consumables: React.FC = () => {
               <Text w={'30%'} pl={2} textAlign="left">
                 材料类型:{' '}
               </Text>
-              <Select
-                w="70%"
-                selectedValue={value}
-                onValueChange={(itemValue: string) => {
-                  onChange(itemValue);
-                }}>
-                <Select.Item label="JavaScript" value="js" />
-                <Select.Item label="TypeScript" value="ts" />
-                <Select.Item label="Java" value="java" />
-              </Select>
+              <Input w="70%" value={value} onChangeText={onChange} isReadOnly />
             </View>
           )}
-          name="type"
+          name="consumablesType"
         />
       </View>
       <View style={styles.formItem}>
@@ -56,10 +72,10 @@ const Consumables: React.FC = () => {
               <Text minW={'30%'} pl={2} textAlign="left">
                 内引线规格:{' '}
               </Text>
-              <Input w="70%" value={value} onChangeText={onChange} />
+              <Input w="70%" value={value} onChangeText={onChange} isReadOnly />
             </View>
           )}
-          name="spe"
+          name="innerThread"
         />
       </View>
       <View style={styles.formItem}>
@@ -73,7 +89,7 @@ const Consumables: React.FC = () => {
               <Input w="70%" value={value} onChangeText={onChange} />
             </View>
           )}
-          name="code"
+          name="consumablesBarCode"
         />
       </View>
       <View style={styles.formItem}>
@@ -87,7 +103,7 @@ const Consumables: React.FC = () => {
               <Input w="70%" value={value} onChangeText={onChange} />
             </View>
           )}
-          name="head"
+          name="bondingHead"
         />
       </View>
       <View style={styles.formItem}>
@@ -106,12 +122,16 @@ const Consumables: React.FC = () => {
               </View>
             </View>
           )}
-          name="isChecked"
+          name="checked"
         />
       </View>
       <View style={styles.submitBtn}>
-        <Button onPress={handleSubmit(onSubmit)} size="sm">
-          确认新增
+        <Button
+          onPress={handleSubmit(onSubmit)}
+          size="sm"
+          isDisabled={isUpdate}
+          colorScheme={isUpdate ? 'green' : 'blue'}>
+          {isUpdate ? '已确认' : '确认新增'}
         </Button>
       </View>
     </Box>

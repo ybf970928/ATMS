@@ -1,33 +1,20 @@
-import {Box, Button, Switch, Input} from 'native-base';
+import {Box, Button, Input} from 'native-base';
 import React from 'react';
 import Table from '../../../components/Table';
 import {IColProps} from '../../../types/Table';
-import {MateriaProps} from '../index';
+import {MaterialBoxProps} from '../index';
 
 type MaterialType = {
-  dataSource: MateriaProps[];
+  dataSource: MaterialBoxProps[];
 };
-const MaterialsInfo: React.FC<MaterialType> = ({dataSource}) => {
-  const columns: IColProps<MateriaProps>[] = [
+const MaterialBox: React.FC<MaterialType> = ({dataSource}) => {
+  const columns: IColProps<MaterialBoxProps>[] = [
     {title: '材料类型', dataIndex: 'materialType'},
     {
       title: '条码',
       dataIndex: 'materialBarCode',
       render: text => {
-        return <Input defaultValue={text} w={60} height={10} />;
-      },
-    },
-    {title: '键合头', dataIndex: 'bondingHead'},
-    {
-      title: '是否勾选',
-      dataIndex: 'checked',
-      render: text => {
-        return (
-          <Switch
-            defaultIsChecked={text ? true : false}
-            onTrackColor="blue.500"
-          />
-        );
+        return <Input defaultValue={text} w={180} height={10} />;
       },
     },
     {
@@ -58,4 +45,4 @@ const MaterialsInfo: React.FC<MaterialType> = ({dataSource}) => {
     </Box>
   );
 };
-export default MaterialsInfo;
+export default MaterialBox;

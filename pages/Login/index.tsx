@@ -33,8 +33,14 @@ const Login: React.FC = () => {
   const doLogin = async () => {
     setIsLoading(true);
     try {
-      const uniqueId = getUniqueId();
-      const res = await accountLogin({username, password, uniqueId, type: 3});
+      // 使用ipaddress替代androd id
+      const ipaddress = getUniqueId();
+      const res = await accountLogin({
+        username,
+        password,
+        ipaddress,
+        loginType: 1,
+      });
       if (res.code === 1) {
         const {token} = res.data;
         setIsLoading(false);

@@ -15,9 +15,6 @@ const formItem: FormTypes[] = [
   {label: '芯片名', value: 'fdssdfsdfsd'},
   {label: '封装形式', value: 'dsbdjhsbkds'},
   {label: '批次数量', value: 'cczxcsds'},
-  {label: '铝丝物料号', value: 'rewrewwe'},
-  {label: '劈刀理论寿命点数', value: 'ervcd'},
-  {label: '导丝管理论寿命点数', value: 'vxvegerer'},
 ];
 
 const UserCard: React.FC = () => {

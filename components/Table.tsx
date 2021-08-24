@@ -14,9 +14,11 @@ const Table: React.FC<IProps> = ({dataSource, columns}) => {
         {columns.map(col => {
           return (
             <Text style={styles.title} key={col.title as string}>
-              {col.render
-                ? col.render(item[col.dataIndex], item, index)
-                : item[col.dataIndex]}
+              {col.render ? (
+                <View>{col.render(item[col.dataIndex], item, index)}</View>
+              ) : (
+                item[col.dataIndex]
+              )}
             </Text>
           );
         })}
