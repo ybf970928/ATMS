@@ -22,7 +22,7 @@ import {
 } from 'react-native';
 import {codeMessage} from '../../utils/request';
 import {getUniqueId} from 'react-native-device-info';
-
+import {setUserInfo} from '../../utils/user';
 const Login: React.FC = () => {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -39,11 +39,12 @@ const Login: React.FC = () => {
         username,
         password,
         ipaddress,
-        loginType: 1,
+        loginType: 3,
       });
       if (res.code === 1) {
         const {token} = res.data;
         setIsLoading(false);
+        setUserInfo(res.data);
         login(token);
       } else {
         setIsLoading(false);

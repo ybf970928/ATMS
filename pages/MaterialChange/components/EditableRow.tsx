@@ -1,46 +1,50 @@
-import {Box, Input, Button, useToast} from 'native-base';
+import {Box, Input, Button, Switch, Select} from 'native-base';
 import React, {useState} from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 import {useForm, Controller, SubmitHandler} from 'react-hook-form';
-import {MaterialBoxProps} from '../index';
+import {MateriaProps} from '../index';
 import {IColProps} from '../../../types/Table';
 import {getUserInfo} from '../../../utils/user';
 import {doUpdate} from '../../../services/materials';
-import {ToastMessage} from '../../../utils/errorMessageMap';
 type MaterialType = {
-  dataSource: MaterialBoxProps[];
+  dataSource: MateriaProps[];
   stepId: string;
 };
-const columns: IColProps<MaterialBoxProps>[] = [
+const columns: IColProps<MateriaProps>[] = [
   {title: '材料类型', dataIndex: 'materialType'},
   {
     title: '条码',
     dataIndex: 'materialBarCode',
   },
+  {title: '键合头', dataIndex: 'bondingHead'},
+  {
+    title: '是否勾选',
+    dataIndex: 'checked',
+  },
   {
     title: '操作',
-    dataIndex: '',
+    dataIndex: 'materialBarCode',
   },
 ];
 
 interface RowProps {
-  item: MaterialBoxProps;
+  item: MateriaProps;
   stepId: string;
 }
 const Row: React.FC<RowProps> = ({
-  item: {materialBarCode, materialType},
+  item: {checked, materialType, materialBarCode, bondingHead},
   stepId,
 }) => {
   const [isCheck, setCheck] = useState<boolean>(false);
-  const {handleSubmit, control} = useForm<MaterialBoxProps>({
+  const {handleSubmit, control} = useForm<MateriaProps>({
     defaultValues: {
-      materialBarCode,
+      checked,
       materialType,
+      materialBarCode,
+      bondingHead,
     },
   });
-  const toast = useToast();
-
-  const onSubmit: SubmitHandler<MaterialBoxProps> = async data => {
+  const onSubmit: SubmitHandler<MateriaProps> = async data => {
     const {eqpid} = await getUserInfo();
     const res = await doUpdate({
       cType: data.materialType,
@@ -48,14 +52,12 @@ const Row: React.FC<RowProps> = ({
       eqpId: eqpid,
       stepId,
       barCode: data.materialBarCode,
-      oldBarCode: materialBarCode || '',
+      bondingHead: data.bondingHead,
+      oldBarCode: materialBarCode,
+      check: data.checked ? 1 : 0,
     });
     if (res.code === 1) {
       setCheck(!isCheck);
-    } else {
-      toast.show({
-        title: ToastMessage(res),
-      });
     }
   };
   return (
@@ -69,7 +71,7 @@ const Row: React.FC<RowProps> = ({
           name="materialType"
         />
       </View>
-      <View style={styles.row}>
+      <View style={[styles.barCode]}>
         <Controller
           control={control}
           render={({field: {onChange, value}}) => (
@@ -81,6 +83,40 @@ const Row: React.FC<RowProps> = ({
             />
           )}
           name="materialBarCode"
+        />
+      </View>
+      <View style={styles.row}>
+        <Controller
+          control={control}
+          render={({field: {onChange, value}}) => (
+            <Select
+              h={10}
+              isDisabled={isCheck}
+              selectedValue={value}
+              onValueChange={(itemValue: string) => {
+                onChange(itemValue);
+              }}>
+              <Select.Item label="1" value="1" />
+              <Select.Item label="2" value="2" />
+            </Select>
+          )}
+          name="bondingHead"
+        />
+      </View>
+      <View style={styles.row}>
+        <Controller
+          control={control}
+          render={({field: {onChange, value}}) => (
+            <View style={styles.checkedView}>
+              <Switch
+                onToggle={(val: boolean) => onChange(val)}
+                isChecked={value}
+                onTrackColor="blue.500"
+                isDisabled={isCheck}
+              />
+            </View>
+          )}
+          name="checked"
         />
       </View>
       <View style={[styles.row, styles.submitBtn]}>
@@ -96,7 +132,7 @@ const Row: React.FC<RowProps> = ({
   );
 };
 
-const materialBox: React.FC<MaterialType> = ({dataSource, stepId}) => {
+const EditableRow: React.FC<MaterialType> = ({dataSource, stepId}) => {
   return (
     <Box
       bg="white"
@@ -109,7 +145,7 @@ const materialBox: React.FC<MaterialType> = ({dataSource, stepId}) => {
         {columns.map((col, index) => {
           return (
             <Text
-              style={styles.row}
+              style={index === 1 ? styles.barCodeTitle : styles.row}
               key={(col.dataIndex as string) + '' + index}>
               {col.title}
             </Text>
@@ -140,8 +176,24 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
   },
+  checkedView: {
+    width: '70%',
+    height: 40,
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+  },
   submitBtn: {
     alignItems: 'flex-start',
   },
+  barCodeTitle: {
+    width: 180,
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+  },
+  barCode: {
+    width: 180,
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+  },
 });
-export default materialBox;
+export default EditableRow;

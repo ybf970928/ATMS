@@ -1,9 +1,10 @@
-import {Box, Heading, Text, Pressable} from 'native-base';
+import {Box, Heading, Text, Pressable, Input} from 'native-base';
 import React, {useEffect, useState} from 'react';
 import {ScrollView, StyleSheet, View} from 'react-native';
 import Consumables from './components/Consumables';
-import MaterialsInfo from './components/MaterialsInfo';
+// import MaterialsInfo from './components/MaterialsInfo';
 import MaterialBox from './components/materialBox';
+import EditableRow from './components/EditableRow';
 import {useNavigation} from '@react-navigation/native';
 import {getMaterials} from '../../services/materials';
 
@@ -55,7 +56,7 @@ const MaterialChange: React.FC = () => {
         <View style={styles.cardHead}>
           <View style={styles.materialsTitle}>
             <Text>作业批号: </Text>
-            <Text>{jobNumber}</Text>
+            <Input defaultValue={jobNumber} w={200} h={10} />
           </View>
           <Pressable onPress={() => navigation.navigate('MaterialsHistory')}>
             <Text style={styles.historyTitle}>查看物料历史记录</Text>
@@ -71,7 +72,7 @@ const MaterialChange: React.FC = () => {
             耗材信息
           </Heading>
           {consumablesList.map((item, index) => (
-            <Consumables item={item} key={index} />
+            <Consumables stepId={jobNumber} item={item} key={index} />
           ))}
         </Box>
         <Box
@@ -88,8 +89,9 @@ const MaterialChange: React.FC = () => {
             paddingBottom={4}>
             材料信息
           </Heading>
-          <MaterialsInfo dataSource={materialList} />
-          <MaterialBox dataSource={materialBoxList} />
+          {/* <MaterialsInfo stepId={jobNumber} dataSource={materialList} /> */}
+          <EditableRow dataSource={materialList} stepId={jobNumber} />
+          <MaterialBox dataSource={materialBoxList} stepId={jobNumber} />
         </Box>
       </View>
     </ScrollView>
@@ -110,10 +112,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     padding: 20,
     justifyContent: 'space-between',
+    alignItems: 'center',
     backgroundColor: '#fff',
   },
   materialsTitle: {
     flexDirection: 'row',
+    alignItems: 'center',
   },
   historyTitle: {
     color: '#3b82f6',

@@ -1,20 +1,50 @@
 import {Box, Button, Switch, Input} from 'native-base';
-import React from 'react';
+import React, {useState} from 'react';
+
 import Table from '../../../components/Table';
 import {IColProps} from '../../../types/Table';
 import {MateriaProps} from '../index';
+import {getUserInfo} from '../../../utils/user';
+import {doUpdate} from '../../../services/materials';
 
 type MaterialType = {
   dataSource: MateriaProps[];
+  stepId: string;
 };
-const MaterialsInfo: React.FC<MaterialType> = ({dataSource}) => {
+const MaterialsInfo: React.FC<MaterialType> = ({dataSource, stepId}) => {
+  const [editingKey, setEditingKey] = useState<number[]>([]);
+  const isEditing = (index: number) => editingKey.includes(index);
+  const onSubmit = async (text: string, data: MateriaProps, index: number) => {
+    const {eqpid} = await getUserInfo();
+    const res = await doUpdate({
+      cType: data.materialType,
+      lotId: '132', //先写死
+      eqpId: eqpid,
+      stepId,
+      barCode: data.materialBarCode,
+      bondingHead: data.bondingHead,
+      oldBarCode: text,
+      check: data.checked ? 1 : 0,
+    });
+    if (res.code === 1) {
+      setEditingKey(editingKey.concat(index));
+    }
+  };
+
   const columns: IColProps<MateriaProps>[] = [
     {title: '材料类型', dataIndex: 'materialType'},
     {
       title: '条码',
       dataIndex: 'materialBarCode',
-      render: text => {
-        return <Input defaultValue={text} w={60} height={10} />;
+      render: (text, record) => {
+        return (
+          <Input
+            defaultValue={text}
+            onChangeText={(val: string) => (record!.materialBarCode = val)}
+            w={60}
+            height={10}
+          />
+        );
       },
     },
     {title: '键合头', dataIndex: 'bondingHead'},
@@ -32,15 +62,16 @@ const MaterialsInfo: React.FC<MaterialType> = ({dataSource}) => {
     },
     {
       title: '操作',
-      dataIndex: '',
-      render: (text, record) => {
+      dataIndex: 'materialBarCode',
+      render: (text, record, index) => {
+        const editable = isEditing(index!);
         return (
           <Button
             size="xs"
-            colorScheme="green"
+            colorScheme={editable ? 'green' : 'blue'}
             rounded="lg"
-            onPress={() => console.log(text, record)}>
-            已确认
+            onPress={() => onSubmit(text, record!, index!)}>
+            {editable ? '已确认' : '确认新增'}
           </Button>
         );
       },

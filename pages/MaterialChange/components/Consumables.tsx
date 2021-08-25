@@ -1,11 +1,14 @@
-import {Box, Input, Text, Button, Switch} from 'native-base';
+import {Box, Input, Text, Button, Switch, Select} from 'native-base';
 import React, {useState} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {useForm, Controller, SubmitHandler} from 'react-hook-form';
 import {ConsumablesProps} from '../index';
 import {doUpdate} from '../../../services/materials';
+import {getUserInfo} from '../../../utils/user';
+
 type ConsumableType = {
   item: ConsumablesProps;
+  stepId: string;
 };
 
 const Consumables: React.FC<ConsumableType> = ({
@@ -16,6 +19,7 @@ const Consumables: React.FC<ConsumableType> = ({
     innerThread,
     bondingHead,
   },
+  stepId,
 }) => {
   const {handleSubmit, control} = useForm<ConsumablesProps>({
     defaultValues: {
@@ -27,19 +31,22 @@ const Consumables: React.FC<ConsumableType> = ({
     },
   });
   const [isUpdate, setIsUpdate] = useState<boolean>(false);
-  const onSubmit: SubmitHandler<ConsumablesProps> = data => {
-    doUpdate({
+  const onSubmit: SubmitHandler<ConsumablesProps> = async data => {
+    const {eqpid} = await getUserInfo();
+    const res = await doUpdate({
       cType: data.consumablesType,
       innerThread: data.innerThread,
+      lotId: '123', // 暂时先写死
+      stepId,
+      eqpId: eqpid,
       barCode: data.consumablesBarCode,
       bondingHead: data.bondingHead,
       oldBarCode: consumablesBarCode,
       check: data.checked ? 1 : 0,
-    }).then(res => {
-      if (res.code === 1) {
-        setIsUpdate(!isUpdate);
-      }
     });
+    if (res.code === 1) {
+      setIsUpdate(!isUpdate);
+    }
   };
   return (
     <Box
@@ -58,7 +65,7 @@ const Consumables: React.FC<ConsumableType> = ({
               <Text w={'30%'} pl={2} textAlign="left">
                 材料类型:{' '}
               </Text>
-              <Input w="70%" value={value} onChangeText={onChange} isReadOnly />
+              <Input w="70%" value={value} onChangeText={onChange} isDisabled />
             </View>
           )}
           name="consumablesType"
@@ -72,7 +79,7 @@ const Consumables: React.FC<ConsumableType> = ({
               <Text minW={'30%'} pl={2} textAlign="left">
                 内引线规格:{' '}
               </Text>
-              <Input w="70%" value={value} onChangeText={onChange} isReadOnly />
+              <Input w="70%" value={value} onChangeText={onChange} isDisabled />
             </View>
           )}
           name="innerThread"
@@ -86,7 +93,12 @@ const Consumables: React.FC<ConsumableType> = ({
               <Text w={'30%'} pl={2} textAlign="left">
                 条码:{' '}
               </Text>
-              <Input w="70%" value={value} onChangeText={onChange} />
+              <Input
+                w="70%"
+                value={value}
+                onChangeText={onChange}
+                isDisabled={isUpdate}
+              />
             </View>
           )}
           name="consumablesBarCode"
@@ -100,7 +112,17 @@ const Consumables: React.FC<ConsumableType> = ({
               <Text w={'30%'} pl={2} textAlign="left">
                 键合头:{' '}
               </Text>
-              <Input w="70%" value={value} onChangeText={onChange} />
+              <Select
+                // h={10}
+                w="70%"
+                isDisabled={isUpdate}
+                selectedValue={value}
+                onValueChange={(itemValue: string) => {
+                  onChange(itemValue);
+                }}>
+                <Select.Item label="1" value="1" />
+                <Select.Item label="2" value="2" />
+              </Select>
             </View>
           )}
           name="bondingHead"
@@ -118,6 +140,7 @@ const Consumables: React.FC<ConsumableType> = ({
                 <Switch
                   onToggle={(val: boolean) => onChange(val)}
                   isChecked={value}
+                  isDisabled={isUpdate}
                 />
               </View>
             </View>
@@ -130,7 +153,7 @@ const Consumables: React.FC<ConsumableType> = ({
           onPress={handleSubmit(onSubmit)}
           size="sm"
           isDisabled={isUpdate}
-          colorScheme={isUpdate ? 'green' : 'blue'}>
+          colorScheme={'blue'}>
           {isUpdate ? '已确认' : '确认新增'}
         </Button>
       </View>
