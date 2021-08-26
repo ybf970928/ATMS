@@ -1,5 +1,16 @@
-export interface IColProps<T = any> {
+import {
+  ControllerRenderProps,
+  UseFormHandleSubmit,
+  UseFormSetValue,
+} from 'react-hook-form';
+
+export interface IColProps<T> {
   title: string;
   dataIndex: keyof T | '';
-  render?: (text: string, record?: T, index?: number) => JSX.Element;
+  width?: number | string;
+  render?: (
+    field: ControllerRenderProps,
+    handleSubmit: UseFormHandleSubmit<T>,
+    setValue: UseFormSetValue<T>,
+  ) => JSX.Element;
 }

@@ -1,8 +1,9 @@
 import React from 'react';
-import {Box, Heading} from 'native-base';
-import {ScrollView} from 'react-native';
+import {Box, Heading, Switch, Input, Button} from 'native-base';
+import {ScrollView, View} from 'react-native';
 import {IColProps} from '../../../types/Table';
-import Table from '../../../components/Table';
+// import Table from '../../../components/Table';
+import TableV2 from '../../../components/TableV2';
 export interface IDataSource {
   id: string;
   title: string;
@@ -34,12 +35,49 @@ const dataSource: IDataSource[] = [
     isChecked: 0,
   },
 ];
+
 const columns: IColProps<IDataSource>[] = [
   {title: '材料类型', dataIndex: 'title'},
   {title: '内引线规格', dataIndex: 'type'},
-  {title: '条码', dataIndex: 'id'},
-  {title: '键合头', dataIndex: 'email'},
-  {title: '是否勾选', dataIndex: 'isChecked'},
+  {
+    title: '条码',
+    dataIndex: 'id',
+    width: '25%',
+    render: ({onChange, value}) => {
+      return <Input h={10} value={value} onChangeText={onChange} />;
+    },
+  },
+  {title: '键合头', dataIndex: 'email', width: 100},
+  {
+    title: '是否勾选',
+    dataIndex: 'isChecked',
+    render: ({onChange, value}) => {
+      return (
+        <View style={{alignItems: 'flex-start'!}}>
+          <Switch
+            onToggle={(val: boolean) => onChange(val)}
+            isChecked={value ? true : false}
+            onTrackColor="blue.500"
+          />
+        </View>
+      );
+    },
+  },
+  {
+    title: '操作',
+    dataIndex: 'id',
+    render: ({value}, handleSubmit, setValue) => {
+      return (
+        <Button
+          onPress={handleSubmit((data: any) => {
+            setValue('id', '1111');
+            console.log(data, value);
+          })}>
+          新增
+        </Button>
+      );
+    },
+  },
 ];
 const MaterialsHistory: React.FC = () => {
   return (
@@ -53,7 +91,8 @@ const MaterialsHistory: React.FC = () => {
           paddingBottom={4}>
           耗材信息
         </Heading>
-        <Table dataSource={dataSource} columns={columns} />
+        {/* <Table dataSource={dataSource} columns={columns} /> */}
+        <TableV2 dataSource={dataSource} columns={columns} />
       </Box>
     </ScrollView>
   );

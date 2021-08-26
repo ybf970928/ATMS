@@ -1,11 +1,11 @@
-import {Box, Input, Text, Button, Switch, Select} from 'native-base';
+import {Box, Input, Text, Button, Switch, Select, useToast} from 'native-base';
 import React, {useState} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {useForm, Controller, SubmitHandler} from 'react-hook-form';
 import {ConsumablesProps} from '../index';
 import {doUpdate} from '../../../services/materials';
-import {getUserInfo} from '../../../utils/user';
-
+import {getLotId, getUserInfo} from '../../../utils/user';
+import {ToastMessage} from '../../../utils/errorMessageMap';
 type ConsumableType = {
   item: ConsumablesProps;
   stepId: string;
@@ -31,12 +31,15 @@ const Consumables: React.FC<ConsumableType> = ({
     },
   });
   const [isUpdate, setIsUpdate] = useState<boolean>(false);
+  const toast = useToast();
+
   const onSubmit: SubmitHandler<ConsumablesProps> = async data => {
     const {eqpid} = await getUserInfo();
+    const LotId = await getLotId();
     const res = await doUpdate({
       cType: data.consumablesType,
       innerThread: data.innerThread,
-      lotId: '123', // 暂时先写死
+      lotId: LotId!,
       stepId,
       eqpId: eqpid,
       barCode: data.consumablesBarCode,
@@ -47,6 +50,9 @@ const Consumables: React.FC<ConsumableType> = ({
     if (res.code === 1) {
       setIsUpdate(!isUpdate);
     }
+    toast.show({
+      title: ToastMessage(res),
+    });
   };
   return (
     <Box

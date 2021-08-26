@@ -1,11 +1,12 @@
-import {Box, Input, Button, Switch, Select} from 'native-base';
+import {Box, Input, Button, Switch, Select, useToast} from 'native-base';
 import React, {useState} from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 import {useForm, Controller, SubmitHandler} from 'react-hook-form';
 import {MateriaProps} from '../index';
 import {IColProps} from '../../../types/Table';
-import {getUserInfo} from '../../../utils/user';
+import {getUserInfo, getLotId} from '../../../utils/user';
 import {doUpdate} from '../../../services/materials';
+import {ToastMessage} from '../../../utils/errorMessageMap';
 type MaterialType = {
   dataSource: MateriaProps[];
   stepId: string;
@@ -36,6 +37,7 @@ const Row: React.FC<RowProps> = ({
   stepId,
 }) => {
   const [isCheck, setCheck] = useState<boolean>(false);
+  const toast = useToast();
   const {handleSubmit, control} = useForm<MateriaProps>({
     defaultValues: {
       checked,
@@ -46,9 +48,10 @@ const Row: React.FC<RowProps> = ({
   });
   const onSubmit: SubmitHandler<MateriaProps> = async data => {
     const {eqpid} = await getUserInfo();
+    const LotId = await getLotId();
     const res = await doUpdate({
       cType: data.materialType,
-      lotId: '132', //先写死
+      lotId: LotId!,
       eqpId: eqpid,
       stepId,
       barCode: data.materialBarCode,
@@ -59,6 +62,9 @@ const Row: React.FC<RowProps> = ({
     if (res.code === 1) {
       setCheck(!isCheck);
     }
+    toast.show({
+      title: ToastMessage(res),
+    });
   };
   return (
     <View style={styles.table}>

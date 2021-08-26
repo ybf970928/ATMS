@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -6,23 +6,68 @@ import {
   Platform,
   ScrollView,
 } from 'react-native';
-import {Box, Text, Input, Button, Select, TextArea} from 'native-base';
+import {
+  Box,
+  Text,
+  Input,
+  Button,
+  Select,
+  TextArea,
+  useToast,
+} from 'native-base';
 import {useForm, Controller, SubmitHandler} from 'react-hook-form';
-interface OEEForm {
-  type: string;
-  number: string;
-  eqpstatus: string;
-  status: string;
-  code: string;
-  user: string;
+import {
+  getOEEStatusSwitch,
+  getOEEReason,
+  doUpdate,
+} from '../../services/OEESwitch';
+import {getUserInfo} from '../../utils/user';
+export interface OEEForm {
+  eqpType: string;
+  eqpId: string;
+  eqpStatus: string;
+  operId: string;
+  reasonCode: string;
+  eqpSwitchStatus: string;
   remark: string;
 }
-const ChangeOEE: React.FC = () => {
-  const {handleSubmit, control} = useForm<OEEForm>();
+import {ToastMessage} from '../../utils/errorMessageMap';
 
-  const onSubmit: SubmitHandler<OEEForm> = data => {
-    console.log(data);
+const ChangeOEE: React.FC = () => {
+  const toast = useToast();
+  const [statusSelectList, setStatusSelectList] = useState<
+    {id: string; name: string}[]
+  >([]);
+  const [reasonCodeSelectList, setReasonCodeSelectList] = useState<
+    {id: string; name: string}[]
+  >([]);
+  const {handleSubmit, control, setValue} = useForm<OEEForm>();
+
+  useEffect(() => {
+    const init = async () => {
+      const {eqpid} = await getUserInfo();
+      const res = await getOEEStatusSwitch({eqpId: eqpid});
+      const {statusList, ...obj} = res.data;
+      for (const [key, value] of Object.entries(obj)) {
+        setValue(key as keyof OEEForm, value as string);
+      }
+      setStatusSelectList(statusList);
+    };
+    init();
+  }, [setValue]);
+
+  const getReasonCodeList = async (value: string) => {
+    const res = await getOEEReason({statusCode: value});
+    setReasonCodeSelectList(res.data);
   };
+
+  const onSubmit: SubmitHandler<OEEForm> = async data => {
+    const res = await doUpdate(data);
+    toast.show({
+      title: ToastMessage(res),
+    });
+  };
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -44,10 +89,15 @@ const ChangeOEE: React.FC = () => {
                   <Text w={'30%'} pl={2} textAlign="left">
                     设备类型:{' '}
                   </Text>
-                  <Input w="70%" value={value} onChangeText={onChange} />
+                  <Input
+                    w="70%"
+                    value={value}
+                    onChangeText={onChange}
+                    isDisabled
+                  />
                 </View>
               )}
-              name="type"
+              name="eqpType"
             />
           </View>
           <View>
@@ -58,10 +108,15 @@ const ChangeOEE: React.FC = () => {
                   <Text w={'30%'} pl={2} textAlign="left">
                     设备编号:{' '}
                   </Text>
-                  <Input w="70%" value={value} onChangeText={onChange} />
+                  <Input
+                    w="70%"
+                    value={value}
+                    onChangeText={onChange}
+                    isDisabled
+                  />
                 </View>
               )}
-              name="number"
+              name="eqpId"
             />
           </View>
           <View>
@@ -72,10 +127,15 @@ const ChangeOEE: React.FC = () => {
                   <Text w={'30%'} pl={2} textAlign="left">
                     机台状态:{' '}
                   </Text>
-                  <Input w="70%" value={value} onChangeText={onChange} />
+                  <Input
+                    w="70%"
+                    value={value}
+                    onChangeText={onChange}
+                    isDisabled
+                  />
                 </View>
               )}
-              name="eqpstatus"
+              name="eqpStatus"
             />
           </View>
           <View>
@@ -91,14 +151,19 @@ const ChangeOEE: React.FC = () => {
                     selectedValue={value}
                     onValueChange={(itemValue: string) => {
                       onChange(itemValue);
+                      getReasonCodeList(itemValue);
                     }}>
-                    <Select.Item label="JavaScript" value="js" />
-                    <Select.Item label="TypeScript" value="ts" />
-                    <Select.Item label="Java" value="java" />
+                    {statusSelectList.map(item => (
+                      <Select.Item
+                        label={item.name}
+                        value={item.id}
+                        key={item.id}
+                      />
+                    ))}
                   </Select>
                 </View>
               )}
-              name="status"
+              name="eqpSwitchStatus"
             />
           </View>
           <View>
@@ -115,13 +180,17 @@ const ChangeOEE: React.FC = () => {
                     onValueChange={(itemValue: string) => {
                       onChange(itemValue);
                     }}>
-                    <Select.Item label="JavaScript" value="js" />
-                    <Select.Item label="TypeScript" value="ts" />
-                    <Select.Item label="Java" value="java" />
+                    {reasonCodeSelectList.map(item => (
+                      <Select.Item
+                        label={item.name}
+                        value={item.id}
+                        key={item.id}
+                      />
+                    ))}
                   </Select>
                 </View>
               )}
-              name="code"
+              name="reasonCode"
             />
           </View>
           <View>
@@ -132,10 +201,15 @@ const ChangeOEE: React.FC = () => {
                   <Text w={'30%'} pl={2} textAlign="left">
                     操作员:{' '}
                   </Text>
-                  <Input w="70%" value={value} onChangeText={onChange} />
+                  <Input
+                    w="70%"
+                    value={value}
+                    onChangeText={onChange}
+                    isDisabled
+                  />
                 </View>
               )}
-              name="user"
+              name="operId"
             />
           </View>
           <View>

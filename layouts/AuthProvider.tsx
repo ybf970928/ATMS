@@ -1,5 +1,6 @@
 import React, {createContext, useState} from 'react';
 import {removeToken, setToken} from '../utils/auth';
+import {removeLotId, removeUserInfo} from '../utils/user';
 import {NativeBaseProvider, extendTheme} from 'native-base';
 
 type User = null | {userToken: string};
@@ -9,10 +10,12 @@ export const AuthContext = createContext<{
   user: User;
   login: (token: string) => void;
   logout: () => void;
+  trackInCode: (code: string) => void;
 }>({
   user: null,
   login: () => {},
   logout: () => {},
+  trackInCode: () => {},
 });
 
 export const AuthProvider: React.FC = ({children}) => {
@@ -70,6 +73,11 @@ export const AuthProvider: React.FC = ({children}) => {
         logout: () => {
           setUser(null);
           removeToken();
+          removeLotId();
+          removeUserInfo();
+        },
+        trackInCode: (code: string) => {
+          console.log(code);
         },
       }}>
       <NativeBaseProvider theme={theme}>{children}</NativeBaseProvider>

@@ -4,7 +4,7 @@ import {View, StyleSheet, Text} from 'react-native';
 import {useForm, Controller, SubmitHandler} from 'react-hook-form';
 import {MaterialBoxProps} from '../index';
 import {IColProps} from '../../../types/Table';
-import {getUserInfo} from '../../../utils/user';
+import {getLotId, getUserInfo} from '../../../utils/user';
 import {doUpdate} from '../../../services/materials';
 import {ToastMessage} from '../../../utils/errorMessageMap';
 type MaterialType = {
@@ -32,6 +32,7 @@ const Row: React.FC<RowProps> = ({
   stepId,
 }) => {
   const [isCheck, setCheck] = useState<boolean>(false);
+
   const {handleSubmit, control} = useForm<MaterialBoxProps>({
     defaultValues: {
       materialBarCode,
@@ -42,9 +43,10 @@ const Row: React.FC<RowProps> = ({
 
   const onSubmit: SubmitHandler<MaterialBoxProps> = async data => {
     const {eqpid} = await getUserInfo();
+    const LotId = await getLotId();
     const res = await doUpdate({
       cType: data.materialType,
-      lotId: '132', //先写死
+      lotId: LotId!, //先写死
       eqpId: eqpid,
       stepId,
       barCode: data.materialBarCode,
@@ -58,6 +60,7 @@ const Row: React.FC<RowProps> = ({
       });
     }
   };
+  console.log('root');
   return (
     <View style={styles.table}>
       <View style={styles.row}>

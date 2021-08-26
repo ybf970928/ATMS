@@ -4,5 +4,9 @@ import {addProductRoutes} from './addProductRoutes';
 import {AuthProductList} from '../types/ProductRoutes';
 export const AppStack: React.FC = () => {
   const Stack = createStackNavigator<AuthProductList>();
-  return <Stack.Navigator>{addProductRoutes(Stack)}</Stack.Navigator>;
+  return (
+    <Stack.Navigator initialRouteName="Home">
+      {addProductRoutes(Stack)}
+    </Stack.Navigator>
+  );
 };

@@ -20,7 +20,7 @@ import {
   Platform,
   Image,
 } from 'react-native';
-import {codeMessage} from '../../utils/request';
+import {errMessageMap} from '../../utils/errorMessageMap';
 import {getUniqueId} from 'react-native-device-info';
 import {setUserInfo} from '../../utils/user';
 const Login: React.FC = () => {
@@ -50,7 +50,7 @@ const Login: React.FC = () => {
         setIsLoading(false);
       }
       toast.show({
-        title: codeMessage[res.message],
+        title: errMessageMap[res.message],
       });
     } catch (error) {
       setIsLoading(false);

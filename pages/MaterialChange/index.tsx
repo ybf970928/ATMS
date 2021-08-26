@@ -1,12 +1,15 @@
-import {Box, Heading, Text, Pressable, Input} from 'native-base';
+import {Box, Heading, Spinner} from 'native-base';
 import React, {useEffect, useState} from 'react';
 import {ScrollView, StyleSheet, View} from 'react-native';
 import Consumables from './components/Consumables';
 // import MaterialsInfo from './components/MaterialsInfo';
+import LotIdHeader from './components/LotIdHeader';
 import MaterialBox from './components/materialBox';
 import EditableRow from './components/EditableRow';
-import {useNavigation} from '@react-navigation/native';
+
 import {getMaterials} from '../../services/materials';
+import {getUserInfo, getLotId, setLotId} from '../../utils/user';
+import {Center} from '../../layouts/Center';
 
 export interface ConsumablesProps {
   consumablesType: string;
@@ -28,71 +31,105 @@ export interface MaterialBoxProps {
   materialBarCode: string;
 }
 
+interface DataProp {
+  consumablesList: ConsumablesProps[];
+  materialList: MateriaProps[];
+  materialBoxList: MaterialBoxProps[];
+}
+
 const MaterialChange: React.FC = () => {
-  const navigation = useNavigation();
   const [jobNumber, setjobNumber] = useState<string>('');
-  const [consumablesList, setConsumablesList] = useState<ConsumablesProps[]>(
-    [],
-  );
-  const [materialList, setMaterialList] = useState<MateriaProps[]>([]);
-  const [materialBoxList, setMaterialBoxList] = useState<MaterialBoxProps[]>(
-    [],
-  );
-  useEffect(() => {
-    const getInit = async () => {
-      // 临时调试
-      const res = await getMaterials({lotId: 132, eqpId: 'TH-062'});
-      const {stepId, consumablesInfo, materialInfo, materialBoxInfo} = res.data;
+  // const [consumablesList, setConsumablesList] = useState<ConsumablesProps[]>(
+  //   [],
+  // );
+  // const [materialList, setMaterialList] = useState<MateriaProps[]>([]);
+  // const [materialBoxList, setMaterialBoxList] = useState<MaterialBoxProps[]>(
+  //   [],
+  // );
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const [data, setData] = useState<DataProp>({
+    consumablesList: [],
+    materialList: [],
+    materialBoxList: [],
+  });
+
+  const getInit = async () => {
+    const isHasLotId = await getLotId();
+    if (isHasLotId) {
+      setLoading(true);
+      const {eqpid} = await getUserInfo();
+      const res = await getMaterials({lotId: isHasLotId, eqpId: eqpid});
+      // const {stepId, consumablesInfo, materialInfo, materialBoxInfo} = res.data;
+      const {stepId, ...obj} = res.data;
       setjobNumber(stepId);
-      setConsumablesList(consumablesInfo);
-      setMaterialList(materialInfo);
-      setMaterialBoxList(materialBoxInfo);
-    };
+      setData({
+        consumablesList: obj.consumablesInfo || [],
+        materialList: obj.materialInfo || [],
+        materialBoxList: obj.materialBoxInfo || [],
+      });
+      // setConsumablesList(consumablesInfo);
+      // setMaterialList(materialInfo);
+      // setMaterialBoxList(materialBoxInfo);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     getInit();
   }, []);
+
+  const handleSetLotId = (lotId: string) => {
+    setLotId(lotId);
+    getInit();
+  };
+
+  if (loading) {
+    return (
+      <Center>
+        <Spinner color="blue.500" />
+      </Center>
+    );
+  }
+
   return (
     <ScrollView style={styles.scrollView} keyboardShouldPersistTaps="handled">
       <View style={styles.card}>
-        <View style={styles.cardHead}>
-          <View style={styles.materialsTitle}>
-            <Text>作业批号: </Text>
-            <Input defaultValue={jobNumber} w={200} h={10} />
-          </View>
-          <Pressable onPress={() => navigation.navigate('MaterialsHistory')}>
-            <Text style={styles.historyTitle}>查看物料历史记录</Text>
-          </Pressable>
-        </View>
-        <Box
-          rounded="lg"
-          width="100%"
-          p={2}
-          flexDirection="row"
-          flexWrap="wrap">
-          <Heading size="md" noOfLines={2} fontSize="sm" w={'100%'}>
-            耗材信息
-          </Heading>
-          {consumablesList.map((item, index) => (
-            <Consumables stepId={jobNumber} item={item} key={index} />
-          ))}
-        </Box>
-        <Box
-          rounded="lg"
-          width="100%"
-          p={2}
-          flexDirection="row"
-          flexWrap="wrap">
-          <Heading
-            size="md"
-            noOfLines={2}
-            fontSize="sm"
-            w={'100%'}
-            paddingBottom={4}>
-            材料信息
-          </Heading>
-          {/* <MaterialsInfo stepId={jobNumber} dataSource={materialList} /> */}
-          <EditableRow dataSource={materialList} stepId={jobNumber} />
-          <MaterialBox dataSource={materialBoxList} stepId={jobNumber} />
-        </Box>
+        <LotIdHeader setLotId={handleSetLotId} />
+        {data.consumablesList.length > 0 ? (
+          <Box
+            rounded="lg"
+            width="100%"
+            p={2}
+            flexDirection="row"
+            flexWrap="wrap">
+            <Heading size="md" noOfLines={2} fontSize="sm" w={'100%'}>
+              耗材信息
+            </Heading>
+            {data.consumablesList.map((item, index) => (
+              <Consumables stepId={jobNumber} item={item} key={index} />
+            ))}
+          </Box>
+        ) : null}
+        {data.materialList.length > 0 ? (
+          <Box
+            rounded="lg"
+            width="100%"
+            p={2}
+            flexDirection="row"
+            flexWrap="wrap">
+            <Heading
+              size="md"
+              noOfLines={2}
+              fontSize="sm"
+              w={'100%'}
+              paddingBottom={4}>
+              材料信息
+            </Heading>
+            <EditableRow dataSource={data.materialList} stepId={jobNumber} />
+            <MaterialBox dataSource={data.materialBoxList} stepId={jobNumber} />
+          </Box>
+        ) : null}
       </View>
     </ScrollView>
   );
@@ -106,21 +143,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     paddingTop: 10,
-  },
-  cardHead: {
-    width: '100%',
-    flexDirection: 'row',
-    padding: 20,
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-  },
-  materialsTitle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  historyTitle: {
-    color: '#3b82f6',
   },
 });
 export default MaterialChange;

@@ -30,17 +30,21 @@ export const errMessageMap: Record<number, string> = {
   50035: '请输入密码',
   50036: 'LDAP认证失败',
 
-  100000: 'EAP Exception: -0-',
-  100001: '当前材料编码-0-规则不正确',
-  100002: '请返回主页面，重新操作',
-  100003: '条码-0-和当前批次信息不符合，条码错误',
-  100004: '条码-0-不能重复扫描，条码错误',
-  100005: '上次使用工单是-0-，您确定更换工单吗？',
-  100006: '系统不存在当前设备-0-',
-  100007: '系统不存在工单-0-的信息',
+  100000: 'MES Exception: -0-',
+  100001: 'EAP Exception: -0-',
+  100002: '当前材料编码-0-规则不正确',
+  100003: '请返回主页面，重新操作',
+  100004: '条码-0-和当前批次信息不符合，条码错误',
+  100005: '条码-0-不能重复扫描，条码错误',
+  100006: '上次使用工单是-0-，您确定更换工单吗？',
+  100007: '系统不存在当前设备-0-',
+  100008: '系统不存在工单-0-的信息',
 };
 
-export const ToastMessage = (res: {message: number; data: string[]}) => {
+export const ToastMessage = (res: {
+  message: number;
+  data: string[];
+}): string => {
   const errM = errMessageMap[res.message];
   const regArr = errM.match(/-[0-9]-/g);
   let newErrMessage = errM;
@@ -53,6 +57,6 @@ export const ToastMessage = (res: {message: number; data: string[]}) => {
     }
     return newErrMessage;
   } else {
-    return res.message;
+    return errM;
   }
 };

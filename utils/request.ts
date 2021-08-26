@@ -30,7 +30,7 @@ service.interceptors.response.use(
   function (response) {
     const result = response.data.message;
     if (result >= 1005 && result <= 1013) {
-      navigate('Login');
+      navigate('Setting');
     }
     // Any status code that lie within the range of 2xx cause this function to trigger
     // Do something with response data
