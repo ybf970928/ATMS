@@ -1,22 +1,49 @@
 import {Box} from 'native-base';
-import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {View, Text, StyleSheet, ImageBackground} from 'react-native';
 import {Item} from '../../components/Item';
 import {useNavigation} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {headerStyle} from '../../layouts/AppTabs';
+import {getUserInfo} from '../../utils/user';
+
+const BASE_API = 'http://10.100.101.22:8100/';
+
+interface UserInfoProps {
+  userName?: string;
+  avatar?: string;
+}
+
 const Stack = createStackNavigator();
 const MyPage: React.FC = () => {
   const navigation = useNavigation();
+  const [currentUser, setUser] = useState<UserInfoProps>({});
   const goSetting = () => {
     navigation.navigate('Setting');
   };
+
+  useEffect(() => {
+    const getUserName = async () => {
+      const {user} = await getUserInfo();
+      setUser({
+        avatar: user.avatar,
+        userName: user.userName,
+      });
+    };
+    getUserName();
+  }, [currentUser]);
+
   return (
     <View style={styles.content}>
       <View style={styles.userinfo}>
-        <View style={styles.avatar} />
+        <ImageBackground
+          source={{uri: BASE_API + currentUser.avatar}}
+          style={styles.avatar}
+        />
         <View>
-          <Text style={styles.userName}>用户名位置</Text>
+          <Text style={styles.userName}>
+            {currentUser.userName || '暂未登陆'}
+          </Text>
         </View>
       </View>
       <Box bg="white" width="100%" mt={4}>
@@ -57,13 +84,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
     backgroundColor: '#3b82f6',
-    zIndex: 2,
   },
   avatar: {
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: 'red',
     marginRight: 20,
   },
   userName: {

@@ -1,16 +1,14 @@
-import {Box, Heading, Spinner} from 'native-base';
+import {Box, Heading, Input, Spinner, Text} from 'native-base';
 import React, {useEffect, useState} from 'react';
-import {ScrollView, StyleSheet, View} from 'react-native';
+import {Pressable, ScrollView, StyleSheet, View} from 'react-native';
 import Consumables from './components/Consumables';
-// import MaterialsInfo from './components/MaterialsInfo';
-import LotIdHeader from './components/LotIdHeader';
 import MaterialBox from './components/materialBox';
 import EditableRow from './components/EditableRow';
-
+import {useNavigation} from '@react-navigation/native';
 import {getMaterials} from '../../services/materials';
-import {getUserInfo, getLotId, setLotId} from '../../utils/user';
+import {getUserInfo, getLotId} from '../../utils/user';
 import {Center} from '../../layouts/Center';
-
+import {useForm, Controller} from 'react-hook-form';
 export interface ConsumablesProps {
   consumablesType: string;
   innerThread: string;
@@ -37,30 +35,31 @@ interface DataProp {
   materialBoxList: MaterialBoxProps[];
 }
 
-const MaterialChange: React.FC = () => {
-  const [jobNumber, setjobNumber] = useState<string>('');
-  // const [consumablesList, setConsumablesList] = useState<ConsumablesProps[]>(
-  //   [],
-  // );
-  // const [materialList, setMaterialList] = useState<MateriaProps[]>([]);
-  // const [materialBoxList, setMaterialBoxList] = useState<MaterialBoxProps[]>(
-  //   [],
-  // );
-  const [loading, setLoading] = useState<boolean>(false);
+interface LotIdFormProp {
+  lotId: string;
+}
 
+const MaterialChange: React.FC = () => {
+  const navigation = useNavigation();
+  const [jobNumber, setjobNumber] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [currentLotId, setCurrentLotId] = useState<string>('');
   const [data, setData] = useState<DataProp>({
     consumablesList: [],
     materialList: [],
     materialBoxList: [],
   });
+  const {control, setValue} = useForm<LotIdFormProp>({
+    defaultValues: {
+      lotId: currentLotId,
+    },
+  });
 
-  const getInit = async () => {
-    const isHasLotId = await getLotId();
-    if (isHasLotId) {
+  const handleSetLotId = (lotId: string) => {
+    const getInfo = async () => {
       setLoading(true);
       const {eqpid} = await getUserInfo();
-      const res = await getMaterials({lotId: isHasLotId, eqpId: eqpid});
-      // const {stepId, consumablesInfo, materialInfo, materialBoxInfo} = res.data;
+      const res = await getMaterials({lotId: lotId, eqpId: eqpid});
       const {stepId, ...obj} = res.data;
       setjobNumber(stepId);
       setData({
@@ -68,68 +67,104 @@ const MaterialChange: React.FC = () => {
         materialList: obj.materialInfo || [],
         materialBoxList: obj.materialBoxInfo || [],
       });
-      // setConsumablesList(consumablesInfo);
-      // setMaterialList(materialInfo);
-      // setMaterialBoxList(materialBoxInfo);
       setLoading(false);
-    }
+      setCurrentLotId(lotId);
+    };
+    getInfo();
   };
 
   useEffect(() => {
-    getInit();
-  }, []);
-
-  const handleSetLotId = (lotId: string) => {
-    setLotId(lotId);
-    getInit();
-  };
-
-  if (loading) {
-    return (
-      <Center>
-        <Spinner color="blue.500" />
-      </Center>
-    );
-  }
+    const alreadyTrackIn = async () => {
+      const lotId = await getLotId();
+      if (lotId) {
+        setValue('lotId', lotId);
+        handleSetLotId(lotId);
+      }
+    };
+    alreadyTrackIn();
+  }, [setValue]);
 
   return (
     <ScrollView style={styles.scrollView} keyboardShouldPersistTaps="handled">
       <View style={styles.card}>
-        <LotIdHeader setLotId={handleSetLotId} />
-        {data.consumablesList.length > 0 ? (
-          <Box
-            rounded="lg"
-            width="100%"
-            p={2}
-            flexDirection="row"
-            flexWrap="wrap">
-            <Heading size="md" noOfLines={2} fontSize="sm" w={'100%'}>
-              耗材信息
-            </Heading>
-            {data.consumablesList.map((item, index) => (
-              <Consumables stepId={jobNumber} item={item} key={index} />
-            ))}
-          </Box>
-        ) : null}
-        {data.materialList.length > 0 ? (
-          <Box
-            rounded="lg"
-            width="100%"
-            p={2}
-            flexDirection="row"
-            flexWrap="wrap">
-            <Heading
-              size="md"
-              noOfLines={2}
-              fontSize="sm"
-              w={'100%'}
-              paddingBottom={4}>
-              材料信息
-            </Heading>
-            <EditableRow dataSource={data.materialList} stepId={jobNumber} />
-            <MaterialBox dataSource={data.materialBoxList} stepId={jobNumber} />
-          </Box>
-        ) : null}
+        <View style={styles.cardHead}>
+          <View style={styles.materialsTitle}>
+            <Text>作业批号: </Text>
+            <Controller
+              control={control}
+              render={({field: {onChange, value}}) => (
+                <Input
+                  w={180}
+                  h={10}
+                  onSubmitEditing={() => handleSetLotId(value)}
+                  multiline={true}
+                  blurOnSubmit={true}
+                  value={value}
+                  onChangeText={onChange}
+                />
+              )}
+              name="lotId"
+            />
+          </View>
+          <Pressable onPress={() => navigation.navigate('MaterialsHistory')}>
+            <Text style={styles.historyTitle}>查看物料历史记录</Text>
+          </Pressable>
+        </View>
+        {loading ? (
+          <Center>
+            <Spinner color="blue.500" />
+          </Center>
+        ) : (
+          <View>
+            {data.consumablesList.length > 0 ? (
+              <Box
+                rounded="lg"
+                width="100%"
+                p={2}
+                flexDirection="row"
+                flexWrap="wrap">
+                <Heading size="md" noOfLines={2} fontSize="sm" w={'100%'}>
+                  耗材信息
+                </Heading>
+                {data.consumablesList.map((item, index) => (
+                  <Consumables
+                    stepId={jobNumber}
+                    lotId={currentLotId}
+                    item={item}
+                    key={index}
+                  />
+                ))}
+              </Box>
+            ) : null}
+            {data.materialList.length > 0 ? (
+              <Box
+                rounded="lg"
+                width="100%"
+                p={2}
+                flexDirection="row"
+                flexWrap="wrap">
+                <Heading
+                  size="md"
+                  noOfLines={2}
+                  fontSize="sm"
+                  w={'100%'}
+                  paddingBottom={4}>
+                  材料信息
+                </Heading>
+                <EditableRow
+                  dataSource={data.materialList}
+                  lotId={currentLotId}
+                  stepId={jobNumber}
+                />
+                <MaterialBox
+                  dataSource={data.materialBoxList}
+                  lotId={currentLotId}
+                  stepId={jobNumber}
+                />
+              </Box>
+            ) : null}
+          </View>
+        )}
       </View>
     </ScrollView>
   );
@@ -143,6 +178,21 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     paddingTop: 10,
+  },
+  cardHead: {
+    width: '100%',
+    flexDirection: 'row',
+    padding: 20,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  materialsTitle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  historyTitle: {
+    color: '#3b82f6',
   },
 });
 export default MaterialChange;

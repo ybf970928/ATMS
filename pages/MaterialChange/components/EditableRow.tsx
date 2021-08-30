@@ -4,12 +4,13 @@ import {View, StyleSheet, Text} from 'react-native';
 import {useForm, Controller, SubmitHandler} from 'react-hook-form';
 import {MateriaProps} from '../index';
 import {IColProps} from '../../../types/Table';
-import {getUserInfo, getLotId} from '../../../utils/user';
+import {getUserInfo} from '../../../utils/user';
 import {doUpdate} from '../../../services/materials';
 import {ToastMessage} from '../../../utils/errorMessageMap';
 type MaterialType = {
   dataSource: MateriaProps[];
   stepId: string;
+  lotId: string;
 };
 const columns: IColProps<MateriaProps>[] = [
   {title: '材料类型', dataIndex: 'materialType'},
@@ -31,10 +32,12 @@ const columns: IColProps<MateriaProps>[] = [
 interface RowProps {
   item: MateriaProps;
   stepId: string;
+  lotId: string;
 }
 const Row: React.FC<RowProps> = ({
   item: {checked, materialType, materialBarCode, bondingHead},
   stepId,
+  lotId,
 }) => {
   const [isCheck, setCheck] = useState<boolean>(false);
   const toast = useToast();
@@ -48,10 +51,9 @@ const Row: React.FC<RowProps> = ({
   });
   const onSubmit: SubmitHandler<MateriaProps> = async data => {
     const {eqpid} = await getUserInfo();
-    const LotId = await getLotId();
     const res = await doUpdate({
       cType: data.materialType,
-      lotId: LotId!,
+      lotId: lotId,
       eqpId: eqpid,
       stepId,
       barCode: data.materialBarCode,
@@ -138,7 +140,7 @@ const Row: React.FC<RowProps> = ({
   );
 };
 
-const EditableRow: React.FC<MaterialType> = ({dataSource, stepId}) => {
+const EditableRow: React.FC<MaterialType> = ({dataSource, stepId, lotId}) => {
   return (
     <Box
       bg="white"
@@ -159,7 +161,7 @@ const EditableRow: React.FC<MaterialType> = ({dataSource, stepId}) => {
         })}
       </View>
       {dataSource.map((item, index) => {
-        return <Row item={item} key={index} stepId={stepId} />;
+        return <Row item={item} lotId={lotId} key={index} stepId={stepId} />;
       })}
     </Box>
   );

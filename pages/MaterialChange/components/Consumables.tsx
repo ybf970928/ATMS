@@ -4,11 +4,12 @@ import {View, StyleSheet} from 'react-native';
 import {useForm, Controller, SubmitHandler} from 'react-hook-form';
 import {ConsumablesProps} from '../index';
 import {doUpdate} from '../../../services/materials';
-import {getLotId, getUserInfo} from '../../../utils/user';
+import {getUserInfo} from '../../../utils/user';
 import {ToastMessage} from '../../../utils/errorMessageMap';
 type ConsumableType = {
   item: ConsumablesProps;
   stepId: string;
+  lotId: string;
 };
 
 const Consumables: React.FC<ConsumableType> = ({
@@ -20,6 +21,7 @@ const Consumables: React.FC<ConsumableType> = ({
     bondingHead,
   },
   stepId,
+  lotId,
 }) => {
   const {handleSubmit, control} = useForm<ConsumablesProps>({
     defaultValues: {
@@ -35,11 +37,10 @@ const Consumables: React.FC<ConsumableType> = ({
 
   const onSubmit: SubmitHandler<ConsumablesProps> = async data => {
     const {eqpid} = await getUserInfo();
-    const LotId = await getLotId();
     const res = await doUpdate({
       cType: data.consumablesType,
       innerThread: data.innerThread,
-      lotId: LotId!,
+      lotId: lotId!,
       stepId,
       eqpId: eqpid,
       barCode: data.consumablesBarCode,

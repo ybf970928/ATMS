@@ -8,17 +8,13 @@ interface IProps {
 }
 
 const Table: React.FC<IProps> = ({dataSource, columns}) => {
-  const Item = ({item, index}: {item: any; index: number}) => {
+  const Item = ({item}: {item: any}) => {
     return (
       <View style={styles.item}>
         {columns.map(col => {
           return (
             <Text style={styles.title} key={col.title as string}>
-              {col.render ? (
-                <View>{col.render(item[col.dataIndex], item, index)}</View>
-              ) : (
-                item[col.dataIndex]
-              )}
+              {item[col.dataIndex]}
             </Text>
           );
         })}
@@ -46,9 +42,13 @@ const Table: React.FC<IProps> = ({dataSource, columns}) => {
         keyExtractor={item => item.id}
       /> */}
       <View>
-        {dataSource.map((item, index) => {
-          return <Item item={item} index={index} key={index} />;
-        })}
+        {dataSource.length > 0 ? (
+          dataSource.map((item, index) => {
+            return <Item item={item} key={index} />;
+          })
+        ) : (
+          <Text>暂无数据</Text>
+        )}
       </View>
     </View>
   );

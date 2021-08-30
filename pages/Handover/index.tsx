@@ -1,22 +1,55 @@
 import React from 'react';
 import {View, StyleSheet} from 'react-native';
-import {Box, Text, Input, Button} from 'native-base';
+import {Box, Text, Input, Button, useToast} from 'native-base';
 import {useForm, Controller, SubmitHandler} from 'react-hook-form';
-interface OEEForm {
-  type: string;
-  number: string;
-  eqpstatus: string;
-  status: string;
-  code: string;
-  user: string;
-  remark: string;
+import {getUserInfo} from '../../utils/user';
+import {getLotInfo} from '../../services/public';
+import {doUpdate} from '../../services/handOver';
+import {useNavigation, CommonActions} from '@react-navigation/native';
+import {ToastMessage} from '../../utils/errorMessageMap';
+interface HandOverForm {
+  lotId: string;
+  eqpId: string;
+  userId: string;
+  quotaCode: string;
+  deviceQty: string;
+  qty: string;
 }
 const Handover: React.FC = () => {
-  const {handleSubmit, control} = useForm<OEEForm>();
-
-  const onSubmit: SubmitHandler<OEEForm> = data => {
-    console.log(data);
+  const {handleSubmit, control, setValue} = useForm<HandOverForm>();
+  const navigation = useNavigation();
+  const toast = useToast();
+  const onSubmit: SubmitHandler<HandOverForm> = async data => {
+    const res = await doUpdate({
+      eqpId: data.eqpId,
+      lotId: data.lotId,
+      qty: data.qty,
+    });
+    if (res.code === 1) {
+      navigation.dispatch(
+        CommonActions.navigate({
+          name: 'Home',
+        }),
+      );
+    }
+    toast.show({
+      title: ToastMessage(res),
+    });
   };
+
+  const gethandeOverForm = async (id: string) => {
+    const {eqpid, user} = await getUserInfo();
+    const res = await getLotInfo({
+      eqpId: eqpid,
+      lotId: id,
+    });
+    const {quotaCode, deviceQty} = res.data;
+    setValue('userId', user.userID);
+    setValue('eqpId', eqpid);
+    setValue('quotaCode', quotaCode);
+    setValue('deviceQty', deviceQty);
+  };
+
   return (
     <View style={styles.layout}>
       <Box
@@ -35,10 +68,17 @@ const Handover: React.FC = () => {
                 <Text w={'30%'} pl={2} textAlign="left">
                   作业批号:{' '}
                 </Text>
-                <Input w="70%" value={value} onChangeText={onChange} />
+                <Input
+                  w={'70%'}
+                  onSubmitEditing={() => gethandeOverForm(value)}
+                  multiline={true}
+                  blurOnSubmit={true}
+                  value={value}
+                  onChangeText={onChange}
+                />
               </View>
             )}
-            name="type"
+            name="lotId"
           />
         </View>
         <View>
@@ -49,10 +89,15 @@ const Handover: React.FC = () => {
                 <Text w={'30%'} pl={2} textAlign="left">
                   机台号:{' '}
                 </Text>
-                <Input w="70%" value={value} onChangeText={onChange} />
+                <Input
+                  w="70%"
+                  value={value}
+                  onChangeText={onChange}
+                  isDisabled
+                />
               </View>
             )}
-            name="number"
+            name="eqpId"
           />
         </View>
         <View>
@@ -63,10 +108,15 @@ const Handover: React.FC = () => {
                 <Text w={'30%'} pl={2} textAlign="left">
                   作业员:{' '}
                 </Text>
-                <Input w="70%" value={value} onChangeText={onChange} />
+                <Input
+                  w="70%"
+                  value={value}
+                  onChangeText={onChange}
+                  isDisabled
+                />
               </View>
             )}
-            name="eqpstatus"
+            name="userId"
           />
         </View>
         <View>
@@ -77,10 +127,15 @@ const Handover: React.FC = () => {
                 <Text w={'30%'} pl={2} textAlign="left">
                   定额代码:{' '}
                 </Text>
-                <Input w="70%" value={value} onChangeText={onChange} />
+                <Input
+                  w="70%"
+                  value={value}
+                  onChangeText={onChange}
+                  isDisabled
+                />
               </View>
             )}
-            name="status"
+            name="quotaCode"
           />
         </View>
         <View>
@@ -91,10 +146,15 @@ const Handover: React.FC = () => {
                 <Text w={'30%'} pl={2} textAlign="left">
                   系统数量:{' '}
                 </Text>
-                <Input w="70%" value={value} onChangeText={onChange} />
+                <Input
+                  w="70%"
+                  value={value}
+                  onChangeText={onChange}
+                  isDisabled
+                />
               </View>
             )}
-            name="code"
+            name="deviceQty"
           />
         </View>
         <View>
@@ -108,7 +168,7 @@ const Handover: React.FC = () => {
                 <Input w="70%" value={value} onChangeText={onChange} />
               </View>
             )}
-            name="user"
+            name="qty"
           />
         </View>
       </Box>

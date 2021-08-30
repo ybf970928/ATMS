@@ -13,6 +13,8 @@ export const headerStyle: StackNavigationOptions = {
   headerTitleStyle: {color: '#fff'},
   headerStyle: {
     backgroundColor: '#3b82f6',
+    borderBottomWidth: 0,
+    elevation: 0,
   },
   headerStatusBarHeight: StatusBar.currentHeight,
   headerTintColor: '#fff', //Tint color for the header 箭头颜色啥的

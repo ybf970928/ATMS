@@ -1,38 +1,70 @@
-import {Box, Text} from 'native-base';
+import {Box, Spinner, Text} from 'native-base';
 import React from 'react';
+import {useState} from 'react';
+import {useEffect} from 'react';
 import {View, StyleSheet} from 'react-native';
+import {Center} from '../../../layouts/Center';
+import {getLotInfo} from '../../../services/public';
+import {getUserInfo} from '../../../utils/user';
 interface IFormProps {
-  user: string;
-  eqpId: string;
-  pihao: string;
-  gongxu: string;
-  zuzhuang: string;
-  xinpian: string;
-  xingshi: string;
-  num: string;
-  pingming: string;
-  xinxi: string;
+  lotId?: string;
+  operId?: string;
+  eqpId?: string;
+  stepID?: string;
+  assemblyLotID?: string;
+  chipName?: string;
+  packageType?: string;
+  deviceQty?: string;
+  productID?: string;
+  materialBoxBarcode?: string;
 }
 interface IFormItemProps {
   label: string;
   prop: keyof IFormProps;
-  render?: (prop: string, record: IFormItemProps) => JSX.Element;
 }
 
 const formItems: IFormItemProps[] = [
-  {label: '作业员', prop: 'user'},
+  {label: '作业员', prop: 'operId'},
   {label: '机台号', prop: 'eqpId'},
-  {label: '批号', prop: 'pihao'},
-  {label: '工序', prop: 'user'},
-  {label: '组装批号', prop: 'user'},
-  {label: '芯片名', prop: 'user'},
-  {label: '封装形式', prop: 'user'},
-  {label: '批次数量', prop: 'user'},
-  {label: '品名', prop: 'user'},
-  {label: '料盒条码信息', prop: 'user'},
+  {label: '工序', prop: 'stepID'},
+  {label: '组装批号', prop: 'assemblyLotID'},
+  {label: '芯片名', prop: 'chipName'},
+  {label: '封装形式', prop: 'packageType'},
+  {label: '批次数量', prop: 'deviceQty'},
+  {label: '品名', prop: 'productID'},
+  {label: '料盒条码信息', prop: 'materialBoxBarcode'},
 ];
 
-const BaseInfoTrackIn: React.FC = () => {
+const BaseInfoTrackIn: React.FC<{lotId: string}> = ({lotId}) => {
+  const [form, setForm] = useState<IFormProps>({});
+  const [loading, setLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (lotId) {
+      setLoading(true);
+      const initForm = async () => {
+        const {eqpid} = await getUserInfo();
+        const res = await getLotInfo({
+          eqpId: eqpid,
+          lotId: lotId,
+        });
+        setLoading(false);
+        setForm(res.data);
+      };
+      initForm();
+    }
+  }, [lotId]);
+
+  if (loading) {
+    return (
+      <Box bg="white" maxWidth="100%" p={2} mt={2} rounded="lg">
+        <Center>
+          <Spinner color="blue.500" />
+        </Center>
+      </Box>
+    );
+  }
+
   return (
     <Box
       bg="white"
@@ -45,16 +77,10 @@ const BaseInfoTrackIn: React.FC = () => {
       {formItems.map(item => {
         return (
           <View style={styles.formItemLayout} key={item.label}>
-            {item.render ? (
-              item.render(item.prop, item)
-            ) : (
-              <>
-                <Text minW="20%" pl={2}>
-                  {item.label}:{' '}
-                </Text>
-                <Text>{item.prop}</Text>
-              </>
-            )}
+            <Text minW="20%" pl={2}>
+              {item.label}:{' '}
+            </Text>
+            <Text>{form[item.prop]}</Text>
           </View>
         );
       })}
