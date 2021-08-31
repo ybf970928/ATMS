@@ -123,7 +123,7 @@ const Consumables: React.FC<ConsumableType> = ({
                 // h={10}
                 w="70%"
                 isDisabled={isUpdate}
-                selectedValue={value}
+                selectedValue={value.toString()}
                 onValueChange={(itemValue: string) => {
                   onChange(itemValue);
                 }}>

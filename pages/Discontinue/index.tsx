@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   NativeSyntheticEvent,
   ScrollView,
@@ -8,21 +8,16 @@ import {
   Platform,
   StyleSheet,
 } from 'react-native';
-import {Box, Button, HStack, Text, Input} from 'native-base';
-import Table from '../../components/Table';
-import {IColProps} from '../../types/Table';
-import {useState} from 'react';
+import {Box, Button, HStack, Text, Input, useToast, Select} from 'native-base';
+import ShowInfoTable from './components/TheInfosTable';
 import {useForm, Controller, SubmitHandler} from 'react-hook-form';
-
-interface IDataSource {
-  id: string;
-  title: string;
-  type: string;
-  email: string;
-  isChecked: number;
-  code: string;
-}
-
+import {removeToken} from '../../utils/auth';
+import {getLotId, getUserInfo, removeUserInfo} from '../../utils/user';
+import {doStop} from '../../services/operationStop';
+import {getOEEReason} from '../../services/OEESwitch';
+import {useEffect} from 'react';
+import {ToastMessage} from '../../utils/errorMessageMap';
+import {CommonActions, useNavigation} from '@react-navigation/native';
 interface IInputProps {
   render: (
     eventKeyDown: (
@@ -37,11 +32,8 @@ interface DiscontinueForm {
 }
 
 const Discontinue: React.FC = () => {
-  const {handleSubmit, control} = useForm<DiscontinueForm>();
-
-  const onSubmit: SubmitHandler<DiscontinueForm> = data => {
-    console.log(data);
-  };
+  const toast = useToast();
+  const navigation = useNavigation();
   const [inputs, setinputs] = useState<IInputProps[]>([
     {
       render: eventKeyDown => {
@@ -59,40 +51,41 @@ const Discontinue: React.FC = () => {
       },
     },
   ]);
-  const dataSource: IDataSource[] = [
-    {
-      id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-      title: 'First Item',
-      type: 'laldal',
-      email: 'dasdasdasdsadas',
-      isChecked: 1,
-      code: 'daasas',
-    },
-    {
-      id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-      title: 'Second Item',
-      type: 'dasdsasd',
-      email: 'brfdfd2',
-      isChecked: 0,
-      code: 'adasdas',
-    },
-    {
-      id: '58694a0f-3da1-471f-bd96-145571e29d72',
-      title: 'Third Item',
-      type: 'f232',
-      email: 'vb fgerf21',
-      isChecked: 0,
-      code: '321vfdvdf',
-    },
-  ];
-  const columns: IColProps<IDataSource>[] = [
-    {title: '物料类型', dataIndex: 'title'},
-    {title: '条码', dataIndex: 'code'},
-  ];
+
+  const [materialBox, setMaterialBox] = useState<string[]>([]);
+  const [currentLotId, setCurrentLotId] = useState<string>('');
+  const [reasonList, setReasonList] = useState<{id: string; name: string}[]>(
+    [],
+  );
+
+  const {handleSubmit, control} = useForm<DiscontinueForm>();
+
+  const onSubmit: SubmitHandler<DiscontinueForm> = async data => {
+    const {eqpid} = await getUserInfo();
+    const res = await doStop({
+      eqpId: eqpid,
+      lotId: currentLotId!,
+      boxs: materialBox.join(','),
+      ...data,
+    });
+    if (res.code === 1) {
+      await removeToken();
+      await removeUserInfo();
+      navigation.dispatch(
+        CommonActions.navigate({
+          name: 'Home',
+        }),
+      );
+    }
+    toast.show({
+      title: ToastMessage(res),
+    });
+  };
   const handleKeyDown = (
     e: NativeSyntheticEvent<TextInputSubmitEditingEventData>,
   ) => {
-    if (e.nativeEvent.text) {
+    if (e.nativeEvent.text && !materialBox.includes(e.nativeEvent.text)) {
+      setMaterialBox(materialBox.concat(e.nativeEvent.text));
       setinputs(
         inputs.concat([
           {
@@ -113,8 +106,31 @@ const Discontinue: React.FC = () => {
           },
         ]),
       );
+    } else if (e.nativeEvent.text && materialBox.includes(e.nativeEvent.text)) {
+      toast.show({
+        title: '料盒重复添加',
+      });
     }
   };
+
+  useEffect(() => {
+    const getCurrentLotId = async () => {
+      const lotId = await getLotId();
+      if (lotId) {
+        setCurrentLotId(lotId);
+      }
+    };
+    getCurrentLotId();
+  }, []);
+
+  useEffect(() => {
+    const getReasonList = async () => {
+      const res = await getOEEReason({statusCode: 'CCancelMoveIn'});
+      setReasonList(res.data);
+    };
+    getReasonList();
+  }, []);
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
@@ -128,10 +144,10 @@ const Discontinue: React.FC = () => {
           p={2}>
           <HStack space={3}>
             <Text>作业批号: </Text>
-            <Text>CL17DYE-1</Text>
+            <Text>{currentLotId}</Text>
           </HStack>
         </Box>
-        <Table dataSource={dataSource} columns={columns} />
+        <ShowInfoTable />
         <Box
           bg="white"
           rounded="lg"
@@ -157,7 +173,20 @@ const Discontinue: React.FC = () => {
                   <Text w={'30%'} pl={2} textAlign="left">
                     原因:{' '}
                   </Text>
-                  <Input w="70%" value={value} onChangeText={onChange} />
+                  <Select
+                    w="70%"
+                    selectedValue={value}
+                    onValueChange={(itemValue: string) => {
+                      onChange(itemValue);
+                    }}>
+                    {reasonList.map(item => (
+                      <Select.Item
+                        label={item.name}
+                        value={item.id}
+                        key={item.id}
+                      />
+                    ))}
+                  </Select>
                 </View>
               )}
               name="reason"
@@ -174,7 +203,7 @@ const Discontinue: React.FC = () => {
                   <Input w="70%" value={value} onChangeText={onChange} />
                 </View>
               )}
-              name="reason"
+              name="remark"
             />
           </View>
         </Box>

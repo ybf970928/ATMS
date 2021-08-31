@@ -3,31 +3,31 @@ import {removeToken, setToken} from '../utils/auth';
 import {removeLotId, removeUserInfo} from '../utils/user';
 import {NativeBaseProvider} from 'native-base';
 import {theme} from '../theme/extendTheme';
-type User = null | {userToken: string};
 
 // eslint-disable-next-line no-spaced-func
 export const AuthContext = createContext<{
-  user: User;
+  user: string;
   login: (token: string) => void;
   logout: () => void;
 }>({
-  user: null,
+  user: '',
   login: () => {},
   logout: () => {},
 });
 
 export const AuthProvider: React.FC = ({children}) => {
-  const [user, setUser] = useState<User>(null);
+  const [loginUser, setLoginUser] = useState<string>('');
   return (
     <AuthContext.Provider
       value={{
-        user,
+        user: loginUser,
         login: (token: string) => {
-          setUser({userToken: token});
+          console.log('token:', token);
+          setLoginUser(token);
           setToken(token);
         },
         logout: () => {
-          setUser(null);
+          setLoginUser('');
           removeToken();
           removeLotId();
           removeUserInfo();

@@ -1,7 +1,7 @@
 import React from 'react';
 import {ScrollView, StyleSheet} from 'react-native';
 import UserCard from './components/UserCard';
-import Infos from './components/Infos';
+import Infos from './components/TheInfosTable';
 const TrackOut: React.FC = () => {
   return (
     <ScrollView style={styles.scrollView}>

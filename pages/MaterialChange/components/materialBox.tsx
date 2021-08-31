@@ -44,7 +44,7 @@ const Row: React.FC<RowProps> = ({
       lotId: lotId,
       eqpId: eqpid,
       stepId,
-      barCode: data.materialBarCode,
+      barCode: data.materialBarCode || '',
       oldBarCode: materialBarCode || '',
     });
     if (res.code === 1) {
@@ -93,7 +93,9 @@ const Row: React.FC<RowProps> = ({
   );
 };
 
-const materialBox: React.FC<MaterialType> = ({dataSource, stepId, lotId}) => {
+const MaterialBox: React.FC<MaterialType> = ({dataSource, stepId, lotId}) => {
+  // const [isHandleTrackIn, setIsHandleTrackIn] = useState<boolean>(false);
+
   return (
     <Box
       bg="white"
@@ -141,4 +143,4 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
 });
-export default materialBox;
+export default MaterialBox;

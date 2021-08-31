@@ -46,7 +46,7 @@ const MyPage: React.FC = () => {
           </Text>
         </View>
       </View>
-      <Box bg="white" width="100%" mt={4}>
+      <Box bg="white" width="100%">
         <Item title="fdnjjdvndfjvdf" iconName={'menu'} />
         <Item title="bgkokfgbfgbnfn" iconName={'hourglass'} />
       </Box>
@@ -83,16 +83,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#3b82f6',
+    // backgroundColor: '#3b82f6',
   },
   avatar: {
     width: 60,
     height: 60,
     borderRadius: 30,
     marginRight: 20,
+    resizeMode: 'cover',
   },
   userName: {
-    color: '#fff',
+    color: '#333',
   },
 });
 

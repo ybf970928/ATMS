@@ -7,7 +7,7 @@ interface IUserFormProps {
   operId?: string;
   lotId?: string;
   stepID?: string;
-  status?: string;
+  trackStatus?: string;
   assemblyLotID?: string;
   chipName?: string;
   packageType?: string;
@@ -22,7 +22,7 @@ const formItem: FormTypes[] = [
   {label: '作业员', prop: 'operId'},
   {label: '机台号', prop: 'lotId'},
   {label: '工序', prop: 'stepID'},
-  {label: '当前状态', prop: 'status'},
+  {label: '当前状态', prop: 'trackStatus'},
   {label: '组装批号', prop: 'assemblyLotID'},
   {label: '芯片名', prop: 'chipName'},
   {label: '封装形式', prop: 'packageType'},
@@ -36,12 +36,15 @@ const UserCard: React.FC = () => {
     const init = async () => {
       const lotId = await getLotId();
       if (lotId) {
-        const {eqpid} = await getUserInfo();
+        const {eqpid, user} = await getUserInfo();
         const res = await getLotInfo({
           eqpId: eqpid,
           lotId: lotId!,
         });
-        setUserInfo(res.data);
+        setUserInfo({
+          ...res.data,
+          operId: user.userID,
+        });
       }
     };
     init();

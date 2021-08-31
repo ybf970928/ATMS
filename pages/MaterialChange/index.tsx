@@ -74,14 +74,14 @@ const MaterialChange: React.FC = () => {
   };
 
   useEffect(() => {
-    const alreadyTrackIn = async () => {
+    const isAlreadyTrackIn = async () => {
       const lotId = await getLotId();
       if (lotId) {
         setValue('lotId', lotId);
         handleSetLotId(lotId);
       }
     };
-    alreadyTrackIn();
+    isAlreadyTrackIn();
   }, [setValue]);
 
   return (
@@ -156,6 +156,15 @@ const MaterialChange: React.FC = () => {
                   lotId={currentLotId}
                   stepId={jobNumber}
                 />
+              </Box>
+            ) : null}
+            {data.materialBoxList.length > 0 ? (
+              <Box
+                rounded="lg"
+                width="100%"
+                p={2}
+                flexDirection="row"
+                flexWrap="wrap">
                 <MaterialBox
                   dataSource={data.materialBoxList}
                   lotId={currentLotId}

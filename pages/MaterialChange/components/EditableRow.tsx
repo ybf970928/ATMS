@@ -100,7 +100,7 @@ const Row: React.FC<RowProps> = ({
             <Select
               h={10}
               isDisabled={isCheck}
-              selectedValue={value}
+              selectedValue={value.toString()}
               onValueChange={(itemValue: string) => {
                 onChange(itemValue);
               }}>
@@ -118,7 +118,7 @@ const Row: React.FC<RowProps> = ({
             <View style={styles.checkedView}>
               <Switch
                 onToggle={(val: boolean) => onChange(val)}
-                isChecked={value}
+                isChecked={value ? true : false}
                 onTrackColor="blue.500"
                 isDisabled={isCheck}
               />
