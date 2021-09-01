@@ -1,8 +1,9 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext, useCallback} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {Box, Text} from 'native-base';
 import {getLotInfo} from '../../../services/public';
 import {getUserInfo, getLotId} from '../../../utils/user';
+import {AuthContext} from '../../../layouts/AuthProvider';
 interface IUserFormProps {
   operId?: string;
   lotId?: string;
@@ -31,24 +32,47 @@ const formItem: FormTypes[] = [
 
 const UserCard: React.FC = () => {
   const [userInfo, setUserInfo] = useState<IUserFormProps>({});
-
+  const {loginPopup} = useContext(AuthContext);
   useEffect(() => {
     const init = async () => {
       const lotId = await getLotId();
       if (lotId) {
         const {eqpid, user} = await getUserInfo();
-        const res = await getLotInfo({
-          eqpId: eqpid,
-          lotId: lotId!,
-        });
-        setUserInfo({
-          ...res.data,
-          operId: user.userID,
-        });
+        if (user && eqpid) {
+          const res = await getLotInfo({
+            eqpId: eqpid,
+            lotId: lotId!,
+          });
+          setUserInfo({
+            ...res.data,
+            operId: user.userID,
+          });
+        }
       }
     };
     init();
   }, []);
+
+  const LoginSucc = useCallback(() => {
+    const getLoginUserInfo = async () => {
+      try {
+        // 没有登录弹窗就说明已经登陆成功了
+        if (!loginPopup) {
+          const {user} = await getUserInfo();
+          setUserInfo({
+            operId: user.userID,
+          });
+        }
+      } catch (error) {
+        console.log('获取用户信息失败');
+      }
+    };
+    getLoginUserInfo();
+  }, [loginPopup]);
+
+  useEffect(() => {
+    LoginSucc();
+  }, [LoginSucc]);
 
   return (
     <View style={styles.card}>

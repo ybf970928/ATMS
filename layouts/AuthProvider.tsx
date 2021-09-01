@@ -3,37 +3,49 @@ import {removeToken, setToken} from '../utils/auth';
 import {removeLotId, removeUserInfo} from '../utils/user';
 import {NativeBaseProvider} from 'native-base';
 import {theme} from '../theme/extendTheme';
+import Login from '../pages/Login/index1';
 
-// eslint-disable-next-line no-spaced-func
-export const AuthContext = createContext<{
-  user: string;
+interface ContextProps {
+  loginPopup: boolean;
+  openLoginPopup: (isOpen: boolean) => void;
   login: (token: string) => void;
   logout: () => void;
-}>({
-  user: '',
+}
+
+export const AuthContext = createContext<ContextProps>({
+  loginPopup: false,
+  openLoginPopup: () => {},
   login: () => {},
   logout: () => {},
 });
 
 export const AuthProvider: React.FC = ({children}) => {
-  const [loginUser, setLoginUser] = useState<string>('');
+  const [showloginPopup, setShowloginPopup] = useState<boolean>(true);
   return (
     <AuthContext.Provider
       value={{
-        user: loginUser,
+        loginPopup: showloginPopup,
+        openLoginPopup: (isOpen: boolean) => {
+          setShowloginPopup(isOpen);
+        },
         login: (token: string) => {
-          console.log('token:', token);
-          setLoginUser(token);
           setToken(token);
+          setShowloginPopup(false);
         },
         logout: () => {
-          setLoginUser('');
           removeToken();
           removeLotId();
           removeUserInfo();
+          setShowloginPopup(true);
         },
       }}>
-      <NativeBaseProvider theme={theme}>{children}</NativeBaseProvider>
+      <NativeBaseProvider theme={theme}>
+        {children}
+        <Login
+          isShow={showloginPopup}
+          needLogin={(show: boolean) => setShowloginPopup(show)}
+        />
+      </NativeBaseProvider>
     </AuthContext.Provider>
   );
 };

@@ -78,8 +78,9 @@ const CardTable: React.FC<{lotId: string}> = ({lotId}) => {
     if (res.code === 1) {
       setLotId(lotId).then(() => {
         navigation.dispatch(
-          CommonActions.navigate({
-            name: 'Home',
+          CommonActions.reset({
+            index: 0,
+            routes: [{name: 'Home'}],
           }),
         );
       });

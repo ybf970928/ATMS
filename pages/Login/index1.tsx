@@ -1,18 +1,23 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {VStack, FormControl, Input, Button, Modal, useToast} from 'native-base';
 import {getUniqueId} from 'react-native-device-info';
 import {accountLogin} from '../../services/login';
 import {ToastMessage} from '../../utils/errorMessageMap';
-interface LoginProps {
-  handlerLogin: (data: any) => void;
+import {AuthContext} from '../../layouts/AuthProvider';
+import {setUserInfo} from '../../utils/user';
+
+interface loginPopupProps {
+  isShow: boolean;
+  needLogin: (show: boolean) => void;
 }
 
-const Login: React.FC<LoginProps> = ({handlerLogin}) => {
-  const [showModal, setShowModal] = useState<boolean>(true);
-  const [username, setUsername] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
+const Login: React.FC<loginPopupProps> = ({isShow, needLogin}) => {
+  // const [showModal, setShowModal] = useState<boolean>(true);
+  const [username, setUsername] = useState<string>('admin');
+  const [password, setPassword] = useState<string>('123456');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const toast = useToast();
+  const {login} = useContext(AuthContext);
 
   const doLogin = async () => {
     setIsLoading(true);
@@ -26,8 +31,11 @@ const Login: React.FC<LoginProps> = ({handlerLogin}) => {
         loginType: 3,
       });
       if (res.code === 1) {
-        setIsLoading(false);
-        handlerLogin(res.data);
+        const {token} = res.data;
+        setUserInfo(res.data).then(() => {
+          setIsLoading(false);
+          login(token);
+        });
       } else {
         setIsLoading(false);
       }
@@ -40,7 +48,7 @@ const Login: React.FC<LoginProps> = ({handlerLogin}) => {
   };
 
   return (
-    <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
+    <Modal isOpen={isShow} onClose={() => needLogin(!isShow)}>
       <Modal.Content maxWidth="400px">
         <Modal.CloseButton />
         <Modal.Body>

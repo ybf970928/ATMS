@@ -24,14 +24,18 @@ const MyPage: React.FC = () => {
 
   useEffect(() => {
     const getUserName = async () => {
-      const {user} = await getUserInfo();
-      setUser({
-        avatar: user.avatar,
-        userName: user.userName,
-      });
+      try {
+        const {user} = await getUserInfo();
+        setUser({
+          avatar: user.avatar,
+          userName: user.userName,
+        });
+      } catch (error) {
+        console.log('获取用户信息失败');
+      }
     };
     getUserName();
-  }, [currentUser]);
+  }, []);
 
   return (
     <View style={styles.content}>

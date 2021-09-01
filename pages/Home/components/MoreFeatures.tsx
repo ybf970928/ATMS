@@ -1,9 +1,10 @@
 import {IconOutline, OutlineGlyphMapType} from '@ant-design/icons-react-native';
-import React from 'react';
+import React, {useContext} from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {useNavigation, StackActions} from '@react-navigation/native';
 import {getToken} from '../../../utils/auth';
 import Collapse from './Collapse';
+import {AuthContext} from '../../../layouts/AuthProvider';
 
 const ProductionRoutes: {
   title: string;
@@ -26,14 +27,18 @@ const ProductionRoutes: {
 
 const MoreFeatures: React.FC = () => {
   const navigation = useNavigation();
-
+  const {openLoginPopup} = useContext(AuthContext);
   const jumpToPage = async (node: {
     title: string;
     icon: OutlineGlyphMapType;
     route: string;
   }) => {
     const token = await getToken();
-    token && navigation.dispatch(StackActions.push(node.route));
+    if (token) {
+      navigation.dispatch(StackActions.push(node.route));
+    } else {
+      openLoginPopup(true);
+    }
   };
 
   return (
