@@ -1,19 +1,28 @@
 import React from 'react';
 import {View, StyleSheet, Text} from 'react-native';
-import {IColProps} from '../types/Table';
+
+export interface TableProps<T> {
+  title: string;
+  dataIndex: keyof T | '';
+  render?: (value: string, item: any, $index: number) => JSX.Element;
+}
 
 interface IProps {
   dataSource: any[];
-  columns: IColProps<any>[];
+  columns: TableProps<any>[];
 }
 
 const Table: React.FC<IProps> = ({dataSource, columns}) => {
-  const Item = ({item}: {item: any}) => {
+  const Item = ({item, $index}: {item: any; $index: number}) => {
     return (
       <View style={styles.item}>
         {columns.map(col => {
-          return (
-            <Text style={styles.title} key={col.title as string}>
+          return col.render ? (
+            <View style={styles.title} key={col.title + ''}>
+              {col.render(item[col.dataIndex], item, $index)}
+            </View>
+          ) : (
+            <Text style={styles.title} key={col.title + ''}>
               {item[col.dataIndex]}
             </Text>
           );
@@ -35,16 +44,10 @@ const Table: React.FC<IProps> = ({dataSource, columns}) => {
           );
         })}
       </View>
-      {/* <FlatList
-        scrollEnabled={false}
-        data={dataSource}
-        renderItem={renderItem}
-        keyExtractor={item => item.id}
-      /> */}
       <View>
         {dataSource.length > 0 ? (
           dataSource.map((item, index) => {
-            return <Item item={item} key={index} />;
+            return <Item item={item} key={index} $index={index} />;
           })
         ) : (
           <Text>暂无数据</Text>

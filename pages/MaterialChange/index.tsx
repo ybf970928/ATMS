@@ -44,6 +44,7 @@ const MaterialChange: React.FC = () => {
   const [jobNumber, setjobNumber] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [currentLotId, setCurrentLotId] = useState<string>('');
+  const [isTrackIn, setIsTrackIn] = useState<boolean>(false);
   const [data, setData] = useState<DataProp>({
     consumablesList: [],
     materialList: [],
@@ -60,8 +61,9 @@ const MaterialChange: React.FC = () => {
       setLoading(true);
       const {eqpid} = await getUserInfo();
       const res = await getMaterials({lotId: lotId, eqpId: eqpid});
-      const {stepId, ...obj} = res.data;
+      const {stepId, trackStatus, ...obj} = res.data;
       setjobNumber(stepId);
+      setIsTrackIn(trackStatus ? true : false);
       setData({
         consumablesList: obj.consumablesInfo || [],
         materialList: obj.materialInfo || [],
@@ -158,7 +160,7 @@ const MaterialChange: React.FC = () => {
                 />
               </Box>
             ) : null}
-            {data.materialBoxList.length > 0 ? (
+            {data.materialBoxList.length > 0 && !isTrackIn ? (
               <Box
                 rounded="lg"
                 width="100%"

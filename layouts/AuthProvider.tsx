@@ -20,7 +20,7 @@ export const AuthContext = createContext<ContextProps>({
 });
 
 export const AuthProvider: React.FC = ({children}) => {
-  const [showloginPopup, setShowloginPopup] = useState<boolean>(true);
+  const [showloginPopup, setShowloginPopup] = useState<boolean>(false);
   return (
     <AuthContext.Provider
       value={{

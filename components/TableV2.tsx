@@ -25,7 +25,7 @@ const TableV2: React.FC<IProps> = ({dataSource, columns}) => {
                 col.width ? {width: col.width} : styles.row,
                 styles.shareCell,
               ]}
-              key={col.title as string}>
+              key={col.title + ''}>
               <Controller
                 control={control}
                 render={({field}) =>
@@ -35,7 +35,7 @@ const TableV2: React.FC<IProps> = ({dataSource, columns}) => {
                     <Text>{field.value}</Text>
                   )
                 }
-                name={col.dataIndex as string}
+                name={col.dataIndex.toString()}
               />
             </View>
           );

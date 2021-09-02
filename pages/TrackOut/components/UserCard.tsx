@@ -1,12 +1,13 @@
 import {Box, Spinner, Text} from 'native-base';
-import React from 'react';
+import React, {useContext} from 'react';
 import {useState} from 'react';
 import {useEffect} from 'react';
 import {View, StyleSheet} from 'react-native';
+import {TrackOutContext} from '../index';
 import {Center} from '../../../layouts/Center';
 import {getLotInfo} from '../../../services/public';
 import {getUserInfo, getLotId} from '../../../utils/user';
-interface IFormProps {
+export interface TrackOutProps {
   lotId?: string;
   operId?: string;
   eqpId?: string;
@@ -17,10 +18,11 @@ interface IFormProps {
   deviceQty?: string;
   productID?: string;
   materialBoxBarcode?: string;
+  quotaCode?: string;
 }
 interface IFormItemProps {
   label: string;
-  prop: keyof IFormProps;
+  prop: keyof TrackOutProps;
 }
 
 const formItems: IFormItemProps[] = [
@@ -36,9 +38,9 @@ const formItems: IFormItemProps[] = [
 ];
 
 const BaseInfoTrackIn: React.FC = () => {
-  const [form, setForm] = useState<IFormProps>({});
+  const [form, setForm] = useState<TrackOutProps>({});
   const [loading, setLoading] = useState<boolean>(false);
-
+  const {toggleEqpInfo} = useContext(TrackOutContext);
   useEffect(() => {
     setLoading(true);
     const initForm = async () => {
@@ -48,13 +50,15 @@ const BaseInfoTrackIn: React.FC = () => {
         eqpId: eqpid,
         lotId: currentLotId!,
       });
-      setLoading(false);
       setForm({
         ...res.data,
         eqpId: eqpid,
       });
+      toggleEqpInfo(res.data);
+      setLoading(false);
     };
     initForm();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (loading) {

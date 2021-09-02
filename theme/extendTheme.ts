@@ -37,7 +37,7 @@ export const theme = extendTheme({
       },
     },
     Select: {
-      sizes: 'xs',
+      size: 'xs',
     },
   },
 });
