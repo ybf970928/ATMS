@@ -46,6 +46,7 @@ const UserCard: React.FC = () => {
           setUserInfo({
             ...res.data,
             operId: user.userID,
+            trackStatus: res.data.trackStatus ? '已开批' : '结批',
           });
         }
       }

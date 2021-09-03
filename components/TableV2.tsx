@@ -60,9 +60,15 @@ const TableV2: React.FC<IProps> = ({dataSource, columns}) => {
           );
         })}
       </View>
-      {dataSource.map((item, index) => {
-        return <Item item={item} key={index} />;
-      })}
+      <View style={styles.tableContent}>
+        {dataSource.length > 0 ? (
+          dataSource.map((item, index) => {
+            return <Item item={item} key={index} />;
+          })
+        ) : (
+          <Text style={{paddingVertical: 10!}}>暂无数据</Text>
+        )}
+      </View>
     </View>
   );
 };
@@ -76,6 +82,10 @@ const styles = StyleSheet.create({
   tableHeader: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+  },
+  tableContent: {
+    width: '100%',
+    alignItems: 'center',
   },
   item: {
     flexDirection: 'row',

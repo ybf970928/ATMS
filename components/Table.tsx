@@ -44,7 +44,7 @@ const Table: React.FC<IProps> = ({dataSource, columns}) => {
           );
         })}
       </View>
-      <View>
+      <View style={styles.tableContent}>
         {dataSource.length > 0 ? (
           dataSource.map((item, index) => {
             return <Item item={item} key={index} $index={index} />;
@@ -77,6 +77,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 10,
     textAlignVertical: 'center',
+  },
+  tableContent: {
+    width: '100%',
+    alignItems: 'center',
   },
 });
 export default Table;

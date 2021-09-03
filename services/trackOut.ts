@@ -1,13 +1,15 @@
+import {scrapProps} from '../pages/TrackOut/components/Scrap';
 import request from '../utils/request';
 
 interface TrackOutParams {
-  lotHistoryId: string;
-  eqpId: string;
-  lotId: string;
-  jobNum: string;
-  boxs: string;
-  scrapList: Array<{qty: string; reason: string}>;
-  defectiveList: Array<{qty: string; reason: string}>;
+  lotHistoryId?: string;
+  eqpId?: string;
+  lotId?: string;
+  remainingQty?: string;
+  jobNum?: string;
+  boxs?: string;
+  scrapList?: scrapProps[];
+  defectiveList?: scrapProps[];
 }
 
 interface YieldInfoParams {

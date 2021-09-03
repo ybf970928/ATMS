@@ -1,33 +1,11 @@
-import React, {createContext} from 'react';
+import React from 'react';
 import {ScrollView, StyleSheet} from 'react-native';
-import UserCard, {TrackOutProps} from './components/UserCard';
-import Infos from './components/TheInfosTable';
-import {useState} from 'react';
-
-interface TrackOutContextProps {
-  eqpInfo: TrackOutProps;
-  toggleEqpInfo: (data: TrackOutProps) => void;
-}
-export const TrackOutContext = createContext<TrackOutContextProps>({
-  eqpInfo: {},
-  toggleEqpInfo: () => {},
-});
+import ActionTrackOut from './components/ActionTrackOut';
 
 const TrackOut: React.FC = () => {
-  const [eqpInfo, setEqpInfo] = useState<TrackOutProps>({});
-
   return (
-    <ScrollView style={styles.scrollView}>
-      <TrackOutContext.Provider
-        value={{
-          eqpInfo: eqpInfo,
-          toggleEqpInfo: (data: TrackOutProps) => {
-            setEqpInfo(data);
-          },
-        }}>
-        <UserCard />
-        <Infos />
-      </TrackOutContext.Provider>
+    <ScrollView style={styles.scrollView} keyboardShouldPersistTaps="handled">
+      <ActionTrackOut />
     </ScrollView>
   );
 };

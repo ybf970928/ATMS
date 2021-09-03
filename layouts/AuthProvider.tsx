@@ -36,7 +36,6 @@ export const AuthProvider: React.FC = ({children}) => {
           removeToken();
           removeLotId();
           removeUserInfo();
-          setShowloginPopup(true);
         },
       }}>
       <NativeBaseProvider theme={theme}>

@@ -1,14 +1,30 @@
-import {Box, Spinner, Text} from 'native-base';
-import React, {useContext} from 'react';
-import {useState} from 'react';
-import {useEffect} from 'react';
+import {
+  Box,
+  Spinner,
+  Text,
+  FormControl,
+  Input,
+  HStack,
+  Heading,
+} from 'native-base';
+import React, {
+  useState,
+  useEffect,
+  forwardRef,
+  useImperativeHandle,
+} from 'react';
 import {View, StyleSheet} from 'react-native';
-import {TrackOutContext} from '../index';
 import {Center} from '../../../layouts/Center';
 import {getLotInfo} from '../../../services/public';
 import {getUserInfo, getLotId} from '../../../utils/user';
+import {getYieldInfo} from '../../../services/trackOut';
+import {IColProps} from '../../../types/Table';
+import {Controller, useForm} from 'react-hook-form';
+import TableV2 from '../../../components/TableV2';
+
 export interface TrackOutProps {
   lotId?: string;
+  remainder?: string;
   operId?: string;
   eqpId?: string;
   stepID?: string;
@@ -18,16 +34,33 @@ export interface TrackOutProps {
   deviceQty?: string;
   productID?: string;
   materialBoxBarcode?: string;
+  trOperID?: string;
+  testedQty?: string;
   quotaCode?: string;
+  lotHistoryId?: string;
 }
 interface IFormItemProps {
   label: string;
   prop: keyof TrackOutProps;
 }
 
+interface yieldProps {
+  trOperID: string;
+  testedQty: string;
+  quotaCode: string;
+}
+
+// 材料信息
+const yieldColumns: IColProps<yieldProps>[] = [
+  {title: '作业员', dataIndex: 'trOperID'},
+  {title: '作业数量', dataIndex: 'testedQty'},
+  {title: '定额代码', dataIndex: 'quotaCode'},
+];
+
 const formItems: IFormItemProps[] = [
   {label: '机台号', prop: 'eqpId'},
   {label: '批号', prop: 'lotId'},
+  {label: '剩余数量', prop: 'remainder'},
   {label: '工序', prop: 'stepID'},
   {label: '组装批号', prop: 'assemblyLotID'},
   {label: '芯片名', prop: 'chipName'},
@@ -37,62 +70,158 @@ const formItems: IFormItemProps[] = [
   {label: '料盒条码信息', prop: 'materialBoxBarcode'},
 ];
 
-const BaseInfoTrackIn: React.FC = () => {
-  const [form, setForm] = useState<TrackOutProps>({});
-  const [loading, setLoading] = useState<boolean>(false);
-  const {toggleEqpInfo} = useContext(TrackOutContext);
-  useEffect(() => {
-    setLoading(true);
-    const initForm = async () => {
-      const {eqpid} = await getUserInfo();
-      const currentLotId = await getLotId();
-      const res = await getLotInfo({
-        eqpId: eqpid,
-        lotId: currentLotId!,
+const BaseInfoTrackIn: React.FC<{ref: React.ForwardedRef<unknown>}> =
+  forwardRef(({}, ref) => {
+    const [loading, setLoading] = useState<boolean>(false);
+    const [formValues, setFormValues] = useState<{
+      remainingQty?: string;
+      jobNum?: string;
+      lotHistoryId?: string;
+    }>({});
+    const [yieldlSource, setYieldSource] = useState<yieldProps[]>([]);
+    const {handleSubmit, control, setValue, getValues} =
+      useForm<TrackOutProps>();
+
+    useEffect(() => {
+      setLoading(true);
+      const initForm = async () => {
+        const {eqpid} = await getUserInfo();
+        const currentLotId = await getLotId();
+        const res = await getLotInfo({
+          eqpId: eqpid,
+          lotId: currentLotId!,
+        });
+        const yieldList = await getYieldInfo({
+          eqpId: eqpid,
+          lotId: currentLotId!,
+        });
+        setValue('eqpId', eqpid);
+        for (const [key, value] of Object.entries(res.data)) {
+          setValue(key as keyof TrackOutProps, value as string);
+        }
+        setYieldSource(yieldList.data);
+        setLoading(false);
+      };
+      initForm();
+    }, [setValue]);
+
+    const getRemainderNums = (data: yieldProps) => {
+      const isKnownNums = yieldlSource
+        .map(v => Number(v.testedQty))
+        .reduce((total: number, current: number) => {
+          return total + current;
+        }, 0);
+      const allNums = getValues('deviceQty');
+      const lotHistoryId = getValues('lotHistoryId');
+      const remainNums = Number(allNums) - isKnownNums - Number(data.testedQty);
+      setValue('remainder', remainNums.toString());
+      setFormValues({
+        remainingQty: remainNums.toString(),
+        jobNum: data.testedQty,
+        lotHistoryId: lotHistoryId,
       });
-      setForm({
-        ...res.data,
-        eqpId: eqpid,
-      });
-      toggleEqpInfo(res.data);
-      setLoading(false);
     };
-    initForm();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
-  if (loading) {
+    useImperativeHandle(ref, () => {
+      return {
+        formValues: formValues,
+      };
+    });
+    if (loading) {
+      return (
+        <Box
+          bg="white"
+          maxWidth="100%"
+          p={2}
+          mt={2}
+          rounded="lg"
+          minHeight={200}>
+          <Center>
+            <Spinner color="blue.500" />
+          </Center>
+        </Box>
+      );
+    }
+
     return (
-      <Box bg="white" maxWidth="100%" p={2} mt={2} rounded="lg">
-        <Center>
-          <Spinner color="blue.500" />
-        </Center>
-      </Box>
+      <>
+        <Box
+          bg="white"
+          maxWidth="100%"
+          p={2}
+          mt={2}
+          rounded="lg"
+          flexDirection="row"
+          flexWrap="wrap">
+          {formItems.map(item => {
+            return (
+              <View style={styles.formItemLayout} key={item.label}>
+                <Text minW="20%" pl={2}>
+                  {item.label}:{' '}
+                </Text>
+                <Controller
+                  control={control}
+                  render={({field: {value}}) => <Text>{value}</Text>}
+                  name={item.prop}
+                />
+              </View>
+            );
+          })}
+        </Box>
+        <Box bg="white" rounded="lg" width="100%" marginTop={5} p={2}>
+          <Heading fontSize={16}>产量信息</Heading>
+          <HStack space={3} alignItems="center" mb={6}>
+            <FormControl style={styles.formItem}>
+              <FormControl.Label
+                _text={{color: 'muted.700', fontSize: 'sm', fontWeight: 600}}>
+                作业员
+              </FormControl.Label>
+              <Controller
+                control={control}
+                render={({field: {value}}) => (
+                  <Input h={10} isDisabled value={value} />
+                )}
+                name="trOperID"
+              />
+            </FormControl>
+            <FormControl style={styles.formItem}>
+              <FormControl.Label
+                _text={{color: 'muted.700', fontSize: 'sm', fontWeight: 600}}>
+                作业数量
+              </FormControl.Label>
+              <Controller
+                control={control}
+                render={({field: {value, onChange}}) => (
+                  <Input
+                    h={10}
+                    keyboardType="number-pad"
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={handleSubmit(getRemainderNums)}
+                  />
+                )}
+                name="testedQty"
+              />
+            </FormControl>
+            <FormControl style={styles.formItem}>
+              <FormControl.Label
+                _text={{color: 'muted.700', fontSize: 'sm', fontWeight: 600}}>
+                定额代码
+              </FormControl.Label>
+              <Controller
+                control={control}
+                render={({field: {value}}) => (
+                  <Input h={10} isDisabled value={value} />
+                )}
+                name="quotaCode"
+              />
+            </FormControl>
+          </HStack>
+          <TableV2 dataSource={yieldlSource} columns={yieldColumns} />
+        </Box>
+      </>
     );
-  }
-
-  return (
-    <Box
-      bg="white"
-      maxWidth="100%"
-      p={2}
-      mt={2}
-      rounded="lg"
-      flexDirection="row"
-      flexWrap="wrap">
-      {formItems.map(item => {
-        return (
-          <View style={styles.formItemLayout} key={item.label}>
-            <Text minW="20%" pl={2}>
-              {item.label}:{' '}
-            </Text>
-            <Text>{form[item.prop]}</Text>
-          </View>
-        );
-      })}
-    </Box>
-  );
-};
+  });
 
 const styles = StyleSheet.create({
   formItemLayout: {
@@ -101,6 +230,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 10,
+  },
+  formItem: {
+    width: '30%',
   },
 });
 
