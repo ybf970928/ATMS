@@ -48,11 +48,14 @@ const BaseInfoTrackIn: React.FC<{lotId: string}> = ({lotId}) => {
           eqpId: eqpid,
           lotId: lotId,
         });
-        setLoading(false);
         setForm(res.data);
+        setLoading(false);
       };
       initForm();
     }
+    return () => {
+      setLoading(false);
+    };
   }, [lotId]);
 
   if (loading) {

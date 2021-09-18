@@ -25,8 +25,6 @@ const Materialcolumns = [
 ];
 
 const ShowInfoTable: React.FC = () => {
-  const [loading, setLoading] = useState<boolean>(true);
-
   const [table, setTable] = useState<{
     consumables: ConsumablesProp[];
     material: MaterialProp[];
@@ -34,6 +32,8 @@ const ShowInfoTable: React.FC = () => {
     consumables: [],
     material: [],
   });
+
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const initTable = async () => {
@@ -53,6 +53,9 @@ const ShowInfoTable: React.FC = () => {
       }
     };
     initTable();
+    return () => {
+      setLoading(false);
+    };
   }, []);
 
   if (loading) {

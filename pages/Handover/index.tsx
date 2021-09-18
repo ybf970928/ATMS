@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {Box, Text, Input, Button, useToast} from 'native-base';
 import {useForm, Controller, SubmitHandler} from 'react-hook-form';
@@ -7,6 +7,7 @@ import {getLotInfo} from '../../services/public';
 import {doUpdate} from '../../services/handOver';
 import {useNavigation, CommonActions} from '@react-navigation/native';
 import {ToastMessage} from '../../utils/errorMessageMap';
+import {AuthContext} from '../../layouts/AuthProvider';
 interface HandOverForm {
   lotId: string;
   eqpId: string;
@@ -18,6 +19,8 @@ interface HandOverForm {
 const Handover: React.FC = () => {
   const {handleSubmit, control, setValue} = useForm<HandOverForm>();
   const navigation = useNavigation();
+  const {logout} = useContext(AuthContext);
+
   const toast = useToast();
   const onSubmit: SubmitHandler<HandOverForm> = async data => {
     const res = await doUpdate({
@@ -26,6 +29,7 @@ const Handover: React.FC = () => {
       qty: data.qty,
     });
     if (res.code === 1) {
+      logout();
       navigation.dispatch(
         CommonActions.navigate({
           name: 'Home',
@@ -165,7 +169,12 @@ const Handover: React.FC = () => {
                 <Text w={'30%'} pl={2} textAlign="left">
                   实物数量:{' '}
                 </Text>
-                <Input w="70%" value={value} onChangeText={onChange} />
+                <Input
+                  w="70%"
+                  value={value}
+                  onChangeText={onChange}
+                  keyboardType="number-pad"
+                />
               </View>
             )}
             name="qty"

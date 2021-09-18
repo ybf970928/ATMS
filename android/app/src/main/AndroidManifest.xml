@@ -3,11 +3,11 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
-    
-    <uses-permission android:name="android.permission.CAMERA" /> 
+    <!-- 用不到相机 -->
+    <!-- <uses-permission android:name="android.permission.CAMERA" /> 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/> -->
     
       <!-- android:roundIcon="@mipmap/ic_launcher_round" -->
       <!-- 在安卓6.0以上http无法使用被移除 https://www.react-native.cn/docs/integration-with-existing-apps -->

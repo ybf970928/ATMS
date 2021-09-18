@@ -1,4 +1,4 @@
-import React, {useRef} from 'react';
+import React, {useRef, useContext} from 'react';
 import {Box, Heading, Button, HStack, useToast} from 'native-base';
 import Scrap, {scrapProps} from './Scrap';
 import InfosTable from './InfosTable';
@@ -6,14 +6,21 @@ import AutoInputs from '../../../components/AutoInputs';
 import UserCard from './UserCard';
 import {doTrackOut} from '../../../services/trackOut';
 import {getLotId, getUserInfo} from '../../../utils/user';
+import {removeLotId} from '../../../utils/user';
 import {ToastMessage} from '../../../utils/errorMessageMap';
+import {useNavigation, CommonActions} from '@react-navigation/native';
+import {AuthContext} from '../../../layouts/AuthProvider';
+
 const CardTable: React.FC = () => {
+  // 通过各种绑定ref来获取 FC 内部的参数
   const userWriteRef = useRef<{
     formValues: {remainingQty: string; jobNum: string; lotHistoryId: string};
   }>(null);
   const scrapRef = useRef<{state: scrapProps[]}>(null);
   const defectiveRef = useRef<{state: scrapProps[]}>(null);
   const autoInputRef = useRef<{values: String[]}>(null);
+  const navigation = useNavigation();
+  const {checkTrackOut} = useContext(AuthContext);
   const toast = useToast();
 
   const isExceed: () => boolean = () => {
@@ -46,7 +53,15 @@ const CardTable: React.FC = () => {
         boxs: autoInputRef.current!.values.join(','),
       });
       if (res.code === 1) {
-        console.log('结批成功');
+        removeLotId().then(() => {
+          checkTrackOut(true);
+          navigation.dispatch(
+            CommonActions.reset({
+              index: 0,
+              routes: [{name: 'Home'}],
+            }),
+          );
+        });
       }
       toast.show({
         title: ToastMessage(res),

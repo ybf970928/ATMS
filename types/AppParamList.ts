@@ -1,5 +1,5 @@
 export type AppParamList = {
-  Home: undefined;
+  AppHome: undefined;
   Message: undefined;
   My: undefined;
 };

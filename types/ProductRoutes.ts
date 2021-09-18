@@ -6,10 +6,6 @@ export type AuthProductList = {
   TrackIn: undefined;
   TrackOut: undefined;
   Handover: undefined;
-  // OnMachine: undefined;
-  // ReplaceScoket: undefined;
-  // SaveSummary: undefined;
-  ScanQRCode: undefined;
   Setting: undefined;
   CraftCard: undefined;
   ChangeOEE: undefined;

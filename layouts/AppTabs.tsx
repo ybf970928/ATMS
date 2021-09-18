@@ -7,7 +7,7 @@ import {
 } from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {IconOutline} from '@ant-design/icons-react-native';
-import {AppParamList} from './AppParamList';
+import {AppParamList} from '../types/AppParamList';
 
 export const headerStyle: StackNavigationOptions = {
   headerTitleStyle: {color: '#fff'},
@@ -23,9 +23,9 @@ export const headerStyle: StackNavigationOptions = {
 const AppTabs = () => {
   const Tab = createBottomTabNavigator<AppParamList>();
   return (
-    <Tab.Navigator>
+    <Tab.Navigator initialRouteName="AppHome">
       <Tab.Screen
-        name="Home"
+        name="AppHome"
         getComponent={() => require('../pages/Home').default}
         options={{
           tabBarLabel: '首页',

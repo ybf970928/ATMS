@@ -1,10 +1,10 @@
-import {Box, Center, Heading, Spinner} from 'native-base';
+import {Box, Heading, Spinner} from 'native-base';
 import React, {useState, useEffect} from 'react';
 import TableV2 from '../../../components/TableV2';
 import {IColProps} from '../../../types/Table';
 import {getAllMaterial} from '../../../services/public';
 import {getLotId, getUserInfo} from '../../../utils/user';
-
+import {Center} from '../../../layouts/Center';
 interface consumablesProps {
   innerThread: string;
   consumablesType: string;
@@ -63,6 +63,9 @@ const InfosTable: React.FC = () => {
       setLoading(false);
     };
     initTable();
+    return () => {
+      setLoading(false);
+    };
   }, []);
 
   if (loading) {

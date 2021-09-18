@@ -68,16 +68,6 @@ export const addProductRoutes = (
         }}
       />
       <Stack.Screen
-        name="ScanQRCode"
-        getComponent={() => require('../pages/ScanQRCode').default}
-        options={{
-          headerTitle: '扫描设备条码',
-          headerTitleAlign: 'center',
-          ...headerStyle,
-          cardStyleInterpolator: undefined,
-        }}
-      />
-      <Stack.Screen
         name="CraftCard"
         getComponent={() => require('../pages/CraftCard').default}
         options={{

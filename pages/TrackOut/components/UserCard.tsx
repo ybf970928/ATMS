@@ -10,6 +10,7 @@ import {
 import React, {
   useState,
   useEffect,
+  useCallback,
   forwardRef,
   useImperativeHandle,
 } from 'react';
@@ -71,8 +72,9 @@ const formItems: IFormItemProps[] = [
 ];
 
 const BaseInfoTrackIn: React.FC<{ref: React.ForwardedRef<unknown>}> =
-  forwardRef(({}, ref) => {
+  forwardRef((_, ref) => {
     const [loading, setLoading] = useState<boolean>(false);
+    // 重新赋值给父组件
     const [formValues, setFormValues] = useState<{
       remainingQty?: string;
       jobNum?: string;
@@ -82,28 +84,39 @@ const BaseInfoTrackIn: React.FC<{ref: React.ForwardedRef<unknown>}> =
     const {handleSubmit, control, setValue, getValues} =
       useForm<TrackOutProps>();
 
-    useEffect(() => {
-      setLoading(true);
+    const getLotCard = useCallback(() => {
       const initForm = async () => {
-        const {eqpid} = await getUserInfo();
-        const currentLotId = await getLotId();
-        const res = await getLotInfo({
-          eqpId: eqpid,
-          lotId: currentLotId!,
-        });
-        const yieldList = await getYieldInfo({
-          eqpId: eqpid,
-          lotId: currentLotId!,
-        });
-        setValue('eqpId', eqpid);
-        for (const [key, value] of Object.entries(res.data)) {
-          setValue(key as keyof TrackOutProps, value as string);
+        setLoading(true);
+        try {
+          const {eqpid} = await getUserInfo();
+          const currentLotId = await getLotId();
+          const res = await getLotInfo({
+            eqpId: eqpid,
+            lotId: currentLotId!,
+          });
+          const yieldList = await getYieldInfo({
+            eqpId: eqpid,
+            lotId: currentLotId!,
+          });
+          setValue('eqpId', eqpid);
+          for (const [key, value] of Object.entries(res.data)) {
+            setValue(key as keyof TrackOutProps, value as string);
+          }
+          setYieldSource(yieldList.data);
+          setLoading(false);
+        } catch (error) {
+          setLoading(false);
         }
-        setYieldSource(yieldList.data);
-        setLoading(false);
       };
       initForm();
     }, [setValue]);
+
+    useEffect(() => {
+      getLotCard();
+      return () => {
+        setLoading(false);
+      };
+    }, [getLotCard]);
 
     const getRemainderNums = (data: yieldProps) => {
       const isKnownNums = yieldlSource
@@ -123,6 +136,7 @@ const BaseInfoTrackIn: React.FC<{ref: React.ForwardedRef<unknown>}> =
     };
 
     useImperativeHandle(ref, () => {
+      // 第二个参数为init的值, 想要传递正确的参数给外界则需要重新render设置init值
       return {
         formValues: formValues,
       };

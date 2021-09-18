@@ -25,9 +25,9 @@ export const getUserInfo = async (): Promise<UserProps> => {
     // value previously stored
     return USER_INFO != null ? JSON.parse(USER_INFO) : null;
     // }
-  } catch (e) {
+  } catch (error) {
     // error reading value
-    return e;
+    return error as UserProps;
   }
 };
 
@@ -53,7 +53,7 @@ export const getLotId = async (): Promise<string | null> => {
     return LotId != null ? LotId : null;
   } catch (e) {
     // saving error
-    return e;
+    return null;
   }
 };
 

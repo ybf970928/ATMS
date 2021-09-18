@@ -42,7 +42,6 @@ interface LotIdFormProp {
 const MaterialChange: React.FC = () => {
   const navigation = useNavigation();
   const [jobNumber, setjobNumber] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(false);
   const [currentLotId, setCurrentLotId] = useState<string>('');
   const [isTrackIn, setIsTrackIn] = useState<boolean>(false);
   const [data, setData] = useState<DataProp>({
@@ -50,6 +49,7 @@ const MaterialChange: React.FC = () => {
     materialList: [],
     materialBoxList: [],
   });
+  const [loading, setLoading] = useState<boolean>(false);
   const {control, setValue} = useForm<LotIdFormProp>({
     defaultValues: {
       lotId: currentLotId,

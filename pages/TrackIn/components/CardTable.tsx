@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import {Box, Heading, Button, useToast, Spinner} from 'native-base';
-import Table from '../../../components/Table';
+import Table, {TableProps} from '../../../components/Table';
 import {getAllMaterial} from '../../../services/public';
 import {doTrackIn} from '../../../services/trackIn';
-import {IColProps} from '../../../types/Table';
+// import {IColProps} from '../../../types/Table';
 import {getUserInfo, setLotId} from '../../../utils/user';
 import {ToastMessage} from '../../../utils/errorMessageMap';
 import {CommonActions, useNavigation} from '@react-navigation/native';
@@ -26,14 +26,14 @@ interface materialProps {
   serialNo: string;
 }
 // 耗材信息
-const consumablesColumns: IColProps<consumablesProps>[] = [
+const consumablesColumns: TableProps<consumablesProps>[] = [
   {title: '内引线规格', dataIndex: 'innerThread'},
   {title: '材料信息', dataIndex: 'consumablesType'},
   {title: '物料描述', dataIndex: 'consumablesDesc'},
   {title: '材料代码', dataIndex: 'consumablesBarCode'},
 ];
 // 材料信息
-const materialColumns: IColProps<materialProps>[] = [
+const materialColumns: TableProps<materialProps>[] = [
   {title: '材料信息', dataIndex: 'materialType'},
   {title: '材料代码', dataIndex: 'partNo'},
   {title: '物料描述', dataIndex: 'materialDesc'},
@@ -66,6 +66,9 @@ const CardTable: React.FC<{lotId: string}> = ({lotId}) => {
         setLoading(false);
       };
       initTable();
+      return () => {
+        setLoading(false);
+      };
     }
   }, [lotId]);
 

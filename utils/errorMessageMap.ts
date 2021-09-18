@@ -21,6 +21,7 @@ export const errMessageMap: Record<number, string> = {
   50034: '请输入用户账号',
   50035: '请输入密码',
   50036: 'LDAP认证失败',
+  50049: '当前App没有绑定设备',
 
   100000: 'MES Exception: -0-',
   100001: 'EAP Exception: -0-',
@@ -35,6 +36,7 @@ export const errMessageMap: Record<number, string> = {
   100010: '添加材料信息失败',
   100011: '当前工单没有绑定物料信息，请先绑定物料',
   100012: 'MES中没有维护料盒信息',
+  999999: '系统未知异常',
 };
 
 export const ToastMessage = (res: {

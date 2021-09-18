@@ -2,5 +2,13 @@
 import axios from 'axios';
 
 declare module 'axios' {
-  export interface AxiosResponse<T = any> extends Promise<T> {}
+  /**
+   * { code => 状态码, msg => '响应信息', data => 数据 }
+   */
+  interface IAxios<D = any> {
+    code: number;
+    message: number;
+    data: D;
+  }
+  export interface AxiosResponse<T = any> extends Promise<IAxios> {}
 }

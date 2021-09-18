@@ -27,7 +27,7 @@ const Home: React.FC = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="My"
+        name="AppHome"
         component={HomePage}
         options={{
           headerTitle: 'ATMS',

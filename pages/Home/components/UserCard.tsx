@@ -2,8 +2,10 @@ import React, {useState, useEffect, useContext, useCallback} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {Box, Text} from 'native-base';
 import {getLotInfo} from '../../../services/public';
+// import {getToken} from '../../../utils/auth';
 import {getUserInfo, getLotId} from '../../../utils/user';
 import {AuthContext} from '../../../layouts/AuthProvider';
+
 interface IUserFormProps {
   operId?: string;
   lotId?: string;
@@ -32,29 +34,9 @@ const formItem: FormTypes[] = [
 
 const UserCard: React.FC = () => {
   const [userInfo, setUserInfo] = useState<IUserFormProps>({});
-  const {loginPopup} = useContext(AuthContext);
-  useEffect(() => {
-    const init = async () => {
-      const lotId = await getLotId();
-      if (lotId) {
-        const {eqpid, user} = await getUserInfo();
-        if (user && eqpid) {
-          const res = await getLotInfo({
-            eqpId: eqpid,
-            lotId: lotId!,
-          });
-          setUserInfo({
-            ...res.data,
-            operId: user.userID,
-            trackStatus: res.data.trackStatus ? '已开批' : '结批',
-          });
-        }
-      }
-    };
-    init();
-  }, []);
+  const {loginPopup, isTrackOut} = useContext(AuthContext);
 
-  const LoginSucc = useCallback(() => {
+  const isLogin = useCallback(() => {
     const getLoginUserInfo = async () => {
       try {
         // 没有登录弹窗就说明已经登陆成功了
@@ -71,9 +53,34 @@ const UserCard: React.FC = () => {
     getLoginUserInfo();
   }, [loginPopup]);
 
+  const getLotForm = useCallback(() => {
+    const init = async () => {
+      try {
+        const lotId = await getLotId();
+        const {eqpid, user} = await getUserInfo();
+        const res = await getLotInfo({
+          eqpId: eqpid,
+          lotId: lotId!,
+        });
+        setUserInfo({
+          ...res.data,
+          operId: user.userID,
+          trackStatus: res.data.trackStatus ? '已开批' : '未开批',
+        });
+      } catch (error) {}
+    };
+    init();
+  }, []);
+
   useEffect(() => {
-    LoginSucc();
-  }, [LoginSucc]);
+    if (isTrackOut) {
+      console.log('开批成功');
+    } else {
+      console.log('没有开批');
+      getLotForm();
+    }
+    isLogin();
+  }, [isTrackOut, isLogin, getLotForm]);
 
   return (
     <View style={styles.card}>

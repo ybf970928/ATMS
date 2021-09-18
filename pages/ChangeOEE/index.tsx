@@ -48,10 +48,10 @@ const ChangeOEE: React.FC = () => {
       const {eqpid} = await getUserInfo();
       const res = await getOEEStatusSwitch({eqpId: eqpid});
       const {statusList, ...obj} = res.data;
+      setStatusSelectList(statusList);
       for (const [key, value] of Object.entries(obj)) {
         setValue(key as keyof OEEForm, value as string);
       }
-      setStatusSelectList(statusList);
     };
     init();
   }, [setValue]);
