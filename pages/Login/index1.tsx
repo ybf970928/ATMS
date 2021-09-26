@@ -22,7 +22,7 @@ const Login: React.FC<loginPopupProps> = ({isShow, needLogin}) => {
   const doLogin = async () => {
     setIsLoading(true);
     try {
-      // 使用ipaddress替代androd id
+      // 使用ipaddress字段替代androd id
       const ipaddress = getUniqueId();
       const res = await accountLogin({
         username,

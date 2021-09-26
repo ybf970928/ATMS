@@ -3,7 +3,9 @@ import axios from 'axios';
 
 declare module 'axios' {
   /**
-   * { code => 状态码, msg => '响应信息', data => 数据 }
+   * @param {code} string
+   * @param {msg} number
+   * @param {data} any
    */
   interface IAxios<D = any> {
     code: number;

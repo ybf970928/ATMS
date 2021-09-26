@@ -24,7 +24,7 @@ export const AuthContext = createContext<ContextProps>({
 });
 
 export const AuthProvider: React.FC = ({children}) => {
-  const [showloginPopup, setShowloginPopup] = useState<boolean>(true);
+  const [showloginPopup, setShowloginPopup] = useState<boolean>(false);
   const [isTrackOut, setisTrackOut] = useState<boolean>(false);
 
   return (
