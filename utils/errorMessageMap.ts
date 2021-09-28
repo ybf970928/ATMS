@@ -1,3 +1,5 @@
+import {IAxios} from '../hooks/useFetch';
+
 export const errMessageMap: Record<number, string> = {
   0: '操作失败',
   1: '操作成功',
@@ -39,10 +41,7 @@ export const errMessageMap: Record<number, string> = {
   999999: '系统未知异常',
 };
 
-export const ToastMessage = (res: {
-  message: number;
-  data: string[];
-}): string => {
+export const ToastMessage = (res: IAxios): string => {
   const errM = errMessageMap[res.message];
   const regArr = errM.match(/-[0-9]-/g);
   let newErrMessage = errM;

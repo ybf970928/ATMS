@@ -1,5 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import axios from 'axios';
+import {IAxios} from '../hooks/useFetch';
 
 declare module 'axios' {
   /**
@@ -7,10 +8,5 @@ declare module 'axios' {
    * @param {msg} number
    * @param {data} any
    */
-  interface IAxios<D = any> {
-    code: number;
-    message: number;
-    data: D;
-  }
   export interface AxiosResponse<T = any> extends Promise<IAxios> {}
 }

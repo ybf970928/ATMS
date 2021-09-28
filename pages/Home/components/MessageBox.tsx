@@ -58,13 +58,13 @@ const MessageBox: React.FC = () => {
       const arr = [...socketMessage];
       setSocketMessage(arr.concat(socketMessage[0]).slice(1));
     }
-    LayoutAnimation.configureNext(
-      LayoutAnimation.create(
-        200,
-        LayoutAnimation.Types.easeInEaseOut,
-        LayoutAnimation.Properties.scaleX,
-      ),
-    );
+    // LayoutAnimation.configureNext(
+    //   LayoutAnimation.create(
+    //     200,
+    //     LayoutAnimation.Types.easeInEaseOut,
+    //     LayoutAnimation.Properties.scaleX,
+    //   ),
+    // );
   };
 
   useEffect(() => {

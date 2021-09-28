@@ -3,8 +3,8 @@ import {getToken, removeToken} from './auth';
 import {removeUserInfo, removeLotId} from './user';
 const service = axios.create({
   baseURL: 'http://10.100.101.22:8100',
-  timeout: 6000,
-  withCredentials: true,
+  timeout: 10000,
+  withCredentials: true, // 携带cookie
 });
 
 // Add a request interceptor
