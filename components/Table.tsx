@@ -4,6 +4,7 @@ import {View, StyleSheet, Text} from 'react-native';
 export interface TableProps<T> {
   title: string;
   dataIndex: keyof T | '';
+  width?: string | number;
   render?: (value: string, item: any, $index: number) => JSX.Element;
 }
 
@@ -18,11 +19,15 @@ const Table: React.FC<IProps> = ({dataSource, columns}) => {
       <View style={styles.item}>
         {columns.map(col => {
           return col.render ? (
-            <View style={styles.title} key={col.title + ''}>
+            <View
+              style={[col.width ? {width: col.width} : null, styles.title]}
+              key={col.title + ''}>
               {col.render(item[col.dataIndex], item, $index)}
             </View>
           ) : (
-            <Text style={styles.title} key={col.title + ''}>
+            <Text
+              style={[col.width ? {width: col.width} : null, styles.title]}
+              key={col.title + ''}>
               {item[col.dataIndex]}
             </Text>
           );
@@ -37,7 +42,7 @@ const Table: React.FC<IProps> = ({dataSource, columns}) => {
         {columns.map((col, index) => {
           return (
             <Text
-              style={styles.title}
+              style={[col.width ? {width: col.width} : null, styles.title]}
               key={(col.dataIndex as string) + '' + index}>
               {col.title}
             </Text>

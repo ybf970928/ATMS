@@ -8,7 +8,7 @@ import {
   Platform,
   StyleSheet,
 } from 'react-native';
-import {Box, Button, HStack, Text, Input, useToast, Select} from 'native-base';
+import {Box, HStack, Text, Input, useToast, Select} from 'native-base';
 import ShowInfoTable from './components/TheInfosTable';
 import {useForm, Controller, SubmitHandler} from 'react-hook-form';
 import {removeToken} from '../../utils/auth';
@@ -18,6 +18,7 @@ import {getOEEReason} from '../../services/OEESwitch';
 import {useEffect} from 'react';
 import {ToastMessage} from '../../utils/errorMessageMap';
 import {CommonActions, useNavigation} from '@react-navigation/native';
+import LoadingButton from '../../components/LoadingButton';
 interface IInputProps {
   render: (
     eventKeyDown: (
@@ -40,7 +41,6 @@ const Discontinue: React.FC = () => {
         return (
           <Input
             w={180}
-            h={10}
             onSubmitEditing={eventKeyDown}
             multiline={true}
             blurOnSubmit={true}
@@ -93,7 +93,6 @@ const Discontinue: React.FC = () => {
               return (
                 <Input
                   w={180}
-                  h={10}
                   onSubmitEditing={eventKeyDown}
                   multiline={true}
                   blurOnSubmit={true}
@@ -115,18 +114,20 @@ const Discontinue: React.FC = () => {
 
   useEffect(() => {
     const getCurrentLotId = async () => {
-      const lotId = await getLotId();
-      if (lotId) {
-        setCurrentLotId(lotId);
-      }
+      try {
+        const lotId = await getLotId();
+        setCurrentLotId(lotId as string);
+      } catch (error) {}
     };
     getCurrentLotId();
   }, []);
 
   useEffect(() => {
     const getReasonList = async () => {
-      const res = await getOEEReason({statusCode: 'CCancelMoveIn'});
-      setReasonList(res.data);
+      try {
+        const res = await getOEEReason({statusCode: 'CCancelMoveIn'});
+        setReasonList(Array.isArray(res.data) ? res.data : []);
+      } catch (error) {}
     };
     getReasonList();
   }, []);
@@ -208,7 +209,7 @@ const Discontinue: React.FC = () => {
           </View>
         </Box>
         <Box bg="white" rounded="lg" width="100%" marginTop={5}>
-          <Button onPress={handleSubmit(onSubmit)}>确认中止</Button>
+          <LoadingButton title="确认中止" onPress={handleSubmit(onSubmit)} />
         </Box>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -220,7 +221,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   formItemLayout: {
-    height: 40,
     flexDirection: 'row',
     alignItems: 'center',
   },

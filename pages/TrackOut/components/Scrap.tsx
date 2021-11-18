@@ -8,6 +8,7 @@ import React, {
 import Table, {TableProps} from '../../../components/Table';
 import {getOEEReason} from '../../../services/OEESwitch';
 import {useForm, Controller, SubmitHandler} from 'react-hook-form';
+import LoadingButton from '../../../components/LoadingButton';
 
 export interface scrapProps {
   qty: string;
@@ -48,18 +49,20 @@ const Scrap: React.FC<{
   }));
 
   const onSubmit: SubmitHandler<scrapProps> = data => {
-    const findItem = reasonList.find(item => item.id === data.reason);
-    // 需要展示的是name
-    setScrapSource(
-      scrapSource.concat([
-        {
-          qty: data.qty,
-          reason: findItem?.name as string,
-        },
-      ]),
-    );
-    setValue('qty', '');
-    setValue('reason', '');
+    if (data.qty && data.reason) {
+      const findItem = reasonList.find(item => item.id === data.reason);
+      // 需要展示的是name
+      setScrapSource(
+        scrapSource.concat([
+          {
+            qty: data.qty,
+            reason: findItem?.name as string,
+          },
+        ]),
+      );
+      setValue('qty', '');
+      setValue('reason', '');
+    }
   };
 
   const handleDelete = (index: number) => {
@@ -80,19 +83,16 @@ const Scrap: React.FC<{
   }, []);
 
   return (
-    <Box bg="white" rounded="lg" width="100%" marginTop={5} p={2}>
-      <Heading fontSize={16}>{type}</Heading>
-      <Box
-        flexDirection="row"
-        h={10}
-        justifyContent="center"
-        alignItems="center">
+    <Box bg="white" rounded="lg" width="100%" marginBottom={5} p={2}>
+      <Heading fontSize={16} mb={4}>
+        {type}
+      </Heading>
+      <Box flexDirection="row" justifyContent="center" alignItems="center">
         <Box w={200}>
           <Controller
             control={control}
             render={({field: {onChange, value}}) => (
               <Input
-                py={1}
                 placeholder={'请输入' + type}
                 onChangeText={val => onChange(val)}
                 value={value}
@@ -107,8 +107,6 @@ const Scrap: React.FC<{
             control={control}
             render={({field: {onChange, value}}) => (
               <Select
-                // h={10}
-                p={2}
                 placeholder="请选择原因代码"
                 selectedValue={value}
                 onValueChange={(itemValue: string) => onChange(itemValue)}>
@@ -120,9 +118,13 @@ const Scrap: React.FC<{
             name="reason"
           />
         </Box>
-        <Button onPress={handleSubmit(onSubmit)} w={100} ml={6} size="sm">
-          新增
-        </Button>
+        <LoadingButton
+          title="新增"
+          onPress={handleSubmit(onSubmit)}
+          w={100}
+          ml={6}
+          size="sm"
+        />
       </Box>
       <Table dataSource={scrapSource} columns={scrapColumns} />
     </Box>

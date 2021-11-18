@@ -37,18 +37,22 @@ const ShowInfoTable: React.FC = () => {
 
   useEffect(() => {
     const initTable = async () => {
-      const {eqpid} = await getUserInfo();
-      const currentLotId = await getLotId();
-      const res = await getAllMaterial({
-        eqpId: eqpid,
-        lotId: currentLotId!,
-      });
-      if (res.code === 1) {
-        const {consumablesInfo, materialInfo} = res.data;
-        setTable({
-          consumables: consumablesInfo,
-          material: materialInfo,
+      try {
+        const {eqpid} = await getUserInfo();
+        const currentLotId = await getLotId();
+        const res = await getAllMaterial({
+          eqpId: eqpid,
+          lotId: currentLotId!,
         });
+        if (res.code === 1) {
+          const {consumablesInfo, materialInfo} = res.data;
+          setTable({
+            consumables: consumablesInfo,
+            material: materialInfo,
+          });
+        }
+        setLoading(false);
+      } catch (error) {
         setLoading(false);
       }
     };

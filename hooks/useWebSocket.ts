@@ -1,50 +1,78 @@
-import {useState, useRef, useEffect} from 'react';
+import {useState, useRef, useEffect, useCallback} from 'react';
 
-const useWebSocket = () => {
-  const ws = useRef<WebSocket>();
-  const [message, setMessage] = useState<any[]>([]);
-  const [readyState, setReadyState] = useState<number>(0);
+export enum ReadyState {
+  Connecting = 0,
+  Open = 1,
+  Closing = 2,
+  Closed = 3,
+}
 
-  const createWebSocket = () => {
+export interface Result {
+  readyState: ReadyState;
+  latestMessage?: WebSocketMessageEvent['data'];
+  connect?: () => void;
+  sendMessage?: WebSocket['send'];
+  closeWebSocket?: WebSocket['close'];
+}
+
+const useWebSocket = (socketUrl: string): Result => {
+  const websocketRef = useRef<WebSocket>();
+  const [latestMessage, setLatestMessage] =
+    useState<WebSocketMessageEvent['data']>();
+  const [readyState, setReadyState] = useState<ReadyState>(ReadyState.Closed);
+
+  const connectWs = useCallback(() => {
     try {
-      ws.current = new WebSocket('ws://10.100.10.24:8000');
-      ws.current.onopen = () => {
-        setReadyState(ws.current?.readyState || 0);
+      websocketRef.current = new WebSocket(socketUrl);
+      websocketRef.current.onerror = () => {
+        setReadyState(websocketRef.current?.readyState || ReadyState.Closed);
       };
-      ws.current.onclose = () => {
-        setReadyState(ws.current?.readyState || 0);
+      websocketRef.current.onopen = () => {
+        setReadyState(websocketRef.current?.readyState || ReadyState.Closed);
       };
-      ws.current.onerror = () => {
-        setReadyState(ws.current?.readyState || 0);
+      websocketRef.current.onmessage = (event: WebSocketMessageEvent) => {
+        setLatestMessage(JSON.parse(event.data));
       };
-      ws.current.onmessage = (event: WebSocketMessageEvent) => {
-        setMessage(JSON.parse(event.data));
+      websocketRef.current.onclose = () => {
+        setReadyState(websocketRef.current?.readyState || ReadyState.Closed);
       };
     } catch (error) {
-      throw new Error('socket 连接失败');
+      throw error;
+    }
+  }, [socketUrl]);
+
+  /**
+   *
+   * @param message 消息内容
+   *
+   */
+  const sendMessage: WebSocket['send'] = (message: any) => {
+    if (readyState === ReadyState.Open) {
+      websocketRef.current?.send(message);
+    } else {
+      throw new Error('WebSocket disconnected');
     }
   };
-  const initWebsocket = () => {
-    if (!ws.current || ws.current.readyState === 3) {
-      createWebSocket();
-    }
+
+  //手动连接ws
+  const connect = () => {
+    connectWs();
   };
+
   const closeWebSocket = () => {
-    ws.current?.close();
+    websocketRef.current?.close();
   };
 
   useEffect(() => {
-    initWebsocket();
-    return () => {
-      ws.current?.close(1000);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ws]);
+    connectWs();
+  }, [connectWs]);
 
   return {
-    message,
+    latestMessage,
     readyState,
     closeWebSocket,
+    sendMessage,
+    connect,
   };
 };
 

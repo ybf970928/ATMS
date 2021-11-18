@@ -3,6 +3,7 @@ import React, {useState, useEffect} from 'react';
 import Table, {TableProps} from '../../../components/Table';
 import {getOEEReason} from '../../../services/OEESwitch';
 import {useForm, Controller, SubmitHandler} from 'react-hook-form';
+import LoadingButton from '../../../components/LoadingButton';
 
 interface scrapProps {
   qty: string;
@@ -72,7 +73,7 @@ const Defective: React.FC = () => {
             control={control}
             render={({field: {onChange, value}}) => (
               <Input
-                h={10}
+                // h={10}
                 onChangeText={val => onChange(val)}
                 value={value}
                 keyboardType="numeric"
@@ -86,7 +87,7 @@ const Defective: React.FC = () => {
             control={control}
             render={({field: {onChange, value}}) => (
               <Select
-                h={10}
+                // h={10}
                 selectedValue={value}
                 onValueChange={(itemValue: string) => onChange(itemValue)}>
                 {reasonList.map(v => {
@@ -97,9 +98,13 @@ const Defective: React.FC = () => {
             name="reason"
           />
         </Box>
-        <Button onPress={handleSubmit(onSubmit)} w={100} ml={6} size="sm">
-          新增
-        </Button>
+        <LoadingButton
+          title="新增"
+          onPress={handleSubmit(onSubmit)}
+          w={100}
+          ml={6}
+          size="sm"
+        />
       </Box>
       <Table dataSource={scrapSource} columns={scrapColumns} />
     </Box>

@@ -1,5 +1,5 @@
 import React, {useRef, useContext} from 'react';
-import {Box, Heading, Button, HStack, useToast} from 'native-base';
+import {Box, Heading, HStack, useToast} from 'native-base';
 import Scrap, {scrapProps} from './Scrap';
 import InfosTable from './InfosTable';
 import AutoInputs from '../../../components/AutoInputs';
@@ -10,6 +10,7 @@ import {removeLotId} from '../../../utils/user';
 import {ToastMessage} from '../../../utils/errorMessageMap';
 import {useNavigation, CommonActions} from '@react-navigation/native';
 import {AuthContext} from '../../../layouts/AuthProvider';
+import LoadingButton from '../../../components/LoadingButton';
 
 const CardTable: React.FC = () => {
   // 通过各种绑定ref来获取 FC 内部的参数
@@ -102,7 +103,7 @@ const CardTable: React.FC = () => {
       <Scrap type="报废数量" ref={scrapRef} />
       <Scrap type="次品数量" ref={defectiveRef} />
       <Box width="100%" marginBottom={5} p={2}>
-        <Button onPress={handleTrackIn}>确认出机</Button>
+        <LoadingButton title="确认出机" onPress={handleTrackIn} />
       </Box>
     </>
   );

@@ -1,19 +1,20 @@
 import React, {useEffect, useState} from 'react';
 import {
-  View,
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  View,
 } from 'react-native';
 import {
   Box,
-  Text,
   Input,
-  Button,
   Select,
   TextArea,
+  Text,
   useToast,
+  FormControl,
+  VStack,
 } from 'native-base';
 import {useForm, Controller, SubmitHandler} from 'react-hook-form';
 import {
@@ -32,6 +33,7 @@ export interface OEEForm {
   remark: string;
 }
 import {ToastMessage} from '../../utils/errorMessageMap';
+import LoadingButton from '../../components/LoadingButton';
 
 const ChangeOEE: React.FC = () => {
   const toast = useToast();
@@ -41,17 +43,24 @@ const ChangeOEE: React.FC = () => {
   const [reasonCodeSelectList, setReasonCodeSelectList] = useState<
     {id: string; name: string}[]
   >([]);
-  const {handleSubmit, control, setValue} = useForm<OEEForm>();
+  const {
+    handleSubmit,
+    control,
+    setValue,
+    formState: {errors},
+  } = useForm<OEEForm>();
 
   useEffect(() => {
     const init = async () => {
-      const {eqpid} = await getUserInfo();
-      const res = await getOEEStatusSwitch({eqpId: eqpid});
-      const {statusList, ...obj} = res.data;
-      setStatusSelectList(statusList);
-      for (const [key, value] of Object.entries(obj)) {
-        setValue(key as keyof OEEForm, value as string);
-      }
+      try {
+        const {eqpid} = await getUserInfo();
+        const res = await getOEEStatusSwitch({eqpId: eqpid});
+        const {statusList, ...obj} = res.data;
+        setStatusSelectList(statusList || []);
+        for (const [key, value] of Object.entries(obj)) {
+          setValue(key as keyof OEEForm, value as string);
+        }
+      } catch (error) {}
     };
     init();
   }, [setValue]);
@@ -81,73 +90,66 @@ const ChangeOEE: React.FC = () => {
           p={2}
           flexDirection="row"
           flexWrap="wrap">
-          <View>
-            <Controller
-              control={control}
-              render={({field: {onChange, value}}) => (
-                <View style={styles.formItemLayout}>
-                  <Text w={'30%'} pl={2} textAlign="left">
-                    设备类型:{' '}
-                  </Text>
+          <VStack width="100%" space={4} alignItems="center" mb={2}>
+            <FormControl>
+              <FormControl.Label>设备类型: </FormControl.Label>
+              <Controller
+                control={control}
+                render={({field: {onChange, value}}) => (
                   <Input
-                    w="70%"
+                    w="100%"
                     value={value}
                     onChangeText={onChange}
                     isDisabled
                   />
-                </View>
-              )}
-              name="eqpType"
-            />
-          </View>
-          <View>
-            <Controller
-              control={control}
-              render={({field: {onChange, value}}) => (
-                <View style={styles.formItemLayout}>
-                  <Text w={'30%'} pl={2} textAlign="left">
-                    设备编号:{' '}
-                  </Text>
+                )}
+                name="eqpType"
+              />
+            </FormControl>
+          </VStack>
+          <VStack width="100%" space={4} alignItems="center" mb={2}>
+            <FormControl>
+              <FormControl.Label>设备编号: </FormControl.Label>
+              <Controller
+                control={control}
+                render={({field: {onChange, value}}) => (
                   <Input
-                    w="70%"
+                    w="100%"
                     value={value}
                     onChangeText={onChange}
                     isDisabled
                   />
-                </View>
-              )}
-              name="eqpId"
-            />
-          </View>
-          <View>
-            <Controller
-              control={control}
-              render={({field: {onChange, value}}) => (
-                <View style={styles.formItemLayout}>
-                  <Text w={'30%'} pl={2} textAlign="left">
-                    机台状态:{' '}
-                  </Text>
+                )}
+                name="eqpId"
+              />
+            </FormControl>
+          </VStack>
+          <VStack width="100%" space={4} alignItems="center" mb={2}>
+            <FormControl>
+              <FormControl.Label>机台状态: </FormControl.Label>
+              <Controller
+                control={control}
+                render={({field: {onChange, value}}) => (
                   <Input
-                    w="70%"
+                    w="100%"
                     value={value}
                     onChangeText={onChange}
                     isDisabled
                   />
-                </View>
-              )}
-              name="eqpStatus"
-            />
-          </View>
-          <View>
-            <Controller
-              control={control}
-              render={({field: {onChange, value}}) => (
-                <View style={styles.formItemLayout}>
-                  <Text w={'30%'} pl={2} textAlign="left">
-                    状态:{' '}
-                  </Text>
+                )}
+                name="eqpStatus"
+              />
+            </FormControl>
+          </VStack>
+          <VStack width="100%" space={4} alignItems="center" mb={2}>
+            <FormControl isRequired isInvalid={'eqpSwitchStatus' in errors}>
+              <FormControl.Label>状态: </FormControl.Label>
+              <Controller
+                control={control}
+                rules={{required: '请选择状态'}}
+                render={({field: {onChange, value}}) => (
                   <Select
-                    w="70%"
+                    w="100%"
                     selectedValue={value}
                     onValueChange={(itemValue: string) => {
                       onChange(itemValue);
@@ -161,21 +163,23 @@ const ChangeOEE: React.FC = () => {
                       />
                     ))}
                   </Select>
-                </View>
-              )}
-              name="eqpSwitchStatus"
-            />
-          </View>
-          <View>
-            <Controller
-              control={control}
-              render={({field: {onChange, value}}) => (
-                <View style={styles.formItemLayout}>
-                  <Text w={'30%'} pl={2} textAlign="left">
-                    原因代码:{' '}
-                  </Text>
+                )}
+                name="eqpSwitchStatus"
+              />
+              <FormControl.ErrorMessage>
+                {errors.eqpSwitchStatus?.message}
+              </FormControl.ErrorMessage>
+            </FormControl>
+          </VStack>
+          <VStack width="100%" space={4} alignItems="center" mb={2}>
+            <FormControl isRequired isInvalid={'reasonCode' in errors}>
+              <FormControl.Label>原因代码: </FormControl.Label>
+              <Controller
+                control={control}
+                rules={{required: '请选择原因代码'}}
+                render={({field: {onChange, value}}) => (
                   <Select
-                    w="70%"
+                    w="100%"
                     selectedValue={value}
                     onValueChange={(itemValue: string) => {
                       onChange(itemValue);
@@ -188,47 +192,63 @@ const ChangeOEE: React.FC = () => {
                       />
                     ))}
                   </Select>
-                </View>
-              )}
-              name="reasonCode"
-            />
-          </View>
-          <View>
-            <Controller
-              control={control}
-              render={({field: {onChange, value}}) => (
-                <View style={styles.formItemLayout}>
-                  <Text w={'30%'} pl={2} textAlign="left">
-                    操作员:{' '}
-                  </Text>
+                )}
+                name="reasonCode"
+              />
+              <FormControl.ErrorMessage>
+                {errors.reasonCode?.message}
+              </FormControl.ErrorMessage>
+            </FormControl>
+          </VStack>
+          <VStack width="100%" space={4} alignItems="center" mb={2}>
+            <FormControl>
+              <FormControl.Label>操作员: </FormControl.Label>
+              <Controller
+                control={control}
+                render={({field: {onChange, value}}) => (
                   <Input
-                    w="70%"
+                    w="100%"
                     value={value}
                     onChangeText={onChange}
                     isDisabled
                   />
-                </View>
-              )}
-              name="operId"
-            />
-          </View>
-          <View>
-            <Controller
-              control={control}
-              render={({field: {onChange, value}}) => (
-                <View style={styles.formItemLayout}>
-                  <Text w={'30%'} pl={2} textAlign="left">
-                    备注:{' '}
-                  </Text>
-                  <TextArea w="70%" value={value} onChangeText={onChange} />
-                </View>
-              )}
-              name="remark"
-            />
-          </View>
+                )}
+                name="operId"
+              />
+            </FormControl>
+          </VStack>
+          <VStack width="100%" space={4} alignItems="center">
+            <FormControl isInvalid={'remark' in errors}>
+              <FormControl.Label>备注: </FormControl.Label>
+              <Controller
+                control={control}
+                rules={{maxLength: 200}}
+                render={({field: {onChange, value}}) => (
+                  <TextArea
+                    w="100%"
+                    value={value}
+                    onChangeText={onChange}
+                    InputRightElement={
+                      <View style={styles.textArea}>
+                        <Text color="muted.300">{`${
+                          value ? value.length : 0
+                        }/200`}</Text>
+                      </View>
+                    }
+                  />
+                )}
+                name="remark"
+              />
+            </FormControl>
+          </VStack>
         </Box>
-        <Box bg="white" rounded="lg" width="100%" marginTop={5}>
-          <Button onPress={handleSubmit(onSubmit)}>确认</Button>
+        <Box
+          bg="white"
+          rounded="lg"
+          width="100%"
+          marginTop={5}
+          marginBottom={5}>
+          <LoadingButton title="确认" onPress={handleSubmit(onSubmit)} />
         </Box>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -240,14 +260,13 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
   },
-  // formItem: {
-  //   width: '50%',
-  // },
-  formItemLayout: {
-    height: 40,
+  textArea: {
+    height: '100%',
+    paddingRight: 16,
+    paddingBottom: 6,
     flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 20,
+    justifyContent: 'flex-end',
+    alignItems: 'flex-end',
   },
 });
 export default ChangeOEE;

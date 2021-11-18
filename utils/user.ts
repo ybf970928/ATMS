@@ -21,7 +21,6 @@ export const setUserInfo = async (user: UserProps) => {
 export const getUserInfo = async (): Promise<UserProps> => {
   try {
     const USER_INFO = await AsyncStorage.getItem(USER);
-    // if (USER_INFO !== null) {
     // value previously stored
     return USER_INFO != null ? JSON.parse(USER_INFO) : null;
     // }
@@ -50,10 +49,14 @@ export const setLotId = async (lotId: string) => {
 export const getLotId = async (): Promise<string | null> => {
   try {
     const LotId = await AsyncStorage.getItem(LOTID);
-    return LotId != null ? LotId : null;
+    if (LotId) {
+      return LotId;
+    } else {
+      throw new Error('oops');
+    }
   } catch (e) {
     // saving error
-    return null;
+    throw new Error('oops');
   }
 };
 

@@ -5,14 +5,12 @@ import {accountLogin} from '../../services/login';
 import {ToastMessage} from '../../utils/errorMessageMap';
 import {AuthContext} from '../../layouts/AuthProvider';
 import {setUserInfo} from '../../utils/user';
-
 interface loginPopupProps {
   isShow: boolean;
   needLogin: (show: boolean) => void;
 }
 
 const Login: React.FC<loginPopupProps> = ({isShow, needLogin}) => {
-  // const [showModal, setShowModal] = useState<boolean>(true);
   const [username, setUsername] = useState<string>('admin');
   const [password, setPassword] = useState<string>('123456');
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -27,7 +25,7 @@ const Login: React.FC<loginPopupProps> = ({isShow, needLogin}) => {
       const res = await accountLogin({
         username,
         password,
-        ipaddress,
+        ipaddress: '7b1ab614a2d3f83f',
         loginType: 3,
       });
       if (res.code === 1) {

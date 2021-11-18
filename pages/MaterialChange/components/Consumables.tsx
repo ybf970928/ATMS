@@ -1,4 +1,4 @@
-import {Box, Input, Text, Button, Switch, Select, useToast} from 'native-base';
+import {Box, Input, Text, Switch, Select, useToast} from 'native-base';
 import React, {useState} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {useForm, Controller, SubmitHandler} from 'react-hook-form';
@@ -6,6 +6,7 @@ import {ConsumablesProps} from '../index';
 import {doUpdate} from '../../../services/materials';
 import {getUserInfo} from '../../../utils/user';
 import {ToastMessage} from '../../../utils/errorMessageMap';
+import LoadingButton from '../../../components/LoadingButton';
 type ConsumableType = {
   item: ConsumablesProps;
   stepId: string;
@@ -120,7 +121,6 @@ const Consumables: React.FC<ConsumableType> = ({
                 键合头:{' '}
               </Text>
               <Select
-                // h={10}
                 w="70%"
                 isDisabled={isUpdate}
                 selectedValue={value.toString()}
@@ -156,13 +156,13 @@ const Consumables: React.FC<ConsumableType> = ({
         />
       </View>
       <View style={styles.submitBtn}>
-        <Button
+        <LoadingButton
+          title={isUpdate ? '已确认' : '确认新增'}
           onPress={handleSubmit(onSubmit)}
           size="sm"
           isDisabled={isUpdate}
-          colorScheme={'blue'}>
-          {isUpdate ? '已确认' : '确认新增'}
-        </Button>
+          colorScheme={'blue'}
+        />
       </View>
     </Box>
   );
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
     width: '50%',
   },
   formItemLayout: {
-    height: 40,
+    // height: 40,
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 20,
@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   submitBtn: {
-    height: 40,
+    // height: 40,
   },
 });
 export default Consumables;

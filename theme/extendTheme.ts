@@ -31,13 +31,10 @@ export const theme = extendTheme({
             borderColor: 'blue.500',
           },
         },
+        defaultProps: {
+          size: 'xs',
+        },
       },
-      defaultProps: {
-        size: 'xs',
-      },
-    },
-    Select: {
-      size: 'xs',
     },
   },
 });

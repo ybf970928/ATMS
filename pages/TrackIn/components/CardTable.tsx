@@ -1,13 +1,13 @@
 import React, {useEffect, useState} from 'react';
-import {Box, Heading, Button, useToast, Spinner} from 'native-base';
+import {Box, Heading, useToast, Spinner} from 'native-base';
 import Table, {TableProps} from '../../../components/Table';
 import {getAllMaterial} from '../../../services/public';
 import {doTrackIn} from '../../../services/trackIn';
-// import {IColProps} from '../../../types/Table';
 import {getUserInfo, setLotId} from '../../../utils/user';
 import {ToastMessage} from '../../../utils/errorMessageMap';
 import {CommonActions, useNavigation} from '@react-navigation/native';
 import {Center} from '../../../layouts/Center';
+import LoadingButton from '../../../components/LoadingButton';
 interface consumablesProps {
   innerThread: string;
   consumablesType: string;
@@ -120,7 +120,7 @@ const CardTable: React.FC<{lotId: string}> = ({lotId}) => {
         <Table dataSource={consumablesSource} columns={consumablesColumns} />
       </Box>
       <Box width="100%" marginBottom={5} p={2}>
-        <Button onPress={handleTrackIn}>确认进机</Button>
+        <LoadingButton title="确认进机" onPress={handleTrackIn} />
       </Box>
     </>
   );

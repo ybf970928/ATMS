@@ -1,4 +1,4 @@
-import {Box, Input, Button, Switch, Select, useToast} from 'native-base';
+import {Box, Input, Switch, Select, useToast} from 'native-base';
 import React, {useState} from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 import {useForm, Controller, SubmitHandler} from 'react-hook-form';
@@ -7,6 +7,7 @@ import {IColProps} from '../../../types/Table';
 import {getUserInfo} from '../../../utils/user';
 import {doUpdate} from '../../../services/materials';
 import {ToastMessage} from '../../../utils/errorMessageMap';
+import LoadingButton from '../../../components/LoadingButton';
 type MaterialType = {
   dataSource: MateriaProps[];
   stepId: string;
@@ -74,7 +75,7 @@ const Row: React.FC<RowProps> = ({
         <Controller
           control={control}
           render={({field: {onChange, value}}) => (
-            <Input h={10} value={value} onChangeText={onChange} isDisabled />
+            <Input value={value} onChangeText={onChange} isDisabled />
           )}
           name="materialType"
         />
@@ -83,12 +84,7 @@ const Row: React.FC<RowProps> = ({
         <Controller
           control={control}
           render={({field: {onChange, value}}) => (
-            <Input
-              h={10}
-              value={value}
-              onChangeText={onChange}
-              isDisabled={isCheck}
-            />
+            <Input value={value} onChangeText={onChange} isDisabled={isCheck} />
           )}
           name="materialBarCode"
         />
@@ -98,7 +94,6 @@ const Row: React.FC<RowProps> = ({
           control={control}
           render={({field: {onChange, value}}) => (
             <Select
-              h={10}
               isDisabled={isCheck}
               selectedValue={value.toString()}
               onValueChange={(itemValue: string) => {
@@ -128,13 +123,13 @@ const Row: React.FC<RowProps> = ({
         />
       </View>
       <View style={[styles.row, styles.submitBtn]}>
-        <Button
+        <LoadingButton
+          title={isCheck ? '已确认' : '确认新增'}
           onPress={handleSubmit(onSubmit)}
           size="sm"
           isDisabled={isCheck}
-          colorScheme={'blue'}>
-          {isCheck ? '已确认' : '确认新增'}
-        </Button>
+          colorScheme={'blue'}
+        />
       </View>
     </View>
   );
@@ -186,12 +181,12 @@ const styles = StyleSheet.create({
   },
   checkedView: {
     width: '70%',
-    height: 40,
     alignItems: 'flex-start',
     justifyContent: 'center',
   },
   submitBtn: {
     alignItems: 'flex-start',
+    justifyContent: 'center',
   },
   barCodeTitle: {
     width: 180,

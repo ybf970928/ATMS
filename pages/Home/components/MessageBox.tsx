@@ -5,7 +5,7 @@ import {
   View,
   StyleSheet,
   Animated,
-  LayoutAnimation,
+  // LayoutAnimation,
 } from 'react-native';
 import useWebSocket from '../../../hooks/useWebSocket';
 
@@ -25,10 +25,17 @@ const Item = ({title}: {title: string}) => {
   );
 };
 const MessageBox: React.FC = () => {
+  const {latestMessage, readyState} = useWebSocket('ws://localhost:8000');
+  const [scrollMessage, setScrollMessage] = useState<MessageType[]>([]);
   const savedCallback = useRef<() => void>(() => {});
   const translateValue = useRef<Animated.Value>(new Animated.Value(0)).current;
-  const [socketMessage, setSocketMessage] = useState<MessageType[]>([]);
-  const {message} = useWebSocket();
+
+  useEffect(() => {
+    if (readyState === 1) {
+      setScrollMessage(latestMessage);
+    }
+  }, [latestMessage, readyState]);
+
   // const startAnimated = useCallback(() => {
   //   if (socketMessage.length <= SHOWSIZE) {
   //     return;
@@ -52,11 +59,10 @@ const MessageBox: React.FC = () => {
   //   // }
   // });
   // }, [socketMessage, translateValue]);
-
   const autoScrollY = () => {
-    if (socketMessage.length) {
-      const arr = [...socketMessage];
-      setSocketMessage(arr.concat(socketMessage[0]).slice(1));
+    if (scrollMessage.length) {
+      const arr = [...scrollMessage];
+      arr.concat(scrollMessage[0]).slice(1);
     }
     // LayoutAnimation.configureNext(
     //   LayoutAnimation.create(
@@ -79,10 +85,6 @@ const MessageBox: React.FC = () => {
     return () => clearInterval(id);
   }, []);
 
-  useEffect(() => {
-    setSocketMessage(message);
-  }, [message]);
-
   return (
     <ScrollView scrollEnabled={false} style={styles.messageBox}>
       <View style={styles.translateBox}>
@@ -90,7 +92,7 @@ const MessageBox: React.FC = () => {
           style={{
             transform: [{translateY: translateValue}],
           }}>
-          {socketMessage.map(item => (
+          {scrollMessage.map(item => (
             <Item title={item.title} key={item.id} />
           ))}
         </Animated.View>

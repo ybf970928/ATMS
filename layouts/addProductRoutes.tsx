@@ -95,6 +95,15 @@ export const addProductRoutes = (
         }}
       />
       <Stack.Screen
+        name="RMS"
+        getComponent={() => require('../pages/RMS').default}
+        options={{
+          headerTitle: 'RMS',
+          headerTitleAlign: 'center',
+          ...headerStyle,
+        }}
+      />
+      <Stack.Screen
         name="Setting"
         getComponent={() => require('../pages/Setting').default}
         options={{

@@ -12,6 +12,7 @@ export type AuthProductList = {
   MaterialChange: undefined;
   Discontinue: undefined;
   MaterialsHistory: undefined;
+  RMS: undefined;
 };
 
 export type AuthNavProps<T extends keyof AuthProductList> = {

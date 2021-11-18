@@ -1,61 +1,42 @@
-import React from 'react';
-import {Box, Heading, Switch, Input, Button} from 'native-base';
+import React, {useEffect, useState} from 'react';
+import {Box, Heading, Switch, Input} from 'native-base';
 import {ScrollView, View} from 'react-native';
 import {IColProps} from '../../../types/Table';
-// import Table from '../../../components/Table';
+import {getMaterialHistory} from '../../../services/materials';
 import TableV2 from '../../../components/TableV2';
+import {getLotId, getUserInfo} from '../../../utils/user';
+
+// import HTTPGet from '../../../components/HTTPGet';
+
 export interface IDataSource {
   id: string;
-  title: string;
-  type: string;
-  email: string;
-  isChecked: number;
+  MaterialType: string;
+  InnerThread: string;
+  MaterailBarCode: string;
+  BondingHead: string;
+  Checked: 1 | 0;
 }
 
-const dataSource: IDataSource[] = [
-  {
-    id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-    title: 'First Item',
-    type: 'laldal',
-    email: 'dasdasdasdsadas',
-    isChecked: 1,
-  },
-  {
-    id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-    title: 'Second Item',
-    type: 'dasdsasd',
-    email: 'brfdfd2',
-    isChecked: 0,
-  },
-  {
-    id: '58694a0f-3da1-471f-bd96-145571e29d72',
-    title: 'Third Item',
-    type: 'f232',
-    email: 'vb fgerf21',
-    isChecked: 0,
-  },
-];
-
 const columns: IColProps<IDataSource>[] = [
-  {title: '材料类型', dataIndex: 'title'},
-  {title: '内引线规格', dataIndex: 'type'},
+  {title: '材料类型', dataIndex: 'MaterialType'},
+  {title: '内引线规格', dataIndex: 'InnerThread'},
   {
     title: '条码',
-    dataIndex: 'id',
+    dataIndex: 'MaterailBarCode',
     width: '25%',
-    render: ({onChange, value}) => {
-      return <Input h={10} value={value} onChangeText={onChange} />;
+    render: ({value}) => {
+      return <Input value={value} isDisabled />;
     },
   },
-  {title: '键合头', dataIndex: 'email', width: 100},
+  {title: '键合头', dataIndex: 'BondingHead', width: 100},
   {
     title: '是否勾选',
-    dataIndex: 'isChecked',
-    render: ({onChange, value}) => {
+    dataIndex: 'Checked',
+    render: ({value}) => {
       return (
         <View style={{alignItems: 'flex-start'!}}>
           <Switch
-            onToggle={(val: boolean) => onChange(val)}
+            disabled
             isChecked={value ? true : false}
             onTrackColor="blue.500"
           />
@@ -63,23 +44,26 @@ const columns: IColProps<IDataSource>[] = [
       );
     },
   },
-  {
-    title: '操作',
-    dataIndex: 'id',
-    render: ({value}, handleSubmit, setValue) => {
-      return (
-        <Button
-          onPress={handleSubmit((data: any) => {
-            setValue('id', '1111');
-            console.log(data, value);
-          })}>
-          新增
-        </Button>
-      );
-    },
-  },
 ];
 const MaterialsHistory: React.FC = () => {
+  const [dataSource, setDataSource] = useState<IDataSource[]>([]);
+
+  const getList = async () => {
+    try {
+      const {eqpid} = await getUserInfo();
+      const lotId = await getLotId();
+      const res = await getMaterialHistory({eqpId: eqpid, lotId: lotId!});
+      setDataSource(Array.isArray(res.data) ? res.data : []);
+    } catch (error) {
+      setDataSource([]);
+      console.log(error, 'errs');
+    }
+  };
+
+  useEffect(() => {
+    getList();
+  }, []);
+
   return (
     <ScrollView>
       <Box rounded="lg" width="100%" p={2}>
@@ -91,8 +75,43 @@ const MaterialsHistory: React.FC = () => {
           paddingBottom={4}>
           耗材信息
         </Heading>
-        {/* <Table dataSource={dataSource} columns={columns} /> */}
         <TableV2 dataSource={dataSource} columns={columns} />
+        {/* <HTTPGet
+          request={async () => {
+            try {
+              const {eqpid} = await getUserInfo();
+              const lotId = await getLotId();
+              const {data} = await getMaterialHistory({
+                eqpId: eqpid,
+                lotId: lotId!,
+              });
+              return data;
+            } catch (error) {
+              console.log(error, 'errs');
+              throw new Error(error);
+            }
+          }}
+          loading={<Text>loading...</Text>}>
+          {(data: IDataSource[]) => {
+            return data.map(item => (
+              <Text key={item.id}>{item.MaterialType}</Text>
+            ));
+          }}
+        </HTTPGet> */}
+      </Box>
+      <Box rounded="lg" width="100%" p={2}>
+        <Heading
+          size="md"
+          noOfLines={2}
+          fontSize="sm"
+          w={'100%'}
+          paddingBottom={4}>
+          材料信息
+        </Heading>
+        <TableV2
+          dataSource={dataSource}
+          columns={columns.filter(col => col.dataIndex !== 'InnerThread')}
+        />
       </Box>
     </ScrollView>
   );

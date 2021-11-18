@@ -43,9 +43,9 @@ const AppTabs = () => {
             return (
               <>
                 <View style={styles.messageTips}>
-                  <View rounded="md" style={styles.messageBadge}>
-                    <Text style={[styles.badge__content]}>99</Text>
-                  </View>
+                  {/* <View rounded="md" style={styles.messageBadge}>
+                    <Text style={[styles.badge__content]} />
+                  </View> */}
                   <IconOutline name="message" size={size} color={color} />
                 </View>
               </>

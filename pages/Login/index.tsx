@@ -1,13 +1,5 @@
 import React, {useState, useContext} from 'react';
-import {
-  Box,
-  Heading,
-  VStack,
-  FormControl,
-  Input,
-  Button,
-  useToast,
-} from 'native-base';
+import {Box, Heading, VStack, FormControl, Input, useToast} from 'native-base';
 import {accountLogin} from '../../services/login';
 import {AuthContext} from '../../layouts/AuthProvider';
 import {
@@ -23,15 +15,16 @@ import {
 import {errMessageMap} from '../../utils/errorMessageMap';
 import {getUniqueId} from 'react-native-device-info';
 import {setUserInfo} from '../../utils/user';
+import LoadingButton from '../../components/LoadingButton';
 const Login: React.FC = () => {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  // const [isLoading, setIsLoading] = useState<boolean>(false);
   const {login} = useContext(AuthContext);
   const toast = useToast();
 
   const doLogin = async () => {
-    setIsLoading(true);
+    // setIsLoading(true);
     try {
       // 使用ipaddress替代androd id
       const ipaddress = getUniqueId();
@@ -43,17 +36,17 @@ const Login: React.FC = () => {
       });
       if (res.code === 1) {
         const {token} = res.data;
-        setIsLoading(false);
+        // setIsLoading(false);
         setUserInfo(res.data);
         login(token);
       } else {
-        setIsLoading(false);
+        // setIsLoading(false);
       }
       toast.show({
         title: errMessageMap[res.message],
       });
     } catch (error) {
-      setIsLoading(false);
+      // setIsLoading(false);
     }
   };
   return (
@@ -107,13 +100,11 @@ const Login: React.FC = () => {
                   />
                 </FormControl>
                 <VStack space={2} mt={5}>
-                  <Button
-                    // colorScheme="cyan"
+                  <LoadingButton
                     _text={{color: 'white'}}
-                    isLoading={isLoading}
-                    onPress={doLogin}>
-                    登录
-                  </Button>
+                    title="登录"
+                    onPress={doLogin}
+                  />
                 </VStack>
               </VStack>
             </Box>

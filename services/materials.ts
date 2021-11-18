@@ -32,3 +32,10 @@ export async function doUpdate(params: MaterialCompared) {
     data: params,
   });
 }
+
+export async function getMaterialHistory(params: materials) {
+  return request('/pad/Materials/GetMaterialHistory', {
+    method: 'get',
+    params: params,
+  });
+}

@@ -1,8 +1,11 @@
 import axios from 'axios';
 import {getToken, removeToken} from './auth';
 import {removeUserInfo, removeLotId} from './user';
+
+export const BASE_API = 'http://10.100.101.22:8100';
+
 const service = axios.create({
-  baseURL: 'http://10.100.101.22:8100',
+  baseURL: BASE_API,
   timeout: 10000,
   withCredentials: true, // 携带cookie
 });

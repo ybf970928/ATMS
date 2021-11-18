@@ -193,7 +193,7 @@ const BaseInfoTrackIn: React.FC<{ref: React.ForwardedRef<unknown>}> =
               <Controller
                 control={control}
                 render={({field: {value}}) => (
-                  <Input h={10} isDisabled value={value} />
+                  <Input isDisabled value={value} />
                 )}
                 name="trOperID"
               />
@@ -207,7 +207,6 @@ const BaseInfoTrackIn: React.FC<{ref: React.ForwardedRef<unknown>}> =
                 control={control}
                 render={({field: {value, onChange}}) => (
                   <Input
-                    h={10}
                     keyboardType="number-pad"
                     value={value}
                     onChangeText={onChange}
@@ -225,7 +224,7 @@ const BaseInfoTrackIn: React.FC<{ref: React.ForwardedRef<unknown>}> =
               <Controller
                 control={control}
                 render={({field: {value}}) => (
-                  <Input h={10} isDisabled value={value} />
+                  <Input isDisabled value={value} />
                 )}
                 name="quotaCode"
               />

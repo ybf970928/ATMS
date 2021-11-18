@@ -8,7 +8,7 @@ import {AuthContext} from '../../../layouts/AuthProvider';
 
 interface IUserFormProps {
   operId?: string;
-  lotId?: string;
+  eqpid?: string;
   stepID?: string;
   trackStatus?: string;
   assemblyLotID?: string;
@@ -23,7 +23,7 @@ interface FormTypes {
 }
 const formItem: FormTypes[] = [
   {label: '作业员', prop: 'operId'},
-  {label: '机台号', prop: 'lotId'},
+  {label: '机台号', prop: 'eqpid'},
   {label: '工序', prop: 'stepID'},
   {label: '当前状态', prop: 'trackStatus'},
   {label: '组装批号', prop: 'assemblyLotID'},
@@ -41,9 +41,10 @@ const UserCard: React.FC = () => {
       try {
         // 没有登录弹窗就说明已经登陆成功了
         if (!loginPopup) {
-          const {user} = await getUserInfo();
+          const {user, eqpid} = await getUserInfo();
           setUserInfo({
             operId: user.userID,
+            eqpid: eqpid,
           });
         }
       } catch (error) {
@@ -65,6 +66,7 @@ const UserCard: React.FC = () => {
         setUserInfo({
           ...res.data,
           operId: user.userID,
+          eqpid: eqpid,
           trackStatus: res.data.trackStatus ? '已开批' : '未开批',
         });
       } catch (error) {}

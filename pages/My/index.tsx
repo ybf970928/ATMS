@@ -50,12 +50,12 @@ const MyPage: React.FC = () => {
           </Text>
         </View>
       </View>
-      <Box bg="white" width="100%">
+      {/* <Box bg="white" width="100%">
         <Item title="fdnjjdvndfjvdf" iconName={'menu'} />
         <Item title="bgkokfgbfgbnfn" iconName={'hourglass'} />
-      </Box>
+      </Box> */}
       <Box bg="white" width="100%" mt={4}>
-        <Item title="iodovkkjvdjk" iconName={'import'} showRightIcon={false} />
+        {/* <Item title="iodovkkjvdjk" iconName={'import'} showRightIcon={false} /> */}
         <Item title="设置" iconName={'setting'} onPress={goSetting} />
       </Box>
     </View>

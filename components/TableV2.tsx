@@ -1,5 +1,4 @@
-import React, {useEffect} from 'react';
-import {Controller, useForm} from 'react-hook-form';
+import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {IColProps} from '../types/Table';
 
@@ -10,33 +9,21 @@ interface IProps {
 
 const TableV2: React.FC<IProps> = ({dataSource, columns}) => {
   const Item = ({item}: {item: any}) => {
-    const {handleSubmit, control, setValue} = useForm<any>();
-    useEffect(() => {
-      for (const [key, value] of Object.entries(item)) {
-        setValue(key, value);
-      }
-    }, [item, setValue]);
     return (
       <View style={styles.item}>
-        {columns.map(col => {
+        {columns.map((col, index) => {
           return (
             <View
               style={[
                 col.width ? {width: col.width} : styles.row,
                 styles.shareCell,
               ]}
-              key={col.title + ''}>
-              <Controller
-                control={control}
-                render={({field}) =>
-                  col.render ? (
-                    col.render(field, handleSubmit, setValue)
-                  ) : (
-                    <Text>{field.value}</Text>
-                  )
-                }
-                name={col.dataIndex.toString()}
-              />
+              key={col.dataIndex as string}>
+              {col.render ? (
+                col.render(item[col.dataIndex], item, index)
+              ) : (
+                <Text>{item[col.dataIndex]}</Text>
+              )}
             </View>
           );
         })}
@@ -60,6 +47,7 @@ const TableV2: React.FC<IProps> = ({dataSource, columns}) => {
           );
         })}
       </View>
+
       <View style={styles.tableContent}>
         {dataSource.length > 0 ? (
           dataSource.map((item, index) => {

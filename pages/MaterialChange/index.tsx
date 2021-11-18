@@ -4,7 +4,7 @@ import {Pressable, ScrollView, StyleSheet, View} from 'react-native';
 import Consumables from './components/Consumables';
 import MaterialBox from './components/materialBox';
 import EditableRow from './components/EditableRow';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, StackActions} from '@react-navigation/native';
 import {getMaterials} from '../../services/materials';
 import {getUserInfo, getLotId} from '../../utils/user';
 import {Center} from '../../layouts/Center';
@@ -97,7 +97,6 @@ const MaterialChange: React.FC = () => {
               render={({field: {onChange, value}}) => (
                 <Input
                   w={180}
-                  h={10}
                   onSubmitEditing={() => handleSetLotId(value)}
                   multiline={true}
                   blurOnSubmit={true}
@@ -108,7 +107,10 @@ const MaterialChange: React.FC = () => {
               name="lotId"
             />
           </View>
-          <Pressable onPress={() => navigation.navigate('MaterialsHistory')}>
+          <Pressable
+            onPress={() =>
+              navigation.dispatch(StackActions.push('MaterialsHistory'))
+            }>
             <Text style={styles.historyTitle}>查看物料历史记录</Text>
           </Pressable>
         </View>
