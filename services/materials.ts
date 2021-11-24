@@ -3,6 +3,7 @@ import request from '../utils/request';
 interface materials {
   lotId: string | number;
   eqpId: string;
+  trackStatus?: 0 | 1;
 }
 
 export interface MaterialCompared {

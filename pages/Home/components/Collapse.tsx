@@ -14,7 +14,7 @@ interface ICollapseTypes {
 }
 
 const Collapse: React.FC<ICollapseTypes> = ({children, title}) => {
-  const [open, setOpen] = useState<boolean>(false);
+  const [open, setOpen] = useState<boolean>(true);
   const height = open ? 'auto' : 0;
   const rotate = useRef<Animated.Value>(new Animated.Value(0)).current;
 
@@ -24,7 +24,7 @@ const Collapse: React.FC<ICollapseTypes> = ({children, title}) => {
       LayoutAnimation.create(200, 'easeInEaseOut', 'opacity'),
     );
     Animated.timing(rotate, {
-      toValue: open ? 0 : 1,
+      toValue: open ? 1 : 0,
       duration: 200,
       easing: Easing.linear,
       useNativeDriver: true,
@@ -32,7 +32,7 @@ const Collapse: React.FC<ICollapseTypes> = ({children, title}) => {
   };
   const rotateX = rotate.interpolate({
     inputRange: [0, 1],
-    outputRange: ['270deg', '360deg'],
+    outputRange: ['360deg', '270deg'],
   });
   return (
     <>

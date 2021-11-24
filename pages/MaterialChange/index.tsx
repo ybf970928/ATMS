@@ -9,6 +9,7 @@ import {getMaterials} from '../../services/materials';
 import {getUserInfo, getLotId} from '../../utils/user';
 import {Center} from '../../layouts/Center';
 import {useForm, Controller} from 'react-hook-form';
+import {getLotInfo} from '../../services/public';
 export interface ConsumablesProps {
   consumablesType: string;
   innerThread: string;
@@ -60,7 +61,14 @@ const MaterialChange: React.FC = () => {
     const getInfo = async () => {
       setLoading(true);
       const {eqpid} = await getUserInfo();
-      const res = await getMaterials({lotId: lotId, eqpId: eqpid});
+      // 获取下最新的开批状态
+      const infoData = await getLotInfo({eqpId: eqpid, lotId: lotId});
+
+      const res = await getMaterials({
+        lotId: lotId,
+        eqpId: eqpid,
+        trackStatus: infoData.data.trackStatus,
+      });
       const {stepId, trackStatus, ...obj} = res.data;
       setjobNumber(stepId);
       setIsTrackIn(trackStatus ? true : false);
@@ -96,7 +104,8 @@ const MaterialChange: React.FC = () => {
               control={control}
               render={({field: {onChange, value}}) => (
                 <Input
-                  w={180}
+                  w={280}
+                  isDisabled={isTrackIn}
                   onSubmitEditing={() => handleSetLotId(value)}
                   multiline={true}
                   blurOnSubmit={true}
@@ -127,7 +136,7 @@ const MaterialChange: React.FC = () => {
                 p={2}
                 flexDirection="row"
                 flexWrap="wrap">
-                <Heading size="md" noOfLines={2} fontSize="sm" w={'100%'}>
+                <Heading size="md" noOfLines={2} fontSize={16} w={'100%'}>
                   耗材信息
                 </Heading>
                 {data.consumablesList.map((item, index) => (
@@ -150,7 +159,7 @@ const MaterialChange: React.FC = () => {
                 <Heading
                   size="md"
                   noOfLines={2}
-                  fontSize="sm"
+                  fontSize={16}
                   w={'100%'}
                   paddingBottom={4}>
                   材料信息

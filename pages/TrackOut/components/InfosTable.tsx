@@ -25,15 +25,15 @@ interface materialProps {
 // 耗材信息
 const consumablesColumns: IColProps<consumablesProps>[] = [
   {title: '内引线规格', dataIndex: 'innerThread'},
-  {title: '材料信息', dataIndex: 'consumablesType'},
+  {title: '物料类型', dataIndex: 'consumablesType'},
   {title: '物料描述', dataIndex: 'consumablesDesc'},
-  {title: '材料代码', dataIndex: 'consumablesBarCode'},
+  {title: '条码', dataIndex: 'consumablesBarCode'},
 ];
 // 材料信息
 const materialColumns: IColProps<materialProps>[] = [
-  {title: '材料信息', dataIndex: 'materialType'},
+  {title: '类型', dataIndex: 'materialType'},
   {title: '材料代码', dataIndex: 'partNo'},
-  {title: '物料描述', dataIndex: 'materialDesc'},
+  {title: '描述', dataIndex: 'materialDesc'},
   {title: '供应商代码', dataIndex: 'supplierNo'},
   {title: '供应商', dataIndex: 'supplierDesc'},
   {title: '批号', dataIndex: 'materialLotNo'},
@@ -51,16 +51,20 @@ const InfosTable: React.FC = () => {
   useEffect(() => {
     setLoading(true);
     const initTable = async () => {
-      const {eqpid} = await getUserInfo();
-      const currentLotId = await getLotId();
-      const res = await getAllMaterial({
-        eqpId: eqpid,
-        lotId: currentLotId!,
-      });
-      const {consumablesInfo, materialInfo} = res.data;
-      setMaterialSource(materialInfo);
-      setConsumablesSource(consumablesInfo);
-      setLoading(false);
+      try {
+        const {eqpid} = await getUserInfo();
+        const currentLotId = await getLotId();
+        const res = await getAllMaterial({
+          eqpId: eqpid,
+          lotId: currentLotId!,
+        });
+        const {consumablesInfo, materialInfo} = res.data;
+        setMaterialSource(materialInfo);
+        setConsumablesSource(consumablesInfo);
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+      }
     };
     initTable();
     return () => {

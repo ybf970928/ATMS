@@ -1,14 +1,23 @@
-import {Box, Button, Heading, Input, Select} from 'native-base';
+import {
+  Box,
+  Heading,
+  Input,
+  Select,
+  useToast,
+  Pressable,
+  Text,
+} from 'native-base';
 import React, {
   useState,
   useEffect,
   useImperativeHandle,
   forwardRef,
 } from 'react';
-import Table, {TableProps} from '../../../components/Table';
 import {getOEEReason} from '../../../services/OEESwitch';
 import {useForm, Controller, SubmitHandler} from 'react-hook-form';
 import LoadingButton from '../../../components/LoadingButton';
+import TableV2 from '../../../components/TableV2';
+import {IColProps} from '../../../types/Table';
 
 export interface scrapProps {
   qty: string;
@@ -16,29 +25,30 @@ export interface scrapProps {
 }
 const Scrap: React.FC<{
   type: '次品数量' | '报废数量';
+  addScrapped?: (list: scrapProps[]) => void;
   ref: React.ForwardedRef<unknown>;
-}> = forwardRef(({type}, ref) => {
+}> = forwardRef(({type, addScrapped}, ref) => {
   const [scrapSource, setScrapSource] = useState<scrapProps[]>([]);
   const [reasonList, setreasonList] = useState<{id: string; name: string}[]>(
     [],
   );
   const {control, handleSubmit, setValue} = useForm<scrapProps>();
+  const toast = useToast();
 
   // 报废信息
-  const scrapColumns: TableProps<scrapProps>[] = [
+  const scrapColumns: IColProps<scrapProps>[] = [
     {title: type, dataIndex: 'qty'},
     {title: '原因代码', dataIndex: 'reason'},
     {
       title: '操作',
       dataIndex: '',
-      render: (text, item, $index) => {
+      render: (field, _handleSubmit, _setValue, $index) => {
         return (
-          <Button
-            onPress={() => handleDelete($index)}
-            size="sm"
-            variant="ghost">
-            删除
-          </Button>
+          <Pressable onPress={() => handleDelete($index)}>
+            <Text color="blue.500" p={2}>
+              删除
+            </Text>
+          </Pressable>
         );
       },
     },
@@ -51,17 +61,31 @@ const Scrap: React.FC<{
   const onSubmit: SubmitHandler<scrapProps> = data => {
     if (data.qty && data.reason) {
       const findItem = reasonList.find(item => item.id === data.reason);
-      // 需要展示的是name
-      setScrapSource(
-        scrapSource.concat([
+
+      setScrapSource(prevState => {
+        return prevState.concat([
           {
             qty: data.qty,
             reason: findItem?.name as string,
           },
-        ]),
-      );
+        ]);
+      });
       setValue('qty', '');
       setValue('reason', '');
+
+      addScrapped &&
+        addScrapped(
+          scrapSource.concat([
+            {
+              qty: data.qty,
+              reason: findItem?.name as string,
+            },
+          ]),
+        );
+    } else {
+      toast.show({
+        title: '报废数量和原因代码请填写完整',
+      });
     }
   };
 
@@ -69,6 +93,7 @@ const Scrap: React.FC<{
     const newScrapSource = [...scrapSource];
     newScrapSource.splice(index, 1);
     setScrapSource(newScrapSource);
+    addScrapped && addScrapped(newScrapSource);
   };
 
   useEffect(() => {
@@ -94,7 +119,10 @@ const Scrap: React.FC<{
             render={({field: {onChange, value}}) => (
               <Input
                 placeholder={'请输入' + type}
-                onChangeText={val => onChange(val)}
+                onChangeText={text => {
+                  const val = text.replace(/[^0-9]/g, '');
+                  onChange(val);
+                }}
                 value={value}
                 keyboardType="numeric"
               />
@@ -109,7 +137,10 @@ const Scrap: React.FC<{
               <Select
                 placeholder="请选择原因代码"
                 selectedValue={value}
-                onValueChange={(itemValue: string) => onChange(itemValue)}>
+                onValueChange={(itemValue: string) => onChange(itemValue)}
+                _selectedItem={{
+                  bg: 'info.100',
+                }}>
                 {reasonList.map(v => {
                   return <Select.Item label={v.name} value={v.id} key={v.id} />;
                 })}
@@ -123,10 +154,11 @@ const Scrap: React.FC<{
           onPress={handleSubmit(onSubmit)}
           w={100}
           ml={6}
+          p={4}
           size="sm"
         />
       </Box>
-      <Table dataSource={scrapSource} columns={scrapColumns} />
+      <TableV2 dataSource={scrapSource} columns={scrapColumns} />
     </Box>
   );
 });

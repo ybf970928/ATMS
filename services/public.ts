@@ -3,6 +3,7 @@ import request from '../utils/request';
 interface LotInfoParams {
   eqpId: string;
   lotId: string;
+  trackInPage?: number;
 }
 // 工单信息
 export async function getLotInfo(params: LotInfoParams) {

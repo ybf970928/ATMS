@@ -47,6 +47,7 @@ const BaseInfoTrackIn: React.FC<{lotId: string}> = ({lotId}) => {
         const res = await getLotInfo({
           eqpId: eqpid,
           lotId: lotId,
+          trackInPage: 1,
         });
         setForm(res.data);
         setLoading(false);

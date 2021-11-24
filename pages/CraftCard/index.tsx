@@ -3,10 +3,10 @@ import {View, StyleSheet, Image, ScrollView} from 'react-native';
 import {HStack, Text} from 'native-base';
 import {getCardPath} from '../../services/craftCard';
 import {getUserInfo, getLotId} from '../../utils/user';
-import {BASE_API} from '../../utils/request';
+// import {BASE_API} from '../../utils/request';
 import {getLotInfo} from '../../services/public';
 const CraftCard: React.FC = () => {
-  const [imgURL, setImgURL] = useState<{
+  const [imgInfo, setImgInfo] = useState<{
     path: string;
     name: string;
     assemblyLotID: string;
@@ -26,7 +26,7 @@ const CraftCard: React.FC = () => {
         eqpId: eqpid,
       });
       const res = await getCardPath({lotId: lotId as string, eqpId: eqpid});
-      setImgURL({
+      setImgInfo({
         path: res.data,
         name: processCardName,
         assemblyLotID: assemblyLotID,
@@ -43,13 +43,13 @@ const CraftCard: React.FC = () => {
         <View style={styles.cardHead}>
           <HStack space={3}>
             <Text>组装批号: </Text>
-            <Text>{imgURL.assemblyLotID}</Text>
+            <Text>{imgInfo.assemblyLotID}</Text>
           </HStack>
         </View>
         <Image
           style={styles.image}
           source={{
-            uri: `${BASE_API}/${imgURL.path}/${imgURL.name}`,
+            uri: `http://10.57.17.146/${imgInfo.path}/${imgInfo.name}`,
           }}
         />
       </View>

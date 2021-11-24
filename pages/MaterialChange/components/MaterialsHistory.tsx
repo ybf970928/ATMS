@@ -10,28 +10,36 @@ import {getLotId, getUserInfo} from '../../../utils/user';
 
 export interface IDataSource {
   id: string;
-  MaterialType: string;
-  InnerThread: string;
-  MaterailBarCode: string;
-  BondingHead: string;
-  Checked: 1 | 0;
+  materialType: string;
+  innerThread: string;
+  materailBarCode: string;
+  bondingHead: string;
+  checked: 1 | 0;
+  systemTime: string;
+  operId: string;
 }
 
+const consumablesList: IColProps<IDataSource>[] = [
+  {title: '物料类型', dataIndex: 'materialType'},
+];
+const materialList: IColProps<IDataSource>[] = [
+  {title: '材料类型', dataIndex: 'materialType'},
+];
+
 const columns: IColProps<IDataSource>[] = [
-  {title: '材料类型', dataIndex: 'MaterialType'},
-  {title: '内引线规格', dataIndex: 'InnerThread'},
+  {title: '内引线规格', dataIndex: 'innerThread'},
   {
     title: '条码',
-    dataIndex: 'MaterailBarCode',
+    dataIndex: 'materailBarCode',
     width: '25%',
     render: ({value}) => {
       return <Input value={value} isDisabled />;
     },
   },
-  {title: '键合头', dataIndex: 'BondingHead', width: 100},
+  {title: '键合头', dataIndex: 'bondingHead', width: 100},
   {
     title: '是否勾选',
-    dataIndex: 'Checked',
+    dataIndex: 'checked',
     render: ({value}) => {
       return (
         <View style={{alignItems: 'flex-start'!}}>
@@ -46,16 +54,25 @@ const columns: IColProps<IDataSource>[] = [
   },
 ];
 const MaterialsHistory: React.FC = () => {
-  const [dataSource, setDataSource] = useState<IDataSource[]>([]);
+  const [dataSource, setDataSource] = useState({
+    materials: [],
+    consumables: [],
+  });
 
   const getList = async () => {
     try {
       const {eqpid} = await getUserInfo();
       const lotId = await getLotId();
       const res = await getMaterialHistory({eqpId: eqpid, lotId: lotId!});
-      setDataSource(Array.isArray(res.data) ? res.data : []);
+      setDataSource({
+        materials: res.data.materials,
+        consumables: res.data.consumables,
+      });
     } catch (error) {
-      setDataSource([]);
+      setDataSource({
+        materials: [],
+        consumables: [],
+      });
       console.log(error, 'errs');
     }
   };
@@ -75,7 +92,10 @@ const MaterialsHistory: React.FC = () => {
           paddingBottom={4}>
           耗材信息
         </Heading>
-        <TableV2 dataSource={dataSource} columns={columns} />
+        <TableV2
+          dataSource={dataSource.consumables}
+          columns={consumablesList.concat(columns)}
+        />
         {/* <HTTPGet
           request={async () => {
             try {
@@ -109,8 +129,10 @@ const MaterialsHistory: React.FC = () => {
           材料信息
         </Heading>
         <TableV2
-          dataSource={dataSource}
-          columns={columns.filter(col => col.dataIndex !== 'InnerThread')}
+          dataSource={dataSource.materials}
+          columns={materialList.concat(
+            columns.filter(col => col.dataIndex !== 'innerThread'),
+          )}
         />
       </Box>
     </ScrollView>

@@ -6,8 +6,7 @@ interface UserProps {
   eqpid: string;
   user: any;
   token: string;
-  logo: string;
-  minilogo: string;
+  projectName: string;
 }
 
 export const setUserInfo = async (user: UserProps) => {

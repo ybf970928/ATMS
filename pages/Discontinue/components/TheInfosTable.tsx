@@ -20,7 +20,7 @@ const Consumableslumns = [
 ];
 
 const Materialcolumns = [
-  {title: '物料类型', dataIndex: 'materialType'},
+  {title: '材料类型', dataIndex: 'materialType'},
   {title: '条码', dataIndex: 'materialBarCode'},
 ];
 
@@ -73,13 +73,13 @@ const ShowInfoTable: React.FC = () => {
   return (
     <>
       <Box bg="white" rounded="lg" width="100%" p={2}>
-        <Heading size="md" noOfLines={2} fontSize="sm" w={'100%'}>
+        <Heading size="md" noOfLines={2} fontSize={16} w={'100%'}>
           耗材信息
         </Heading>
         <Table dataSource={table.consumables} columns={Consumableslumns} />
       </Box>
       <Box rounded="lg" width="100%" bg="white" mt={4} p={2}>
-        <Heading size="md" noOfLines={2} fontSize="sm" w={'100%'}>
+        <Heading size="md" noOfLines={2} fontSize={16} w={'100%'}>
           材料信息
         </Heading>
         <Table dataSource={table.material} columns={Materialcolumns} />

@@ -51,23 +51,29 @@ const Row: React.FC<RowProps> = ({
     },
   });
   const onSubmit: SubmitHandler<MateriaProps> = async data => {
-    const {eqpid} = await getUserInfo();
-    const res = await doUpdate({
-      cType: data.materialType,
-      lotId: lotId,
-      eqpId: eqpid,
-      stepId,
-      barCode: data.materialBarCode,
-      bondingHead: data.bondingHead,
-      oldBarCode: materialBarCode,
-      check: data.checked ? 1 : 0,
-    });
-    if (res.code === 1) {
-      setCheck(!isCheck);
+    if (data.materialBarCode && data.bondingHead) {
+      const {eqpid} = await getUserInfo();
+      const res = await doUpdate({
+        cType: data.materialType,
+        lotId: lotId,
+        eqpId: eqpid,
+        stepId,
+        barCode: data.materialBarCode,
+        bondingHead: data.bondingHead,
+        oldBarCode: materialBarCode,
+        check: data.checked ? 1 : 0,
+      });
+      if (res.code === 1) {
+        setCheck(!isCheck);
+      }
+      toast.show({
+        title: ToastMessage(res),
+      });
+    } else {
+      toast.show({
+        title: '信息请填写完整',
+      });
     }
-    toast.show({
-      title: ToastMessage(res),
-    });
   };
   return (
     <View style={styles.table}>
@@ -98,6 +104,9 @@ const Row: React.FC<RowProps> = ({
               selectedValue={value.toString()}
               onValueChange={(itemValue: string) => {
                 onChange(itemValue);
+              }}
+              _selectedItem={{
+                bg: 'info.100',
               }}>
               <Select.Item label="1" value="1" />
               <Select.Item label="2" value="2" />
@@ -183,18 +192,19 @@ const styles = StyleSheet.create({
     width: '70%',
     alignItems: 'flex-start',
     justifyContent: 'center',
+    paddingVertical: 10,
   },
   submitBtn: {
     alignItems: 'flex-start',
     justifyContent: 'center',
   },
   barCodeTitle: {
-    width: 180,
+    width: 140,
     paddingHorizontal: 10,
     paddingVertical: 10,
   },
   barCode: {
-    width: 180,
+    width: 140,
     paddingHorizontal: 10,
     paddingVertical: 10,
   },

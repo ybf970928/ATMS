@@ -73,7 +73,6 @@ const Defective: React.FC = () => {
             control={control}
             render={({field: {onChange, value}}) => (
               <Input
-                // h={10}
                 onChangeText={val => onChange(val)}
                 value={value}
                 keyboardType="numeric"
@@ -87,9 +86,11 @@ const Defective: React.FC = () => {
             control={control}
             render={({field: {onChange, value}}) => (
               <Select
-                // h={10}
                 selectedValue={value}
-                onValueChange={(itemValue: string) => onChange(itemValue)}>
+                onValueChange={(itemValue: string) => onChange(itemValue)}
+                _selectedItem={{
+                  bg: 'info.100',
+                }}>
                 {reasonList.map(v => {
                   return <Select.Item label={v.name} value={v.id} key={v.id} />;
                 })}

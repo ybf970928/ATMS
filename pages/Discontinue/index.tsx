@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useContext} from 'react';
 import {
   NativeSyntheticEvent,
   ScrollView,
@@ -8,17 +8,27 @@ import {
   Platform,
   StyleSheet,
 } from 'react-native';
-import {Box, HStack, Text, Input, useToast, Select} from 'native-base';
+import {
+  Box,
+  HStack,
+  Text,
+  Input,
+  useToast,
+  Select,
+  VStack,
+  FormControl,
+  TextArea,
+} from 'native-base';
 import ShowInfoTable from './components/TheInfosTable';
 import {useForm, Controller, SubmitHandler} from 'react-hook-form';
-import {removeToken} from '../../utils/auth';
-import {getLotId, getUserInfo, removeUserInfo} from '../../utils/user';
+import {getLotId, getUserInfo, removeLotId} from '../../utils/user';
 import {doStop} from '../../services/operationStop';
 import {getOEEReason} from '../../services/OEESwitch';
 import {useEffect} from 'react';
 import {ToastMessage} from '../../utils/errorMessageMap';
-import {CommonActions, useNavigation} from '@react-navigation/native';
+// import {CommonActions, useNavigation} from '@react-navigation/native';
 import LoadingButton from '../../components/LoadingButton';
+import {AuthContext} from '../../layouts/AuthProvider';
 interface IInputProps {
   render: (
     eventKeyDown: (
@@ -34,7 +44,7 @@ interface DiscontinueForm {
 
 const Discontinue: React.FC = () => {
   const toast = useToast();
-  const navigation = useNavigation();
+  // const navigation = useNavigation();
   const [inputs, setinputs] = useState<IInputProps[]>([
     {
       render: eventKeyDown => {
@@ -57,29 +67,47 @@ const Discontinue: React.FC = () => {
   const [reasonList, setReasonList] = useState<{id: string; name: string}[]>(
     [],
   );
+  const [isDisabled, setDisabled] = useState<boolean>(false);
 
-  const {handleSubmit, control} = useForm<DiscontinueForm>();
+  const {checkTrackOut} = useContext(AuthContext);
+
+  const {
+    handleSubmit,
+    control,
+    formState: {errors},
+  } = useForm<DiscontinueForm>();
 
   const onSubmit: SubmitHandler<DiscontinueForm> = async data => {
-    const {eqpid} = await getUserInfo();
-    const res = await doStop({
-      eqpId: eqpid,
-      lotId: currentLotId!,
-      boxs: materialBox.join(','),
-      ...data,
-    });
-    if (res.code === 1) {
-      await removeToken();
-      await removeUserInfo();
-      navigation.dispatch(
-        CommonActions.navigate({
-          name: 'Home',
-        }),
-      );
+    if (materialBox.length) {
+      const {eqpid} = await getUserInfo();
+      const res = await doStop({
+        eqpId: eqpid,
+        lotId: currentLotId!,
+        boxs: materialBox.join(','),
+        ...data,
+      });
+      if (res.code === 1) {
+        await removeLotId();
+        checkTrackOut(false);
+        setDisabled(true);
+        // navigation.dispatch(
+        //   CommonActions.reset({
+        //     index: 0,
+        //     routes: [{name: 'Home'}],
+        //   }),
+        // );
+      } else {
+        setDisabled(false);
+      }
+      toast.show({
+        title: ToastMessage(res),
+      });
+    } else {
+      setDisabled(false);
+      toast.show({
+        title: '料盒信息填写至少一个',
+      });
     }
-    toast.show({
-      title: ToastMessage(res),
-    });
   };
   const handleKeyDown = (
     e: NativeSyntheticEvent<TextInputSubmitEditingEventData>,
@@ -156,8 +184,13 @@ const Discontinue: React.FC = () => {
           marginTop={5}
           marginBottom={5}
           p={2}>
-          <HStack space={3}>
-            <Text>料盒信息</Text>
+          <HStack>
+            <Text fontSize={16} color="blue.500">
+              料盒信息
+            </Text>
+            <Text fontSize={16} color="red.600" pl={1}>
+              *
+            </Text>
           </HStack>
           <HStack flexWrap="wrap" mt={6}>
             {inputs.map((item, index) => {
@@ -166,50 +199,70 @@ const Discontinue: React.FC = () => {
           </HStack>
         </Box>
         <Box bg="white" maxWidth="100%" marginBottom={5} rounded="lg" p={2}>
-          <View>
-            <Controller
-              control={control}
-              render={({field: {onChange, value}}) => (
-                <View style={[styles.formItemLayout, styles.itemMT]}>
-                  <Text w={'30%'} pl={2} textAlign="left">
-                    原因:{' '}
-                  </Text>
+          <VStack width="100%" space={4} alignItems="center" mb={2}>
+            <FormControl isRequired isInvalid={'reason' in errors}>
+              <FormControl.Label>原因: </FormControl.Label>
+              <Controller
+                control={control}
+                rules={{required: '请选择原因'}}
+                render={({field: {onChange, value}}) => (
                   <Select
-                    w="70%"
+                    w="100%"
                     selectedValue={value}
                     onValueChange={(itemValue: string) => {
                       onChange(itemValue);
+                    }}
+                    _selectedItem={{
+                      bg: 'info.100',
                     }}>
                     {reasonList.map(item => (
                       <Select.Item
+                        mt={1}
                         label={item.name}
                         value={item.id}
                         key={item.id}
                       />
                     ))}
                   </Select>
-                </View>
-              )}
-              name="reason"
-            />
-          </View>
-          <View>
-            <Controller
-              control={control}
-              render={({field: {onChange, value}}) => (
-                <View style={styles.formItemLayout}>
-                  <Text w={'30%'} pl={2} textAlign="left">
-                    备注:{' '}
-                  </Text>
-                  <Input w="70%" value={value} onChangeText={onChange} />
-                </View>
-              )}
-              name="remark"
-            />
-          </View>
+                )}
+                name="reason"
+              />
+              <FormControl.ErrorMessage>
+                {errors.reason?.message}
+              </FormControl.ErrorMessage>
+            </FormControl>
+          </VStack>
+          <VStack width="100%" space={4} alignItems="center">
+            <FormControl>
+              <FormControl.Label>备注: </FormControl.Label>
+              <Controller
+                control={control}
+                rules={{maxLength: 200}}
+                render={({field: {onChange, value}}) => (
+                  <TextArea
+                    w="100%"
+                    value={value}
+                    onChangeText={onChange}
+                    InputRightElement={
+                      <View style={styles.textArea}>
+                        <Text color="muted.300">{`${
+                          value ? value.length : 0
+                        }/200`}</Text>
+                      </View>
+                    }
+                  />
+                )}
+                name="remark"
+              />
+            </FormControl>
+          </VStack>
         </Box>
-        <Box bg="white" rounded="lg" width="100%" marginTop={5}>
-          <LoadingButton title="确认中止" onPress={handleSubmit(onSubmit)} />
+        <Box bg="white" rounded="lg" width="100%" marginBottom={5}>
+          <LoadingButton
+            title="确认中止"
+            onPress={handleSubmit(onSubmit)}
+            isDisabled={isDisabled}
+          />
         </Box>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -226,6 +279,11 @@ const styles = StyleSheet.create({
   },
   itemMT: {
     marginBottom: 10,
+  },
+  textArea: {
+    position: 'absolute',
+    right: 10,
+    bottom: 0,
   },
 });
 export default Discontinue;

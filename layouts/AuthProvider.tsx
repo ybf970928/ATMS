@@ -4,7 +4,7 @@ import {removeUserInfo} from '../utils/user';
 import {NativeBaseProvider} from 'native-base';
 import {theme} from '../theme/extendTheme';
 // 旧的先不删, 待定
-import Login from '../pages/Login/index1';
+import Login from '../pages/Login';
 interface ContextProps {
   isTrackOut: boolean;
   loginPopup: boolean;

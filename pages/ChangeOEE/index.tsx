@@ -154,6 +154,9 @@ const ChangeOEE: React.FC = () => {
                     onValueChange={(itemValue: string) => {
                       onChange(itemValue);
                       getReasonCodeList(itemValue);
+                    }}
+                    _selectedItem={{
+                      bg: 'info.100',
                     }}>
                     {statusSelectList.map(item => (
                       <Select.Item
@@ -183,6 +186,9 @@ const ChangeOEE: React.FC = () => {
                     selectedValue={value}
                     onValueChange={(itemValue: string) => {
                       onChange(itemValue);
+                    }}
+                    _selectedItem={{
+                      bg: 'info.100',
                     }}>
                     {reasonCodeSelectList.map(item => (
                       <Select.Item
@@ -261,12 +267,9 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   textArea: {
-    height: '100%',
-    paddingRight: 16,
-    paddingBottom: 6,
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignItems: 'flex-end',
+    position: 'absolute',
+    right: 10,
+    bottom: 0,
   },
 });
 export default ChangeOEE;

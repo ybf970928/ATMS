@@ -12,5 +12,6 @@ export interface IColProps<T> {
     field: ControllerRenderProps,
     handleSubmit: UseFormHandleSubmit<T>,
     setValue: UseFormSetValue<T>,
+    _index: number,
   ) => JSX.Element;
 }

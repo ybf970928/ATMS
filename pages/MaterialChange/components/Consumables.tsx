@@ -1,4 +1,13 @@
-import {Box, Input, Text, Switch, Select, useToast} from 'native-base';
+import {
+  Box,
+  Input,
+  Text,
+  Switch,
+  Select,
+  useToast,
+  VStack,
+  FormControl,
+} from 'native-base';
 import React, {useState} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {useForm, Controller, SubmitHandler} from 'react-hook-form';
@@ -24,11 +33,15 @@ const Consumables: React.FC<ConsumableType> = ({
   stepId,
   lotId,
 }) => {
-  const {handleSubmit, control} = useForm<ConsumablesProps>({
+  const {
+    handleSubmit,
+    control,
+    formState: {errors},
+  } = useForm<ConsumablesProps>({
     defaultValues: {
       consumablesType,
       innerThread,
-      bondingHead,
+      bondingHead: bondingHead ? bondingHead : '',
       consumablesBarCode,
       checked: checked ? true : false,
     },
@@ -65,76 +78,87 @@ const Consumables: React.FC<ConsumableType> = ({
       mt={2}
       flexDirection="row"
       flexWrap="wrap">
-      <View style={styles.formItem}>
-        <Controller
-          control={control}
-          render={({field: {onChange, value}}) => (
-            <View style={styles.formItemLayout}>
-              <Text w={'30%'} pl={2} textAlign="left">
-                材料类型:{' '}
-              </Text>
-              <Input w="70%" value={value} onChangeText={onChange} isDisabled />
-            </View>
-          )}
-          name="consumablesType"
-        />
-      </View>
-      <View style={styles.formItem}>
-        <Controller
-          control={control}
-          render={({field: {onChange, value}}) => (
-            <View style={styles.formItemLayout}>
-              <Text minW={'30%'} pl={2} textAlign="left">
-                内引线规格:{' '}
-              </Text>
-              <Input w="70%" value={value} onChangeText={onChange} isDisabled />
-            </View>
-          )}
-          name="innerThread"
-        />
-      </View>
-      <View style={styles.formItem}>
-        <Controller
-          control={control}
-          render={({field: {onChange, value}}) => (
-            <View style={styles.formItemLayout}>
-              <Text w={'30%'} pl={2} textAlign="left">
-                条码:{' '}
-              </Text>
+      <VStack width="50%" space={4} alignItems="center" mb={2} px={2}>
+        <FormControl>
+          <FormControl.Label>物料类型: </FormControl.Label>
+          <Controller
+            control={control}
+            render={({field: {onChange, value}}) => (
               <Input
-                w="70%"
+                w="100%"
+                value={value}
+                onChangeText={onChange}
+                isDisabled
+              />
+            )}
+            name="consumablesType"
+          />
+        </FormControl>
+      </VStack>
+      <VStack width="50%" space={4} alignItems="center" mb={2} px={2}>
+        <FormControl>
+          <FormControl.Label>内引线规格: </FormControl.Label>
+          <Controller
+            control={control}
+            render={({field: {onChange, value}}) => (
+              <Input
+                w="100%"
+                value={value}
+                onChangeText={onChange}
+                isDisabled
+              />
+            )}
+            name="innerThread"
+          />
+        </FormControl>
+      </VStack>
+      <VStack width="50%" space={4} alignItems="center" mb={2} px={2}>
+        <FormControl isRequired isInvalid={'consumablesBarCode' in errors}>
+          <FormControl.Label>条码: </FormControl.Label>
+          <Controller
+            control={control}
+            rules={{required: '请输入条码'}}
+            render={({field: {onChange, value}}) => (
+              <Input
+                w="100%"
                 value={value}
                 onChangeText={onChange}
                 isDisabled={isUpdate}
               />
-            </View>
-          )}
-          name="consumablesBarCode"
-        />
-      </View>
-      <View style={styles.formItem}>
-        <Controller
-          control={control}
-          render={({field: {onChange, value}}) => (
-            <View style={styles.formItemLayout}>
-              <Text w={'30%'} pl={2} textAlign="left">
-                键合头:{' '}
-              </Text>
+            )}
+            name="consumablesBarCode"
+          />
+          <FormControl.ErrorMessage>
+            {errors.consumablesBarCode?.message}
+          </FormControl.ErrorMessage>
+        </FormControl>
+      </VStack>
+      <VStack width="50%" space={4} alignItems="center" mb={2} px={2}>
+        <FormControl isRequired isInvalid={'bondingHead' in errors}>
+          <FormControl.Label>键合头: </FormControl.Label>
+          <Controller
+            control={control}
+            rules={{required: '请选择键合头'}}
+            render={({field: {onChange, value}}) => (
               <Select
-                w="70%"
+                w="100%"
                 isDisabled={isUpdate}
                 selectedValue={value.toString()}
-                onValueChange={(itemValue: string) => {
-                  onChange(itemValue);
+                onValueChange={onChange}
+                _selectedItem={{
+                  bg: 'info.100',
                 }}>
                 <Select.Item label="1" value="1" />
                 <Select.Item label="2" value="2" />
               </Select>
-            </View>
-          )}
-          name="bondingHead"
-        />
-      </View>
+            )}
+            name="bondingHead"
+          />
+          <FormControl.ErrorMessage>
+            {errors.bondingHead?.message}
+          </FormControl.ErrorMessage>
+        </FormControl>
+      </VStack>
       <View style={styles.formItem}>
         <Controller
           control={control}

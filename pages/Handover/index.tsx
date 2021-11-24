@@ -20,12 +20,24 @@ interface HandOverForm {
 }
 
 const Handover: React.FC = () => {
-  const {handleSubmit, control, setValue} = useForm<HandOverForm>();
+  const {
+    handleSubmit,
+    control,
+    setValue,
+    formState: {errors},
+  } = useForm<HandOverForm>();
   const navigation = useNavigation();
   const {logout} = useContext(AuthContext);
 
   const toast = useToast();
   const onSubmit: SubmitHandler<HandOverForm> = async data => {
+    if (Number(data.qty) > Number(data.deviceQty)) {
+      toast.show({
+        title: '实物数量不能大于系统数量',
+      });
+      return;
+    }
+
     try {
       const res = await doUpdate({
         eqpId: data.eqpId,
@@ -54,7 +66,7 @@ const Handover: React.FC = () => {
     });
     const {quotaCode, deviceQty} = res.data;
     setValue('userId', user.userID);
-    setValue('eqpId', eqpid);
+    setValue('eqpId', res.data.eqpId);
     setValue('quotaCode', quotaCode);
     setValue('deviceQty', deviceQty);
   };
@@ -70,10 +82,11 @@ const Handover: React.FC = () => {
         flexDirection="row"
         flexWrap="wrap">
         <VStack width="100%" space={4} alignItems="center" mb={2}>
-          <FormControl>
+          <FormControl isRequired isInvalid={'lotId' in errors}>
             <FormControl.Label>作业批号: </FormControl.Label>
             <Controller
               control={control}
+              rules={{required: '请输入作业批号'}}
               render={({field: {onChange, value}}) => (
                 <Input
                   w={'100%'}
@@ -86,6 +99,9 @@ const Handover: React.FC = () => {
               )}
               name="lotId"
             />
+            <FormControl.ErrorMessage>
+              {errors.lotId?.message}
+            </FormControl.ErrorMessage>
           </FormControl>
         </VStack>
         <VStack width="100%" space={4} alignItems="center" mb={2}>
@@ -157,20 +173,27 @@ const Handover: React.FC = () => {
           </FormControl>
         </VStack>
         <VStack width="100%" space={4} alignItems="center" mb={2}>
-          <FormControl>
+          <FormControl isRequired isInvalid={'qty' in errors}>
             <FormControl.Label>实物数量: </FormControl.Label>
             <Controller
               control={control}
+              rules={{required: '请输入实物数量'}}
               render={({field: {onChange, value}}) => (
                 <Input
                   w="100%"
                   value={value}
-                  onChangeText={onChange}
+                  onChangeText={text => {
+                    const val = text.replace(/[^0-9]/g, '');
+                    onChange(val);
+                  }}
                   keyboardType="number-pad"
                 />
               )}
               name="qty"
             />
+            <FormControl.ErrorMessage>
+              {errors.qty?.message}
+            </FormControl.ErrorMessage>
           </FormControl>
         </VStack>
       </Box>

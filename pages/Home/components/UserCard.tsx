@@ -1,14 +1,16 @@
-import React, {useState, useEffect, useContext, useCallback} from 'react';
+import React, {useState, useContext, useCallback} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {Box, Text} from 'native-base';
 import {getLotInfo} from '../../../services/public';
 // import {getToken} from '../../../utils/auth';
 import {getUserInfo, getLotId} from '../../../utils/user';
 import {AuthContext} from '../../../layouts/AuthProvider';
+import {useFocusEffect} from '@react-navigation/native';
 
 interface IUserFormProps {
   operId?: string;
-  eqpid?: string;
+  eqpId?: string;
+  lotId?: string;
   stepID?: string;
   trackStatus?: string;
   assemblyLotID?: string;
@@ -23,7 +25,8 @@ interface FormTypes {
 }
 const formItem: FormTypes[] = [
   {label: '作业员', prop: 'operId'},
-  {label: '机台号', prop: 'eqpid'},
+  {label: '机台号', prop: 'eqpId'},
+  {label: '批号', prop: 'lotId'},
   {label: '工序', prop: 'stepID'},
   {label: '当前状态', prop: 'trackStatus'},
   {label: '组装批号', prop: 'assemblyLotID'},
@@ -44,12 +47,10 @@ const UserCard: React.FC = () => {
           const {user, eqpid} = await getUserInfo();
           setUserInfo({
             operId: user.userID,
-            eqpid: eqpid,
+            eqpId: eqpid,
           });
         }
-      } catch (error) {
-        console.log('获取用户信息失败');
-      }
+      } catch (error) {}
     };
     getLoginUserInfo();
   }, [loginPopup]);
@@ -58,31 +59,36 @@ const UserCard: React.FC = () => {
     const init = async () => {
       try {
         const lotId = await getLotId();
-        const {eqpid, user} = await getUserInfo();
+        const {eqpid} = await getUserInfo();
+        console.log(eqpid, lotId, '有状态');
+
         const res = await getLotInfo({
           eqpId: eqpid,
           lotId: lotId!,
+          trackInPage: 1,
         });
         setUserInfo({
           ...res.data,
-          operId: user.userID,
-          eqpid: eqpid,
           trackStatus: res.data.trackStatus ? '已开批' : '未开批',
         });
-      } catch (error) {}
+      } catch (error) {
+        console.log('没状态');
+      }
     };
     init();
   }, []);
 
-  useEffect(() => {
-    if (isTrackOut) {
-      console.log('开批成功');
-    } else {
-      console.log('没有开批');
-      getLotForm();
-    }
-    isLogin();
-  }, [isTrackOut, isLogin, getLotForm]);
+  useFocusEffect(
+    React.useCallback(() => {
+      if (isTrackOut) {
+        console.log('结批成功');
+      } else {
+        console.log('没有结批');
+        getLotForm();
+      }
+      isLogin();
+    }, [getLotForm, isLogin, isTrackOut]),
+  );
 
   return (
     <View style={styles.card}>

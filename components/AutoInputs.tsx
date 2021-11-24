@@ -1,5 +1,5 @@
 import React, {useState, useImperativeHandle, forwardRef} from 'react';
-import {Input, View} from 'native-base';
+import {Input, View, useToast} from 'native-base';
 import {
   NativeSyntheticEvent,
   TextInputSubmitEditingEventData,
@@ -14,6 +14,7 @@ interface IInputProps {
 }
 
 const AutoInputs = forwardRef(({}, ref: React.ForwardedRef<unknown>) => {
+  const toast = useToast();
   const [inputValues, setInputValues] = useState<String[]>([]);
   const [inputs, setinputs] = useState<IInputProps[]>([
     {
@@ -66,6 +67,10 @@ const AutoInputs = forwardRef(({}, ref: React.ForwardedRef<unknown>) => {
           },
         ]),
       );
+    } else {
+      toast.show({
+        description: '请勿重复添加',
+      });
     }
   };
   return (

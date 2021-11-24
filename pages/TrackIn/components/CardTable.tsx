@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {Box, Heading, useToast, Spinner} from 'native-base';
 import Table, {TableProps} from '../../../components/Table';
 import {getAllMaterial} from '../../../services/public';
@@ -8,6 +8,8 @@ import {ToastMessage} from '../../../utils/errorMessageMap';
 import {CommonActions, useNavigation} from '@react-navigation/native';
 import {Center} from '../../../layouts/Center';
 import LoadingButton from '../../../components/LoadingButton';
+import {UseFormHandleSubmit} from 'react-hook-form';
+import {AuthContext} from '../../../layouts/AuthProvider';
 interface consumablesProps {
   innerThread: string;
   consumablesType: string;
@@ -28,22 +30,26 @@ interface materialProps {
 // 耗材信息
 const consumablesColumns: TableProps<consumablesProps>[] = [
   {title: '内引线规格', dataIndex: 'innerThread'},
-  {title: '材料信息', dataIndex: 'consumablesType'},
+  {title: '物料类型', dataIndex: 'consumablesType'},
   {title: '物料描述', dataIndex: 'consumablesDesc'},
-  {title: '材料代码', dataIndex: 'consumablesBarCode'},
+  {title: '条码', dataIndex: 'consumablesBarCode'},
 ];
 // 材料信息
 const materialColumns: TableProps<materialProps>[] = [
-  {title: '材料信息', dataIndex: 'materialType'},
+  {title: '类型', dataIndex: 'materialType'},
   {title: '材料代码', dataIndex: 'partNo'},
-  {title: '物料描述', dataIndex: 'materialDesc'},
+  {title: '描述', dataIndex: 'materialDesc'},
   {title: '供应商代码', dataIndex: 'supplierNo'},
   {title: '供应商', dataIndex: 'supplierDesc'},
   {title: '批号', dataIndex: 'materialLotNo'},
   {title: '有效期', dataIndex: 'effectiveDate'},
   {title: '序列号', dataIndex: 'serialNo'},
 ];
-const CardTable: React.FC<{lotId: string}> = ({lotId}) => {
+const CardTable: React.FC<{
+  lotId: string;
+  trackStatus: 0 | 1;
+  handleSubmit: UseFormHandleSubmit<any>;
+}> = ({lotId, trackStatus, handleSubmit}) => {
   const [materialSource, setMaterialSource] = useState<materialProps[]>([]);
   const [consumablesSource, setConsumablesSource] = useState<
     consumablesProps[]
@@ -51,6 +57,8 @@ const CardTable: React.FC<{lotId: string}> = ({lotId}) => {
   const navigation = useNavigation();
   const toast = useToast();
   const [loading, setLoading] = useState<boolean>(false);
+  const {checkTrackOut} = useContext(AuthContext);
+
   useEffect(() => {
     if (lotId) {
       setLoading(true);
@@ -80,6 +88,7 @@ const CardTable: React.FC<{lotId: string}> = ({lotId}) => {
     });
     if (res.code === 1) {
       setLotId(lotId).then(() => {
+        checkTrackOut(false);
         navigation.dispatch(
           CommonActions.reset({
             index: 0,
@@ -120,7 +129,11 @@ const CardTable: React.FC<{lotId: string}> = ({lotId}) => {
         <Table dataSource={consumablesSource} columns={consumablesColumns} />
       </Box>
       <Box width="100%" marginBottom={5} p={2}>
-        <LoadingButton title="确认进机" onPress={handleTrackIn} />
+        <LoadingButton
+          title="确认进机"
+          onPress={handleSubmit(handleTrackIn)}
+          isDisabled={trackStatus}
+        />
       </Box>
     </>
   );
