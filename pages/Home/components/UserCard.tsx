@@ -50,7 +50,12 @@ const UserCard: React.FC = () => {
             eqpId: eqpid,
           });
         }
-      } catch (error) {}
+      } catch (error) {
+        setUserInfo({
+          operId: '',
+          eqpId: '',
+        });
+      }
     };
     getLoginUserInfo();
   }, [loginPopup]);

@@ -18,6 +18,13 @@ export async function getOEEStatusSwitch(params: OEEParams) {
     params: params,
   });
 }
+// 作业中止页面，原因代码
+export async function getOperationStop() {
+  return request('/pad/OperationStop/GetReasonCode', {
+    method: 'get',
+  });
+}
+
 // 根据状态带出原因代码
 export async function getOEEReason(params: {statusCode: string}) {
   return request('/pad/OEEStatusSwitch/GetOEEReason', {

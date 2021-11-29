@@ -23,7 +23,7 @@ import ShowInfoTable from './components/TheInfosTable';
 import {useForm, Controller, SubmitHandler} from 'react-hook-form';
 import {getLotId, getUserInfo, removeLotId} from '../../utils/user';
 import {doStop} from '../../services/operationStop';
-import {getOEEReason} from '../../services/OEESwitch';
+import {getOperationStop} from '../../services/OEESwitch';
 import {useEffect} from 'react';
 import {ToastMessage} from '../../utils/errorMessageMap';
 // import {CommonActions, useNavigation} from '@react-navigation/native';
@@ -153,7 +153,7 @@ const Discontinue: React.FC = () => {
   useEffect(() => {
     const getReasonList = async () => {
       try {
-        const res = await getOEEReason({statusCode: 'CCancelMoveIn'});
+        const res = await getOperationStop();
         setReasonList(Array.isArray(res.data) ? res.data : []);
       } catch (error) {}
     };

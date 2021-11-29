@@ -1,6 +1,7 @@
 import React, {useContext, useEffect, useState} from 'react';
+import {ScrollView} from 'react-native';
 import {Box, Heading, useToast, Spinner} from 'native-base';
-import Table, {TableProps} from '../../../components/Table';
+// import Table, {TableProps} from '../../../components/Table';
 import {getAllMaterial} from '../../../services/public';
 import {doTrackIn} from '../../../services/trackIn';
 import {getUserInfo, setLotId} from '../../../utils/user';
@@ -10,6 +11,8 @@ import {Center} from '../../../layouts/Center';
 import LoadingButton from '../../../components/LoadingButton';
 import {UseFormHandleSubmit} from 'react-hook-form';
 import {AuthContext} from '../../../layouts/AuthProvider';
+import TableV2 from '../../../components/TableV2';
+import {IColProps} from '../../../types/Table';
 interface consumablesProps {
   innerThread: string;
   consumablesType: string;
@@ -28,22 +31,22 @@ interface materialProps {
   serialNo: string;
 }
 // 耗材信息
-const consumablesColumns: TableProps<consumablesProps>[] = [
+const consumablesColumns: IColProps<consumablesProps>[] = [
   {title: '内引线规格', dataIndex: 'innerThread'},
   {title: '物料类型', dataIndex: 'consumablesType'},
   {title: '物料描述', dataIndex: 'consumablesDesc'},
   {title: '条码', dataIndex: 'consumablesBarCode'},
 ];
 // 材料信息
-const materialColumns: TableProps<materialProps>[] = [
+const materialColumns: IColProps<materialProps>[] = [
   {title: '类型', dataIndex: 'materialType'},
-  {title: '材料代码', dataIndex: 'partNo'},
-  {title: '描述', dataIndex: 'materialDesc'},
-  {title: '供应商代码', dataIndex: 'supplierNo'},
-  {title: '供应商', dataIndex: 'supplierDesc'},
+  {title: '材料代码', dataIndex: 'partNo', width: 120},
+  {title: '供应商代码', dataIndex: 'supplierNo', width: 140},
+  {title: '供应商', dataIndex: 'supplierDesc', width: 280},
   {title: '批号', dataIndex: 'materialLotNo'},
   {title: '有效期', dataIndex: 'effectiveDate'},
   {title: '序列号', dataIndex: 'serialNo'},
+  {title: '描述', dataIndex: 'materialDesc', width: 180},
 ];
 const CardTable: React.FC<{
   lotId: string;
@@ -122,11 +125,15 @@ const CardTable: React.FC<{
         marginBottom={5}
         p={2}>
         <Heading fontSize={16}>材料信息</Heading>
-        <Table dataSource={materialSource} columns={materialColumns} />
+        <ScrollView horizontal>
+          <Box w={1000}>
+            <TableV2 dataSource={materialSource} columns={materialColumns} />
+          </Box>
+        </ScrollView>
       </Box>
       <Box bg="white" rounded="lg" width="100%" marginBottom={5} p={2}>
         <Heading fontSize={16}>耗材信息</Heading>
-        <Table dataSource={consumablesSource} columns={consumablesColumns} />
+        <TableV2 dataSource={consumablesSource} columns={consumablesColumns} />
       </Box>
       <Box width="100%" marginBottom={5} p={2}>
         <LoadingButton

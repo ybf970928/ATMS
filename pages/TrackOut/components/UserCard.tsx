@@ -118,8 +118,6 @@ const BaseInfoTrackIn: React.FC<{
 
         setYieldSource(yieldList.data);
 
-        // setYieldSource([{trOperID: '123', testedQty: 20, quotaCode: '123'}, {trOperID: '1223', testedQty: 10, quotaCode: '123'}]);
-
         setLoading(false);
       } catch (error) {
         setLoading(false);

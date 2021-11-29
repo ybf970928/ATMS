@@ -29,6 +29,12 @@ const LoadingButton: React.FC<IProps> = ({
   return (
     <Button
       isLoading={showLoading ? loading : false}
+      _loading={{
+        bg: 'blue.500',
+        _text: {
+          color: '#FFFFFF',
+        },
+      }}
       {...props}
       onPress={requestApi}>
       {title}

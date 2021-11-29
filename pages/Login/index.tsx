@@ -1,9 +1,9 @@
+import {Button, FormControl, Input, Modal, useToast, VStack} from 'native-base';
 import React, {useContext, useState} from 'react';
-import {VStack, FormControl, Input, Button, Modal, useToast} from 'native-base';
 import {getUniqueId} from 'react-native-device-info';
+import {AuthContext} from '../../layouts/AuthProvider';
 import {accountLogin} from '../../services/login';
 import {ToastMessage} from '../../utils/errorMessageMap';
-import {AuthContext} from '../../layouts/AuthProvider';
 import {setUserInfo} from '../../utils/user';
 interface loginPopupProps {
   isShow: boolean;
@@ -31,6 +31,8 @@ const Login: React.FC<loginPopupProps> = ({isShow, needLogin}) => {
       if (res.code === 1) {
         const {token} = res.data;
         setUserInfo(res.data).then(() => {
+          setUsername('');
+          setPassword('');
           setIsLoading(false);
           login(token);
         });
@@ -41,12 +43,20 @@ const Login: React.FC<loginPopupProps> = ({isShow, needLogin}) => {
         title: ToastMessage(res),
       });
     } catch (error) {
+      setUsername('');
+      setPassword('');
       setIsLoading(false);
     }
   };
 
+  const onClose = () => {
+    setUsername('');
+    setPassword('');
+    needLogin(!isShow);
+  };
+
   return (
-    <Modal isOpen={isShow} onClose={() => needLogin(!isShow)}>
+    <Modal isOpen={isShow} onClose={onClose}>
       <Modal.Content maxWidth="400px">
         <Modal.CloseButton />
         <Modal.Body>

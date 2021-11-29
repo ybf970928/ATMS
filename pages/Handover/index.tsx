@@ -55,7 +55,11 @@ const Handover: React.FC = () => {
       toast.show({
         title: ToastMessage(res),
       });
-    } catch (error) {}
+    } catch (error) {
+      toast.show({
+        title: '系统未知异常',
+      });
+    }
   };
 
   const gethandeOverForm = async (id: string) => {

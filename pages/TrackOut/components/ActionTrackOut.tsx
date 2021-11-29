@@ -1,5 +1,5 @@
 import React, {useRef, useContext, useState} from 'react';
-import {Box, HStack, useToast, Text} from 'native-base';
+import {Box, HStack, useToast, Text, Button} from 'native-base';
 import Scrap, {scrapProps} from './Scrap';
 import InfosTable from './InfosTable';
 import AutoInputs from '../../../components/AutoInputs';
@@ -10,7 +10,6 @@ import {removeLotId} from '../../../utils/user';
 import {ToastMessage} from '../../../utils/errorMessageMap';
 // import {useNavigation, CommonActions} from '@react-navigation/native';
 import {AuthContext} from '../../../layouts/AuthProvider';
-import LoadingButton from '../../../components/LoadingButton';
 
 export interface TrackOutFormTypes {
   deviceQty?: string;
@@ -35,6 +34,7 @@ const CardTable: React.FC = () => {
   const defectiveRef = useRef<{state: scrapProps[]}>(null);
   const autoInputRef = useRef<{values: String[]}>(null);
   const [scrappedList, setScrappedList] = useState<scrapProps[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   // const navigation = useNavigation();
   const [isDisabled, setDisabled] = useState<boolean>(false);
   const {checkTrackOut} = useContext(AuthContext);
@@ -134,6 +134,7 @@ const CardTable: React.FC = () => {
   };
 
   const trackInSucc = async () => {
+    setIsLoading(true);
     try {
       const {eqpid} = await getUserInfo();
       const currentLotId = await getLotId();
@@ -150,6 +151,7 @@ const CardTable: React.FC = () => {
       if (res.code === 1) {
         removeLotId().then(() => {
           checkTrackOut(true);
+          setIsLoading(false);
           setDisabled(true);
           // navigation.dispatch(
           //   CommonActions.reset({
@@ -159,12 +161,14 @@ const CardTable: React.FC = () => {
           // );
         });
       } else {
+        setIsLoading(false);
         setDisabled(false);
       }
       toast.show({
         title: ToastMessage(res),
       });
     } catch (error) {
+      setIsLoading(false);
       setDisabled(false);
       toast.show({
         title: '结批失败',
@@ -172,7 +176,7 @@ const CardTable: React.FC = () => {
     }
   };
 
-  const handleTrackIn = () => {
+  const handleTrackIn = async () => {
     if (validNums() && validBox()) {
       trackInSucc();
     } else {
@@ -210,11 +214,18 @@ const CardTable: React.FC = () => {
       <Scrap type="报废数量" ref={scrapRef} addScrapped={getScrappedList} />
       <Scrap type="次品数量" ref={defectiveRef} />
       <Box width="100%" marginBottom={5} p={2}>
-        <LoadingButton
-          title="确认出机"
-          onPress={handleTrackIn}
+        <Button
+          _loading={{
+            bg: 'blue.500',
+            _text: {
+              color: '#FFFFFF',
+            },
+          }}
           isDisabled={isDisabled}
-        />
+          onPress={handleTrackIn}
+          isLoading={isLoading}>
+          确认出机
+        </Button>
       </Box>
     </>
   );

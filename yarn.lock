@@ -6519,7 +6519,7 @@ nanomatch@^1.2.9:
     snapdragon "^0.8.1"
     to-regex "^3.0.1"
 
-native-base@>=3.0.6:
+native-base@3.2.2:
   version "3.2.2"
   resolved "https://registry.npmmirror.com/native-base/download/native-base-3.2.2.tgz#a802875ac68884b4dbd2ad29c341f3f64f1fc3c5"
   integrity sha1-qAKHWsaIhLTb0q0pw0Hz9k8fw8U=
@@ -7218,7 +7218,7 @@ react-native-reanimated@^2.2.0:
     mockdate "^3.0.2"
     string-hash-64 "^1.0.3"
 
-react-native-safe-area-context@>=3.2.0:
+react-native-safe-area-context@^3.2.0:
   version "3.3.2"
   resolved "https://registry.nlark.com/react-native-safe-area-context/download/react-native-safe-area-context-3.3.2.tgz#9549a2ce580f2374edb05e49d661258d1b8bcaed"
   integrity sha1-lUmizlgPI3TtsF5J1mEljRuLyu0=
@@ -7230,7 +7230,7 @@ react-native-screens@^3.4.0:
   dependencies:
     warn-once "^0.1.0"
 
-react-native-svg@>=12.1.1:
+react-native-svg@^12.1.1:
   version "12.1.1"
   resolved "https://registry.nlark.com/react-native-svg/download/react-native-svg-12.1.1.tgz#5f292410b8bcc07bbc52b2da7ceb22caf5bcaaee"
   integrity sha1-XykkELi8wHu8UrLafOsiyvW8qu4=

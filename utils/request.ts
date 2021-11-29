@@ -9,7 +9,7 @@ export const BASE_API = __DEV__
 
 const service = axios.create({
   baseURL: BASE_API,
-  timeout: 10000,
+  timeout: 20000,
   withCredentials: true, // 携带cookie
 });
 

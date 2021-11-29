@@ -5,6 +5,7 @@ import {NativeBaseProvider} from 'native-base';
 import {theme} from '../theme/extendTheme';
 // 旧的先不删, 待定
 import Login from '../pages/Login';
+import UpdateModel from '../components/updateModel';
 interface ContextProps {
   isTrackOut: boolean;
   loginPopup: boolean;
@@ -53,6 +54,7 @@ export const AuthProvider: React.FC = ({children}) => {
           isShow={showloginPopup}
           needLogin={(show: boolean) => setShowloginPopup(show)}
         />
+        <UpdateModel />
       </NativeBaseProvider>
     </AuthContext.Provider>
   );

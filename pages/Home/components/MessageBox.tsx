@@ -1,76 +1,89 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {
-  Text,
+  // Text,
   ScrollView,
   View,
   StyleSheet,
   Animated,
+  Easing,
   // LayoutAnimation,
 } from 'react-native';
+import {Text} from 'native-base';
+
 import useWebSocket from '../../../hooks/useWebSocket';
+import {parseTime} from '../../../utils/parseTime';
+
+type SocketType = {
+  eqpId: string;
+  functionName: string;
+  body: {
+    message?: string;
+    type?: string;
+    action?: string;
+    status?: string;
+  };
+};
 
 type MessageType = {
-  id: string;
-  title: string;
-  flag: 0 | 1;
+  date: string;
+  message: string;
+  type: string;
 };
 
 const ITEM_H = 40; // 每项的高度
 
-const Item = ({title}: {title: string}) => {
+const Item = ({item}: {item: MessageType}) => {
   return (
-    <View style={styles.item}>
-      <Text style={styles.title}>{title}</Text>
+    <View style={styles.messageItem}>
+      <Text style={styles.messageDate}>{item.date}</Text>
+      <Text style={styles.messageTitle} noOfLines={1}>
+        {item.message}
+      </Text>
     </View>
   );
 };
+
 const MessageBox: React.FC = () => {
-  const {latestMessage, readyState} = useWebSocket('ws://localhost:8000');
+  const {latestMessage, readyState} = useWebSocket('ws://192.168.20.12:8070');
   const [scrollMessage, setScrollMessage] = useState<MessageType[]>([]);
   const savedCallback = useRef<() => void>(() => {});
-  const translateValue = useRef<Animated.Value>(new Animated.Value(0)).current;
+  const translateY = useRef<Animated.Value>(new Animated.Value(0)).current;
 
   useEffect(() => {
     if (readyState === 1) {
-      setScrollMessage(latestMessage);
+      if (!latestMessage) {
+        return;
+      }
+      const {functionName, body} = latestMessage as SocketType;
+      if (functionName === 'EAPToOUI_ShowUIMessage') {
+        const msgItem: MessageType = {
+          type: body.type!,
+          message: body.message!,
+          date: parseTime(new Date().getTime())!,
+        };
+        setScrollMessage(preState => [...preState, msgItem]);
+      }
     }
   }, [latestMessage, readyState]);
 
-  // const startAnimated = useCallback(() => {
-  //   if (socketMessage.length <= SHOWSIZE) {
-  //     return;
-  //   }
-  //   if (count.current === socketMessage.length - SHOWSIZE) {
-  //     count.current = 0;
-  //   } else {
-  //     count.current++;
-  //   }
-  //   console.log('count数: ', count.current, '信息长度:', socketMessage.length);
-
-  // Animated.timing(translateValue, {
-  //   toValue: -(count.current * ITEM_H),
-  //   duration: 1500,
-  //   delay: 1500,
-  //   easing: Easing.linear,
-  //   useNativeDriver: true,
-  // }).start(() => {
-  //   // if (!stopAnimation) {
-  //   startAnimated();
-  //   // }
-  // });
-  // }, [socketMessage, translateValue]);
   const autoScrollY = () => {
-    if (scrollMessage.length) {
-      const arr = [...scrollMessage];
-      arr.concat(scrollMessage[0]).slice(1);
+    if (scrollMessage.length > 5) {
+      Animated.timing(translateY, {
+        toValue: -40,
+        duration: 200,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      }).start(() => {
+        setScrollMessage(scrollMessage.concat(scrollMessage[0]).slice(1));
+        Animated.timing(translateY, {
+          toValue: 0,
+          duration: 0,
+          delay: 0,
+          easing: Easing.linear,
+          useNativeDriver: true,
+        }).start();
+      });
     }
-    // LayoutAnimation.configureNext(
-    //   LayoutAnimation.create(
-    //     200,
-    //     LayoutAnimation.Types.easeInEaseOut,
-    //     LayoutAnimation.Properties.scaleX,
-    //   ),
-    // );
   };
 
   useEffect(() => {
@@ -81,7 +94,7 @@ const MessageBox: React.FC = () => {
     function tick() {
       savedCallback.current();
     }
-    let id = setInterval(tick, 2000);
+    let id = setInterval(tick, 4000);
     return () => clearInterval(id);
   }, []);
 
@@ -90,10 +103,10 @@ const MessageBox: React.FC = () => {
       <View style={styles.translateBox}>
         <Animated.View
           style={{
-            transform: [{translateY: translateValue}],
+            transform: [{translateY: translateY}],
           }}>
-          {scrollMessage.map(item => (
-            <Item title={item.title} key={item.id} />
+          {scrollMessage.map((item, index) => (
+            <Item item={item} key={index} />
           ))}
         </Animated.View>
       </View>
@@ -110,13 +123,24 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     overflow: 'hidden',
     borderRadius: 8,
+    paddingHorizontal: 10,
   },
-  item: {
+  messageItem: {
     marginHorizontal: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
-  title: {
+  messageDate: {
+    height: ITEM_H,
+    width: '30%',
+    lineHeight: ITEM_H,
+    textAlign: 'left',
+  },
+  messageTitle: {
+    width: '70%',
     height: ITEM_H,
     lineHeight: ITEM_H,
+    textAlign: 'right',
   },
 });
 export default MessageBox;

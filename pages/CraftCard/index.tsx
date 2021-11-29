@@ -15,6 +15,17 @@ const CraftCard: React.FC = () => {
     name: '',
     assemblyLotID: '',
   });
+
+  const replaceFile = (url: string) => {
+    return url.replace(/^file/g, 'http');
+  };
+
+  const replaceFormat = (url: string) => {
+    return url.replace(/(JPGE|PNG|JPG)/g, $1 => {
+      return $1.toLowerCase();
+    });
+  };
+
   const getCardImage = async () => {
     try {
       const {eqpid} = await getUserInfo();
@@ -27,12 +38,13 @@ const CraftCard: React.FC = () => {
       });
       const res = await getCardPath({lotId: lotId as string, eqpId: eqpid});
       setImgInfo({
-        path: res.data,
-        name: processCardName,
+        path: replaceFile(res.data),
+        name: replaceFormat(processCardName),
         assemblyLotID: assemblyLotID,
       });
     } catch (error) {}
   };
+
   useEffect(() => {
     getCardImage();
   }, []);
@@ -49,7 +61,7 @@ const CraftCard: React.FC = () => {
         <Image
           style={styles.image}
           source={{
-            uri: `http://10.57.17.146/${imgInfo.path}/${imgInfo.name}`,
+            uri: `${imgInfo.path}/${imgInfo.name}`,
           }}
         />
       </View>

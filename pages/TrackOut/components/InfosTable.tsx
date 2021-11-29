@@ -5,6 +5,7 @@ import {IColProps} from '../../../types/Table';
 import {getAllMaterial} from '../../../services/public';
 import {getLotId, getUserInfo} from '../../../utils/user';
 import {Center} from '../../../layouts/Center';
+import {ScrollView} from 'react-native';
 interface consumablesProps {
   innerThread: string;
   consumablesType: string;
@@ -32,13 +33,13 @@ const consumablesColumns: IColProps<consumablesProps>[] = [
 // 材料信息
 const materialColumns: IColProps<materialProps>[] = [
   {title: '类型', dataIndex: 'materialType'},
-  {title: '材料代码', dataIndex: 'partNo'},
-  {title: '描述', dataIndex: 'materialDesc'},
-  {title: '供应商代码', dataIndex: 'supplierNo'},
-  {title: '供应商', dataIndex: 'supplierDesc'},
+  {title: '材料代码', dataIndex: 'partNo', width: 120},
+  {title: '供应商代码', dataIndex: 'supplierNo', width: 140},
+  {title: '供应商', dataIndex: 'supplierDesc', width: 280},
   {title: '批号', dataIndex: 'materialLotNo'},
   {title: '有效期', dataIndex: 'effectiveDate'},
   {title: '序列号', dataIndex: 'serialNo'},
+  {title: '描述', dataIndex: 'materialDesc', width: 180},
 ];
 
 const InfosTable: React.FC = () => {
@@ -91,7 +92,11 @@ const InfosTable: React.FC = () => {
         marginBottom={5}
         p={2}>
         <Heading fontSize={16}>材料信息</Heading>
-        <TableV2 dataSource={materialSource} columns={materialColumns} />
+        <ScrollView horizontal>
+          <Box w={1000}>
+            <TableV2 dataSource={materialSource} columns={materialColumns} />
+          </Box>
+        </ScrollView>
       </Box>
       <Box bg="white" rounded="lg" width="100%" marginBottom={5} p={2}>
         <Heading fontSize={16}>耗材信息</Heading>
