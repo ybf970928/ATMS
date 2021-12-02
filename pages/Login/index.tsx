@@ -57,7 +57,7 @@ const Login: React.FC<loginPopupProps> = ({isShow, needLogin}) => {
   };
 
   return (
-    <Modal isOpen={isShow} onClose={onClose}>
+    <Modal isOpen={isShow} onClose={onClose} animationPreset="slide">
       <Modal.Content maxWidth="400px">
         <Modal.CloseButton />
         <Modal.Body>
@@ -84,7 +84,15 @@ const Login: React.FC<loginPopupProps> = ({isShow, needLogin}) => {
               />
             </FormControl>
             <VStack space={2}>
-              <Button isLoading={isLoading} onPress={doLogin}>
+              <Button
+                isLoading={isLoading}
+                onPress={doLogin}
+                _loading={{
+                  bg: 'blue.500',
+                  _text: {
+                    color: '#FFFFFF',
+                  },
+                }}>
                 登陆
               </Button>
             </VStack>

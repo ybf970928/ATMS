@@ -6,7 +6,7 @@ interface LotInfoParams {
   trackInPage?: number;
 }
 // 工单信息
-export async function getLotInfo(params: LotInfoParams) {
+export function getLotInfo(params: LotInfoParams) {
   return request('/pad/MainPage/GetLotInfo', {
     method: 'get',
     params: params,
@@ -14,7 +14,7 @@ export async function getLotInfo(params: LotInfoParams) {
 }
 
 // 材料信息
-export async function getAllMaterial(params: LotInfoParams) {
+export function getAllMaterial(params: LotInfoParams) {
   return request('/pad/MainPage/GetAllMaterial', {
     method: 'get',
     params: params,

@@ -7,7 +7,7 @@ interface UserLoginParams {
   loginType: number;
 }
 
-export async function accountLogin(params: UserLoginParams) {
+export function accountLogin(params: UserLoginParams) {
   return request('/config/Login/Login', {
     method: 'POST',
     data: params,

@@ -5,7 +5,7 @@ interface TrackInParams {
   lotId: string;
 }
 
-export async function doTrackIn(params: TrackInParams) {
+export function doTrackIn(params: TrackInParams) {
   return request('/pad/TrakIn/TrackIn', {
     method: 'POST',
     data: params,

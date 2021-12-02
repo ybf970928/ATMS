@@ -17,7 +17,7 @@ interface YieldInfoParams {
   lotId: string;
 }
 
-export async function doTrackOut(params: TrackOutParams) {
+export function doTrackOut(params: TrackOutParams) {
   return request('/pad/TrackOut/TrackOut', {
     method: 'POST',
     data: params,
@@ -25,7 +25,7 @@ export async function doTrackOut(params: TrackOutParams) {
 }
 
 // 获取产量信息
-export async function getYieldInfo(params: YieldInfoParams) {
+export function getYieldInfo(params: YieldInfoParams) {
   return request('/pad/HandOver/GetYieldInfo', {
     method: 'get',
     params: params,

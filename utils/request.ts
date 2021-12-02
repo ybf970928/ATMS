@@ -4,8 +4,8 @@ import {removeUserInfo} from './user';
 
 export const BASE_API = __DEV__
   ? 'http://10.100.101.22:8100'
-  : 'http://10.100.101.22:8100';
-// 'http://192.168.20.12:8100';
+  : //'http://10.100.101.22:8100';
+    'http://192.168.20.12:8100';
 
 const service = axios.create({
   baseURL: BASE_API,

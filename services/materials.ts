@@ -20,7 +20,7 @@ export interface MaterialCompared {
 }
 
 // 初始化
-export async function getMaterials(params: materials) {
+export function getMaterials(params: materials) {
   return request('/pad/Materials/GetMaterial', {
     method: 'get',
     params: params,
@@ -28,14 +28,14 @@ export async function getMaterials(params: materials) {
 }
 
 // 确认新增
-export async function doUpdate(params: MaterialCompared) {
+export function doUpdate(params: MaterialCompared) {
   return request('/pad/Materials/MaterialCompared', {
     method: 'POST',
     data: params,
   });
 }
 
-export async function getMaterialHistory(params: materials) {
+export function getMaterialHistory(params: materials) {
   return request('/pad/Materials/GetMaterialHistory', {
     method: 'get',
     params: params,

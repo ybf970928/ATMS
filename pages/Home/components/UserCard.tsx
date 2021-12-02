@@ -1,8 +1,7 @@
 import React, {useState, useContext} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {Box, Text} from 'native-base';
-import {getLotInfo} from '../../../services/public';
-// import {getToken} from '../../../utils/auth';
+import {getLotInfo} from 'services/public';
 import {getEqpId} from 'utils/user';
 import {AuthContext} from '../../../layouts/AuthProvider';
 import {useFocusEffect} from '@react-navigation/native';
@@ -37,7 +36,7 @@ const formItem: FormTypes[] = [
 
 const UserCard: React.FC = () => {
   const [userInfo, setUserInfo] = useState<IUserFormProps>({});
-  const {setLotInfo} = useContext(AuthContext);
+  const {setLotInfo, loginPopup} = useContext(AuthContext);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -63,8 +62,11 @@ const UserCard: React.FC = () => {
           setLotInfo({});
         }
       };
-      init();
-    }, [setLotInfo]),
+      // 防止登陆成功不执行
+      if (!loginPopup) {
+        init();
+      }
+    }, [setLotInfo, loginPopup]),
   );
 
   return (
