@@ -1,13 +1,16 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const USER = '@user';
-const LOTID = '@lotId';
+const EQPID = '@eqpId';
 
-interface UserProps {
-  eqpid: string;
-  user: any;
-  token: string;
-  projectName: string;
-}
+type UserProps = {
+  id: string;
+  userID: string;
+  userName: string;
+  department: string;
+  email: string;
+  mobilePhone: string;
+  avatar: string;
+};
 
 export const setUserInfo = async (user: UserProps) => {
   try {
@@ -37,31 +40,27 @@ export const removeUserInfo = async () => {
   }
 };
 
-export const setLotId = async (lotId: string) => {
+export const setEqpId = async (eqpId: string) => {
   try {
-    await AsyncStorage.setItem(LOTID, lotId);
+    await AsyncStorage.setItem(EQPID, eqpId);
   } catch (e) {
     // saving error
   }
 };
 
-export const getLotId = async (): Promise<string | null> => {
+export const getEqpId = async (): Promise<string> => {
   try {
-    const LotId = await AsyncStorage.getItem(LOTID);
-    if (LotId) {
-      return LotId;
-    } else {
-      throw new Error('oops');
-    }
+    const eqpId = await AsyncStorage.getItem(EQPID);
+    return eqpId as string;
   } catch (e) {
     // saving error
     throw new Error('oops');
   }
 };
 
-export const removeLotId = async () => {
+export const removeEqpId = async () => {
   try {
-    await AsyncStorage.removeItem(LOTID);
+    await AsyncStorage.removeItem(EQPID);
   } catch (e) {
     // saving error
   }

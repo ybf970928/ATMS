@@ -3,8 +3,8 @@ import React, {useContext, useState} from 'react';
 import {getUniqueId} from 'react-native-device-info';
 import {AuthContext} from '../../layouts/AuthProvider';
 import {accountLogin} from '../../services/login';
-import {ToastMessage} from '../../utils/errorMessageMap';
-import {setUserInfo} from '../../utils/user';
+import {ToastMessage} from 'utils/errorMessageMap';
+import {setEqpId, setUserInfo} from 'utils/user';
 interface loginPopupProps {
   isShow: boolean;
   needLogin: (show: boolean) => void;
@@ -29,11 +29,12 @@ const Login: React.FC<loginPopupProps> = ({isShow, needLogin}) => {
         loginType: 3,
       });
       if (res.code === 1) {
-        const {token} = res.data;
-        setUserInfo(res.data).then(() => {
+        const {token, eqpid, user} = res.data;
+        setEqpId(eqpid).then(() => {
           setUsername('');
           setPassword('');
           setIsLoading(false);
+          setUserInfo({...user, eqpId: eqpid});
           login(token);
         });
       } else {

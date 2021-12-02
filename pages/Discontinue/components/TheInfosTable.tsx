@@ -1,8 +1,9 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import {Box, Center, Heading, Spinner} from 'native-base';
 import Table from '../../../components/Table';
-import {getAllMaterial} from '../../../services/public';
-import {getLotId, getUserInfo} from '../../../utils/user';
+import {getAllMaterial} from 'services/public';
+import {getEqpId} from 'utils/user';
+import {AuthContext} from 'layouts/AuthProvider';
 
 interface ConsumablesProp {
   consumablesType: string;
@@ -32,17 +33,17 @@ const ShowInfoTable: React.FC = () => {
     consumables: [],
     material: [],
   });
+  const {lotForm} = useContext(AuthContext);
 
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const initTable = async () => {
       try {
-        const {eqpid} = await getUserInfo();
-        const currentLotId = await getLotId();
+        const eqpId = await getEqpId();
         const res = await getAllMaterial({
-          eqpId: eqpid,
-          lotId: currentLotId!,
+          eqpId: eqpId,
+          lotId: lotForm.lotId,
         });
         if (res.code === 1) {
           const {consumablesInfo, materialInfo} = res.data;
@@ -57,10 +58,7 @@ const ShowInfoTable: React.FC = () => {
       }
     };
     initTable();
-    return () => {
-      setLoading(false);
-    };
-  }, []);
+  }, [lotForm.lotId]);
 
   if (loading) {
     return (

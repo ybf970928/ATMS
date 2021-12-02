@@ -1,8 +1,8 @@
 import request from '../utils/request';
 
 interface materials {
-  lotId: string | number;
   eqpId: string;
+  lotId: string;
   trackStatus?: 0 | 1;
 }
 
@@ -16,6 +16,7 @@ export interface MaterialCompared {
   bondingHead?: string;
   check?: number;
   oldBarCode?: string;
+  oldBondingHead?: string;
 }
 
 // 初始化

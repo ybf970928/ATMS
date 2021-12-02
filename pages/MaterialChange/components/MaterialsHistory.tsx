@@ -4,9 +4,8 @@ import {ScrollView, View} from 'react-native';
 import {IColProps} from '../../../types/Table';
 import {getMaterialHistory} from '../../../services/materials';
 import TableV2 from '../../../components/TableV2';
-import {getLotId, getUserInfo} from '../../../utils/user';
-
-// import HTTPGet from '../../../components/HTTPGet';
+import {getEqpId} from '../../../utils/user';
+import {getLotInfo} from '../../../services/public';
 
 export interface IDataSource {
   id: string;
@@ -61,9 +60,12 @@ const MaterialsHistory: React.FC = () => {
 
   const getList = async () => {
     try {
-      const {eqpid} = await getUserInfo();
-      const lotId = await getLotId();
-      const res = await getMaterialHistory({eqpId: eqpid, lotId: lotId!});
+      const eqpId = await getEqpId();
+      const infoData = await getLotInfo({eqpId, trackInPage: 0});
+      const res = await getMaterialHistory({
+        eqpId: eqpId,
+        lotId: infoData.data.lotId,
+      });
       setDataSource({
         materials: res.data.materials,
         consumables: res.data.consumables,
@@ -96,28 +98,6 @@ const MaterialsHistory: React.FC = () => {
           dataSource={dataSource.consumables}
           columns={consumablesList.concat(columns)}
         />
-        {/* <HTTPGet
-          request={async () => {
-            try {
-              const {eqpid} = await getUserInfo();
-              const lotId = await getLotId();
-              const {data} = await getMaterialHistory({
-                eqpId: eqpid,
-                lotId: lotId!,
-              });
-              return data;
-            } catch (error) {
-              console.log(error, 'errs');
-              throw new Error(error);
-            }
-          }}
-          loading={<Text>loading...</Text>}>
-          {(data: IDataSource[]) => {
-            return data.map(item => (
-              <Text key={item.id}>{item.MaterialType}</Text>
-            ));
-          }}
-        </HTTPGet> */}
       </Box>
       <Box rounded="lg" width="100%" p={2}>
         <Heading

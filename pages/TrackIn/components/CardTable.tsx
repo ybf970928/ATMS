@@ -1,16 +1,14 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {ScrollView} from 'react-native';
 import {Box, Heading, useToast, Spinner} from 'native-base';
-// import Table, {TableProps} from '../../../components/Table';
 import {getAllMaterial} from '../../../services/public';
 import {doTrackIn} from '../../../services/trackIn';
-import {getUserInfo, setLotId} from '../../../utils/user';
+import {getEqpId} from '../../../utils/user';
 import {ToastMessage} from '../../../utils/errorMessageMap';
 import {CommonActions, useNavigation} from '@react-navigation/native';
 import {Center} from '../../../layouts/Center';
 import LoadingButton from '../../../components/LoadingButton';
 import {UseFormHandleSubmit} from 'react-hook-form';
-import {AuthContext} from '../../../layouts/AuthProvider';
 import TableV2 from '../../../components/TableV2';
 import {IColProps} from '../../../types/Table';
 interface consumablesProps {
@@ -60,16 +58,15 @@ const CardTable: React.FC<{
   const navigation = useNavigation();
   const toast = useToast();
   const [loading, setLoading] = useState<boolean>(false);
-  const {checkTrackOut} = useContext(AuthContext);
 
   useEffect(() => {
     if (lotId) {
       setLoading(true);
       const initTable = async () => {
-        const {eqpid} = await getUserInfo();
+        const eqpId = await getEqpId();
         const res = await getAllMaterial({
-          eqpId: eqpid,
-          lotId: lotId,
+          eqpId: eqpId,
+          lotId,
         });
         const {consumablesInfo, materialInfo} = res.data;
         setMaterialSource(materialInfo);
@@ -77,32 +74,32 @@ const CardTable: React.FC<{
         setLoading(false);
       };
       initTable();
-      return () => {
-        setLoading(false);
-      };
     }
   }, [lotId]);
 
   const handleTrackIn = async () => {
-    const {eqpid} = await getUserInfo();
-    const res = await doTrackIn({
-      eqpId: eqpid,
-      lotId: lotId,
-    });
-    if (res.code === 1) {
-      setLotId(lotId).then(() => {
-        checkTrackOut(false);
+    try {
+      const eqpId = await getEqpId();
+      const res = await doTrackIn({
+        eqpId: eqpId,
+        lotId: lotId,
+      });
+      if (res.code === 1) {
         navigation.dispatch(
           CommonActions.reset({
             index: 0,
             routes: [{name: 'Home'}],
           }),
         );
+      }
+      toast.show({
+        title: ToastMessage(res),
+      });
+    } catch (error) {
+      toast.show({
+        title: '系统未知异常',
       });
     }
-    toast.show({
-      title: ToastMessage(res),
-    });
   };
 
   if (loading) {

@@ -5,7 +5,7 @@ interface HandleStopParams {
   lotId: string;
   boxs: string;
   reason: string;
-  remark: string;
+  remark?: string;
 }
 
 export async function doStop(params: HandleStopParams) {

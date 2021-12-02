@@ -1,5 +1,5 @@
 import {removeToken} from '../utils/auth';
-import {removeLotId, removeUserInfo} from '../utils/user';
+import {removeUserInfo} from '../utils/user';
 
 export type IAxios<D = any> = {
   code: number;
@@ -12,7 +12,6 @@ const defaultResolve = async (cb: Promise<IAxios>): Promise<IAxios> => {
   if (res.message >= 1005 && res.message <= 1013) {
     removeToken();
     removeUserInfo();
-    removeLotId();
     return Promise.reject('登陆过期');
   } else {
     if (res.code === 1) {

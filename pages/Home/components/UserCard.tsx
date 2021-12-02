@@ -1,9 +1,9 @@
-import React, {useState, useContext, useCallback} from 'react';
+import React, {useState, useContext} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {Box, Text} from 'native-base';
 import {getLotInfo} from '../../../services/public';
 // import {getToken} from '../../../utils/auth';
-import {getUserInfo, getLotId} from '../../../utils/user';
+import {getEqpId} from 'utils/user';
 import {AuthContext} from '../../../layouts/AuthProvider';
 import {useFocusEffect} from '@react-navigation/native';
 
@@ -37,62 +37,34 @@ const formItem: FormTypes[] = [
 
 const UserCard: React.FC = () => {
   const [userInfo, setUserInfo] = useState<IUserFormProps>({});
-  const {loginPopup, isTrackOut} = useContext(AuthContext);
-
-  const isLogin = useCallback(() => {
-    const getLoginUserInfo = async () => {
-      try {
-        // 没有登录弹窗就说明已经登陆成功了
-        if (!loginPopup) {
-          const {user, eqpid} = await getUserInfo();
-          setUserInfo({
-            operId: user.userID,
-            eqpId: eqpid,
-          });
-        }
-      } catch (error) {
-        setUserInfo({
-          operId: '',
-          eqpId: '',
-        });
-      }
-    };
-    getLoginUserInfo();
-  }, [loginPopup]);
-
-  const getLotForm = useCallback(() => {
-    const init = async () => {
-      try {
-        const lotId = await getLotId();
-        const {eqpid} = await getUserInfo();
-        console.log(eqpid, lotId, '有状态');
-
-        const res = await getLotInfo({
-          eqpId: eqpid,
-          lotId: lotId!,
-          trackInPage: 1,
-        });
-        setUserInfo({
-          ...res.data,
-          trackStatus: res.data.trackStatus ? '已开批' : '未开批',
-        });
-      } catch (error) {
-        console.log('没状态');
-      }
-    };
-    init();
-  }, []);
+  const {setLotInfo} = useContext(AuthContext);
 
   useFocusEffect(
     React.useCallback(() => {
-      if (isTrackOut) {
-        console.log('结批成功');
-      } else {
-        console.log('没有结批');
-        getLotForm();
-      }
-      isLogin();
-    }, [getLotForm, isLogin, isTrackOut]),
+      const init = async () => {
+        try {
+          const eqpId = await getEqpId();
+          const res = await getLotInfo({
+            eqpId: eqpId,
+            trackInPage: 1,
+          });
+          if (res.code === 1) {
+            setUserInfo({
+              ...res.data,
+              trackStatus: res.data.trackStatus ? '已开批' : '未开批',
+            });
+            setLotInfo(res.data);
+          } else {
+            setUserInfo({});
+            setLotInfo({});
+          }
+        } catch (error) {
+          setUserInfo({});
+          setLotInfo({});
+        }
+      };
+      init();
+    }, [setLotInfo]),
   );
 
   return (

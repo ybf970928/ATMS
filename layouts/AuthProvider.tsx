@@ -1,40 +1,40 @@
-import React, {createContext, useState} from 'react';
-import {removeToken, setToken} from '../utils/auth';
-import {removeUserInfo} from '../utils/user';
+import React, {createContext, useState, useCallback} from 'react';
+import {removeToken, setToken} from 'utils/auth';
+import {removeUserInfo} from 'utils/user';
 import {NativeBaseProvider} from 'native-base';
 import {theme} from '../theme/extendTheme';
-// 旧的先不删, 待定
 import Login from '../pages/Login';
 import UpdateModel from '../components/updateModel';
+import {LotInfoType} from 'types/lotinfo';
 interface ContextProps {
-  isTrackOut: boolean;
   loginPopup: boolean;
   openLoginPopup: (isOpen: boolean) => void;
   login: (token: string) => void;
   logout: () => void;
-  checkTrackOut: (TrackOut: boolean) => void;
+  lotForm: LotInfoType;
+  setLotInfo: (info: LotInfoType) => void;
 }
 
 export const AuthContext = createContext<ContextProps>({
-  isTrackOut: false,
   loginPopup: false,
   openLoginPopup: () => {},
   login: () => {},
   logout: () => {},
-  checkTrackOut: () => {},
+  lotForm: {},
+  setLotInfo: () => {},
 });
 
 export const AuthProvider: React.FC = ({children}) => {
   const [showloginPopup, setShowloginPopup] = useState<boolean>(false);
-  const [isTrackOut, setisTrackOut] = useState<boolean>(false);
+  const [lotForm, setLotForm] = useState<LotInfoType>({});
+
+  const handleSetLotForm = useCallback((info: LotInfoType) => {
+    setLotForm(info);
+  }, []);
 
   return (
     <AuthContext.Provider
       value={{
-        isTrackOut,
-        checkTrackOut: (TrackOut: boolean) => {
-          setisTrackOut(TrackOut);
-        },
         loginPopup: showloginPopup,
         openLoginPopup: (isOpen: boolean) => {
           setShowloginPopup(isOpen);
@@ -47,6 +47,8 @@ export const AuthProvider: React.FC = ({children}) => {
           removeToken();
           removeUserInfo();
         },
+        lotForm,
+        setLotInfo: handleSetLotForm,
       }}>
       <NativeBaseProvider theme={theme}>
         {children}

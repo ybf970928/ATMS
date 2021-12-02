@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import {
   NativeSyntheticEvent,
   ScrollView,
@@ -21,13 +21,11 @@ import {
 } from 'native-base';
 import ShowInfoTable from './components/TheInfosTable';
 import {useForm, Controller, SubmitHandler} from 'react-hook-form';
-import {getLotId, getUserInfo, removeLotId} from '../../utils/user';
-import {doStop} from '../../services/operationStop';
-import {getOperationStop} from '../../services/OEESwitch';
-import {useEffect} from 'react';
-import {ToastMessage} from '../../utils/errorMessageMap';
-// import {CommonActions, useNavigation} from '@react-navigation/native';
-import LoadingButton from '../../components/LoadingButton';
+import {getEqpId} from 'utils/user';
+import {doStop} from 'services/operationStop';
+import {getOperationStop} from 'services/OEESwitch';
+import {ToastMessage} from 'utils/errorMessageMap';
+import LoadingButton from 'components/LoadingButton';
 import {AuthContext} from '../../layouts/AuthProvider';
 interface IInputProps {
   render: (
@@ -44,7 +42,6 @@ interface DiscontinueForm {
 
 const Discontinue: React.FC = () => {
   const toast = useToast();
-  // const navigation = useNavigation();
   const [inputs, setinputs] = useState<IInputProps[]>([
     {
       render: eventKeyDown => {
@@ -63,14 +60,12 @@ const Discontinue: React.FC = () => {
   ]);
 
   const [materialBox, setMaterialBox] = useState<string[]>([]);
-  const [currentLotId, setCurrentLotId] = useState<string>('');
   const [reasonList, setReasonList] = useState<{id: string; name: string}[]>(
     [],
   );
   const [isDisabled, setDisabled] = useState<boolean>(false);
 
-  const {checkTrackOut} = useContext(AuthContext);
-
+  const {lotForm} = useContext(AuthContext);
   const {
     handleSubmit,
     control,
@@ -79,16 +74,14 @@ const Discontinue: React.FC = () => {
 
   const onSubmit: SubmitHandler<DiscontinueForm> = async data => {
     if (materialBox.length) {
-      const {eqpid} = await getUserInfo();
+      const eqpId = await getEqpId();
       const res = await doStop({
-        eqpId: eqpid,
-        lotId: currentLotId!,
+        eqpId,
+        lotId: lotForm.lotId!,
         boxs: materialBox.join(','),
         ...data,
       });
       if (res.code === 1) {
-        await removeLotId();
-        checkTrackOut(false);
         setDisabled(true);
         // navigation.dispatch(
         //   CommonActions.reset({
@@ -141,16 +134,6 @@ const Discontinue: React.FC = () => {
   };
 
   useEffect(() => {
-    const getCurrentLotId = async () => {
-      try {
-        const lotId = await getLotId();
-        setCurrentLotId(lotId as string);
-      } catch (error) {}
-    };
-    getCurrentLotId();
-  }, []);
-
-  useEffect(() => {
     const getReasonList = async () => {
       try {
         const res = await getOperationStop();
@@ -171,9 +154,9 @@ const Discontinue: React.FC = () => {
           marginTop={5}
           marginBottom={5}
           p={2}>
-          <HStack space={3}>
+          <HStack space={3} p={2}>
             <Text>作业批号: </Text>
-            <Text>{currentLotId}</Text>
+            <Text>{lotForm.lotId}</Text>
           </HStack>
         </Box>
         <ShowInfoTable />

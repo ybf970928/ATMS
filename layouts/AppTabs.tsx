@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text} from 'native-base';
+import {View} from 'native-base';
 import {StyleSheet, StatusBar} from 'react-native';
 import {
   CardStyleInterpolators,

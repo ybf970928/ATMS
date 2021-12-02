@@ -5,8 +5,7 @@ import InfosTable from './InfosTable';
 import AutoInputs from '../../../components/AutoInputs';
 import UserCard from './UserCard';
 import {doTrackOut} from '../../../services/trackOut';
-import {getLotId, getUserInfo} from '../../../utils/user';
-import {removeLotId} from '../../../utils/user';
+import {getEqpId} from '../../../utils/user';
 import {ToastMessage} from '../../../utils/errorMessageMap';
 // import {useNavigation, CommonActions} from '@react-navigation/native';
 import {AuthContext} from '../../../layouts/AuthProvider';
@@ -37,7 +36,7 @@ const CardTable: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   // const navigation = useNavigation();
   const [isDisabled, setDisabled] = useState<boolean>(false);
-  const {checkTrackOut} = useContext(AuthContext);
+  const {lotForm} = useContext(AuthContext);
   const toast = useToast();
 
   const validNums: () => boolean = () => {
@@ -54,41 +53,6 @@ const CardTable: React.FC = () => {
         return total + current;
       }, 0);
     const {jobNum, deviceQty, knownJobs} = userWriteRef.current.formValues;
-    // console.log(
-    //   '作业总数数:' + (Number(jobNum) + Number(knownJobs)),
-    //   '批次总数:' + deviceQty,
-    // );
-    // console.log('报废总数:' + scrapNum, '次品总数:' + defectiveNum);
-    // if (Number(jobNum) + Number(knownJobs) > Number(deviceQty)) {
-    //   toast.show({
-    //     title: '作业总数有误',
-    //   });
-    //   console.log('作业总数有误');
-
-    //   return false;
-    // } else {
-    //   if (
-    //     scrapNum >
-    //     Number(deviceQty) - (Number(jobNum) + Number(knownJobs)) - defectiveNum
-    //   ) {
-    //     toast.show({
-    //       title: '报废数量有误',
-    //     });
-    //     console.log('报废数量有误');
-
-    //     return false;
-    //   } else if (
-    //     defectiveNum >
-    //     Number(deviceQty) - (Number(jobNum) + Number(knownJobs)) - scrapNum
-    //   ) {
-    //     toast.show({
-    //       title: '次品数量有误',
-    //     });
-    //     console.log('次品数量有误');
-
-    //     return false;
-    //   }
-    // }
     if (Number(jobNum) + Number(knownJobs) > Number(deviceQty)) {
       toast.show({
         title: '作业总数有误',
@@ -136,12 +100,11 @@ const CardTable: React.FC = () => {
   const trackInSucc = async () => {
     setIsLoading(true);
     try {
-      const {eqpid} = await getUserInfo();
-      const currentLotId = await getLotId();
+      const eqpId = await getEqpId();
       const res = await doTrackOut({
         lotHistoryId: userWriteRef.current.formValues.lotHistoryId,
-        eqpId: eqpid,
-        lotId: currentLotId!,
+        eqpId: eqpId,
+        lotId: lotForm.lotId,
         remainingQty: userWriteRef.current.formValues.remainingQty,
         jobNum: userWriteRef.current.formValues.jobNum,
         scrapList: scrapRef.current!.state,
@@ -149,17 +112,14 @@ const CardTable: React.FC = () => {
         boxs: autoInputRef.current!.values.join(','),
       });
       if (res.code === 1) {
-        removeLotId().then(() => {
-          checkTrackOut(true);
-          setIsLoading(false);
-          setDisabled(true);
-          // navigation.dispatch(
-          //   CommonActions.reset({
-          //     index: 0,
-          //     routes: [{name: 'Home'}],
-          //   }),
-          // );
-        });
+        setIsLoading(false);
+        setDisabled(true);
+        // navigation.dispatch(
+        //   CommonActions.reset({
+        //     index: 0,
+        //     routes: [{name: 'Home'}],
+        //   }),
+        // );
       } else {
         setIsLoading(false);
         setDisabled(false);

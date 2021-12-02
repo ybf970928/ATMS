@@ -4,7 +4,7 @@ import {View, StyleSheet, Text} from 'react-native';
 import {useForm, Controller, SubmitHandler} from 'react-hook-form';
 import {MaterialBoxProps} from '../index';
 import {IColProps} from '../../../types/Table';
-import {getUserInfo} from '../../../utils/user';
+import {getEqpId} from '../../../utils/user';
 import {doUpdate} from '../../../services/materials';
 import {ToastMessage} from '../../../utils/errorMessageMap';
 import LoadingButton from '../../../components/LoadingButton';
@@ -39,11 +39,11 @@ const Row: React.FC<RowProps> = ({
   const toast = useToast();
 
   const onSubmit: SubmitHandler<MaterialBoxProps> = async data => {
-    const {eqpid} = await getUserInfo();
+    const eqpId = await getEqpId();
     const res = await doUpdate({
       cType: data.materialType,
       lotId: lotId,
-      eqpId: eqpid,
+      eqpId: eqpId,
       stepId,
       barCode: data.materialBarCode || '',
       oldBarCode: materialBarCode || '',

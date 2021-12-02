@@ -6,7 +6,7 @@ import MaterialBox from './components/materialBox';
 import EditableRow from './components/EditableRow';
 import {useNavigation, StackActions} from '@react-navigation/native';
 import {getMaterials} from '../../services/materials';
-import {getUserInfo, getLotId} from '../../utils/user';
+import {getEqpId} from '../../utils/user';
 import {Center} from '../../layouts/Center';
 import {useForm, Controller} from 'react-hook-form';
 import {getLotInfo} from '../../services/public';
@@ -60,13 +60,13 @@ const MaterialChange: React.FC = () => {
   const handleSetLotId = (lotId: string) => {
     const getInfo = async () => {
       setLoading(true);
-      const {eqpid} = await getUserInfo();
+      const eqpId = await getEqpId();
       // 获取下最新的开批状态
-      const infoData = await getLotInfo({eqpId: eqpid, lotId: lotId});
+      const infoData = await getLotInfo({eqpId: eqpId});
 
       const res = await getMaterials({
+        eqpId: eqpId,
         lotId: lotId,
-        eqpId: eqpid,
         trackStatus: infoData.data.trackStatus,
       });
       const {stepId, trackStatus, ...obj} = res.data;
@@ -77,21 +77,40 @@ const MaterialChange: React.FC = () => {
         materialList: obj.materialInfo || [],
         materialBoxList: obj.materialBoxInfo || [],
       });
-      setLoading(false);
       setCurrentLotId(lotId);
+      setValue('lotId', lotId);
+      setLoading(false);
     };
     getInfo();
   };
 
+  // 暂时就先这样子, 以后再优化
   useEffect(() => {
-    const isAlreadyTrackIn = async () => {
-      const lotId = await getLotId();
-      if (lotId) {
-        setValue('lotId', lotId);
-        handleSetLotId(lotId);
+    const getInfo = async () => {
+      setLoading(true);
+      const eqpId = await getEqpId();
+      // 获取下最新的开批状态
+      const infoData = await getLotInfo({eqpId: eqpId});
+      if (infoData.data.trackStatus) {
+        const res = await getMaterials({
+          eqpId: eqpId,
+          lotId: infoData.data.lotId,
+          trackStatus: infoData.data.trackStatus,
+        });
+        const {stepId, trackStatus, ...obj} = res.data;
+        setjobNumber(stepId);
+        setIsTrackIn(trackStatus ? true : false);
+        setData({
+          consumablesList: obj.consumablesInfo || [],
+          materialList: obj.materialInfo || [],
+          materialBoxList: obj.materialBoxInfo || [],
+        });
+        setCurrentLotId(infoData.data.lotId);
+        setValue('lotId', infoData.data.lotId);
       }
+      setLoading(false);
     };
-    isAlreadyTrackIn();
+    getInfo();
   }, [setValue]);
 
   return (

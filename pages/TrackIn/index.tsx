@@ -4,7 +4,7 @@ import {Text, Input, Box, VStack, FormControl} from 'native-base';
 // import BaseInfoTrackIn from './components/BaseInfo';
 import {useForm, Controller} from 'react-hook-form';
 import CardTable from './components/CardTable';
-import {getUserInfo, getLotId} from '../../utils/user';
+import {getEqpId} from '../../utils/user';
 import {getLotInfo} from '../../services/public';
 
 interface IFormProps {
@@ -47,41 +47,37 @@ const TrackIn: React.FC = () => {
   const [trackStatus, setTrackStatus] = useState<0 | 1>(0);
   const [form, setForm] = useState<IFormProps>({});
 
-  const handleKeyDown = (value: string) => {
-    setInputValue(value);
+  const handleKeyDown = async (value: string) => {
+    try {
+      const eqpId = await getEqpId();
+      const res = await getLotInfo({
+        eqpId: eqpId,
+        lotId: value,
+        trackInPage: 0,
+      });
+      setValue('lotId', res.data.lotId);
+      setInputValue(res.data.lotId);
+      setForm(res.data);
+      setTrackStatus(res.data.trackStatus);
+    } catch (error) {}
   };
 
   useEffect(() => {
     const initForm = async () => {
       try {
-        const lotId = await getLotId();
-        const {eqpid} = await getUserInfo();
+        const eqpId = await getEqpId();
         const res = await getLotInfo({
-          eqpId: eqpid,
-          lotId: inputValue,
+          eqpId: eqpId,
           trackInPage: 0,
         });
-        setValue('lotId', lotId);
-        setInputValue(lotId as string);
+        setValue('lotId', res.data.lotId);
+        setInputValue(res.data.lotId);
         setForm(res.data);
         setTrackStatus(res.data.trackStatus);
-      } catch (error) {
-        const {eqpid} = await getUserInfo();
-        if (inputValue) {
-          const res = await getLotInfo({
-            eqpId: eqpid,
-            lotId: inputValue,
-            trackInPage: 0,
-          });
-          setValue('lotId', inputValue);
-          setInputValue(inputValue);
-          setForm(res.data);
-          setTrackStatus(res.data.trackStatus);
-        }
-      }
+      } catch (error) {}
     };
     initForm();
-  }, [inputValue, setValue]);
+  }, [setValue]);
 
   return (
     <ScrollView style={styles.scrollView}>

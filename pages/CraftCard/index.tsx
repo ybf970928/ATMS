@@ -1,10 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import {View, StyleSheet, Image, ScrollView} from 'react-native';
 import {HStack, Text} from 'native-base';
-import {getCardPath} from '../../services/craftCard';
-import {getUserInfo, getLotId} from '../../utils/user';
-// import {BASE_API} from '../../utils/request';
-import {getLotInfo} from '../../services/public';
+import {getCardPath} from 'services/craftCard';
+import {getEqpId} from 'utils/user';
+import {getLotInfo} from 'services/public';
 const CraftCard: React.FC = () => {
   const [imgInfo, setImgInfo] = useState<{
     path: string;
@@ -28,25 +27,32 @@ const CraftCard: React.FC = () => {
 
   const getCardImage = async () => {
     try {
-      const {eqpid} = await getUserInfo();
-      const lotId = await getLotId();
-      const {
-        data: {processCardName, assemblyLotID},
-      } = await getLotInfo({
-        lotId: lotId!,
-        eqpId: eqpid,
-      });
-      const res = await getCardPath({lotId: lotId as string, eqpId: eqpid});
-      setImgInfo({
-        path: replaceFile(res.data),
-        name: replaceFormat(processCardName),
-        assemblyLotID: assemblyLotID,
+      const eqpId = await getEqpId();
+      const info = await getLotInfo({eqpId});
+      setImgInfo(preState => {
+        return {
+          ...preState,
+          name: replaceFormat(info.data.processCardName),
+          assemblyLotID: info.data.assemblyLotID,
+        };
       });
     } catch (error) {}
   };
 
+  const cardPath = async () => {
+    const res = await getCardPath();
+    setImgInfo(preState => {
+      return {
+        ...preState,
+        path: replaceFile(res.data),
+      };
+    });
+  };
+
   useEffect(() => {
     getCardImage();
+    cardPath();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

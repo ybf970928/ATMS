@@ -5,7 +5,7 @@ import {useEffect} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {Center} from '../../../layouts/Center';
 import {getLotInfo} from '../../../services/public';
-import {getUserInfo} from '../../../utils/user';
+import {getEqpId} from 'utils/user';
 interface IFormProps {
   lotId?: string;
   operId?: string;
@@ -43,9 +43,9 @@ const BaseInfoTrackIn: React.FC<{lotId: string}> = ({lotId}) => {
     if (lotId) {
       setLoading(true);
       const initForm = async () => {
-        const {eqpid} = await getUserInfo();
+        const eqpId = await getEqpId();
         const res = await getLotInfo({
-          eqpId: eqpid,
+          eqpId: eqpId,
           lotId: lotId,
           trackInPage: 1,
         });
@@ -54,9 +54,6 @@ const BaseInfoTrackIn: React.FC<{lotId: string}> = ({lotId}) => {
       };
       initForm();
     }
-    return () => {
-      setLoading(false);
-    };
   }, [lotId]);
 
   if (loading) {

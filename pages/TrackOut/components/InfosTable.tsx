@@ -1,11 +1,12 @@
 import {Box, Heading, Spinner} from 'native-base';
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import TableV2 from '../../../components/TableV2';
 import {IColProps} from '../../../types/Table';
 import {getAllMaterial} from '../../../services/public';
-import {getLotId, getUserInfo} from '../../../utils/user';
+import {getEqpId} from 'utils/user';
 import {Center} from '../../../layouts/Center';
 import {ScrollView} from 'react-native';
+import {AuthContext} from 'layouts/AuthProvider';
 interface consumablesProps {
   innerThread: string;
   consumablesType: string;
@@ -48,16 +49,16 @@ const InfosTable: React.FC = () => {
   const [consumablesSource, setConsumablesSource] = useState<
     consumablesProps[]
   >([]);
+  const {lotForm} = useContext(AuthContext);
 
   useEffect(() => {
     setLoading(true);
     const initTable = async () => {
       try {
-        const {eqpid} = await getUserInfo();
-        const currentLotId = await getLotId();
+        const eqpId = await getEqpId();
         const res = await getAllMaterial({
-          eqpId: eqpid,
-          lotId: currentLotId!,
+          eqpId: eqpId,
+          lotId: lotForm.lotId,
         });
         const {consumablesInfo, materialInfo} = res.data;
         setMaterialSource(materialInfo);
@@ -68,10 +69,7 @@ const InfosTable: React.FC = () => {
       }
     };
     initTable();
-    return () => {
-      setLoading(false);
-    };
-  }, []);
+  }, [lotForm.lotId]);
 
   if (loading) {
     return (

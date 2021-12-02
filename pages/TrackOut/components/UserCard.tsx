@@ -17,7 +17,7 @@ import React, {
 import {View, StyleSheet} from 'react-native';
 import {Center} from '../../../layouts/Center';
 import {getLotInfo} from '../../../services/public';
-import {getUserInfo, getLotId} from '../../../utils/user';
+import {getEqpId} from '../../../utils/user';
 import {getYieldInfo} from '../../../services/trackOut';
 import {IColProps} from '../../../types/Table';
 import {Controller, useForm} from 'react-hook-form';
@@ -94,15 +94,13 @@ const BaseInfoTrackIn: React.FC<{
     const initForm = async () => {
       setLoading(true);
       try {
-        const {eqpid} = await getUserInfo();
-        const currentLotId = await getLotId();
+        const eqpId = await getEqpId();
         const res = await getLotInfo({
-          eqpId: eqpid,
-          lotId: currentLotId!,
+          eqpId: eqpId,
         });
         const yieldList = await getYieldInfo({
-          eqpId: eqpid,
-          lotId: currentLotId!,
+          eqpId: eqpId,
+          lotId: res.data.lotId,
         });
         setValue('eqpId', res.data.eqpId);
         for (const [key, value] of Object.entries(res.data)) {

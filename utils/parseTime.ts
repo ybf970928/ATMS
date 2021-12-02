@@ -5,16 +5,6 @@
  * @returns {string}
  */
 
-interface FormatObj {
-  y: number | string;
-  m: number | string;
-  d: number | string;
-  h: number | string;
-  i: number | string;
-  s: number | string;
-  a: number | string;
-}
-
 export function parseTime(time: Date | string | number, cFormat?: string) {
   if (arguments.length === 0) {
     return null;

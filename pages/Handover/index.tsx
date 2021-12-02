@@ -2,7 +2,7 @@ import React, {useContext} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {Box, Input, useToast, VStack, FormControl} from 'native-base';
 import {useForm, Controller, SubmitHandler} from 'react-hook-form';
-import {getUserInfo} from '../../utils/user';
+import {getEqpId} from '../../utils/user';
 import {getLotInfo} from '../../services/public';
 import {doUpdate} from '../../services/handOver';
 import {useNavigation, CommonActions} from '@react-navigation/native';
@@ -63,13 +63,13 @@ const Handover: React.FC = () => {
   };
 
   const gethandeOverForm = async (id: string) => {
-    const {eqpid, user} = await getUserInfo();
+    const eqpId = await getEqpId();
     const res = await getLotInfo({
-      eqpId: eqpid,
+      eqpId: eqpId,
       lotId: id,
     });
-    const {quotaCode, deviceQty} = res.data;
-    setValue('userId', user.userID);
+    const {quotaCode, deviceQty, ...obj} = res.data;
+    setValue('userId', obj.operId);
     setValue('eqpId', res.data.eqpId);
     setValue('quotaCode', quotaCode);
     setValue('deviceQty', deviceQty);

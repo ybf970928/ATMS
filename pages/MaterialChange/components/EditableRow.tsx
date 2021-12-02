@@ -4,7 +4,7 @@ import {View, StyleSheet, Text} from 'react-native';
 import {useForm, Controller, SubmitHandler} from 'react-hook-form';
 import {MateriaProps} from '../index';
 import {IColProps} from '../../../types/Table';
-import {getUserInfo} from '../../../utils/user';
+import {getEqpId} from 'utils/user';
 import {doUpdate} from '../../../services/materials';
 import {ToastMessage} from '../../../utils/errorMessageMap';
 import LoadingButton from '../../../components/LoadingButton';
@@ -52,11 +52,11 @@ const Row: React.FC<RowProps> = ({
   });
   const onSubmit: SubmitHandler<MateriaProps> = async data => {
     if (data.materialBarCode && data.bondingHead) {
-      const {eqpid} = await getUserInfo();
+      const eqpId = await getEqpId();
       const res = await doUpdate({
         cType: data.materialType,
         lotId: lotId,
-        eqpId: eqpid,
+        eqpId: eqpId,
         stepId,
         barCode: data.materialBarCode,
         bondingHead: data.bondingHead,
@@ -121,7 +121,7 @@ const Row: React.FC<RowProps> = ({
           render={({field: {onChange, value}}) => (
             <View style={styles.checkedView}>
               <Switch
-                onToggle={(val: boolean) => onChange(val)}
+                onToggle={onChange}
                 isChecked={value ? true : false}
                 onTrackColor="blue.500"
                 isDisabled={isCheck}

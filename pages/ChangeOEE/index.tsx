@@ -17,14 +17,9 @@ import {
   VStack,
 } from 'native-base';
 import {useForm, Controller, SubmitHandler} from 'react-hook-form';
-import {
-  getOEEStatusSwitch,
-  getOEEReason,
-  doUpdate,
-} from '../../services/OEESwitch';
-import {getUserInfo} from '../../utils/user';
+import {getOEEStatusSwitch, getOEEReason, doUpdate} from 'services/OEESwitch';
+import {getEqpId} from 'utils/user';
 export interface OEEForm {
-  eqpType: string;
   eqpId: string;
   eqpStatus: string;
   operId: string;
@@ -32,8 +27,8 @@ export interface OEEForm {
   eqpSwitchStatus: string;
   remark: string;
 }
-import {ToastMessage} from '../../utils/errorMessageMap';
-import LoadingButton from '../../components/LoadingButton';
+import {ToastMessage} from 'utils/errorMessageMap';
+import LoadingButton from 'components/LoadingButton';
 
 const ChangeOEE: React.FC = () => {
   const toast = useToast();
@@ -53,16 +48,23 @@ const ChangeOEE: React.FC = () => {
   useEffect(() => {
     const init = async () => {
       try {
-        const {eqpid} = await getUserInfo();
-        const res = await getOEEStatusSwitch({eqpId: eqpid});
-        const {statusList, ...obj} = res.data;
-        setStatusSelectList(statusList || []);
-        for (const [key, value] of Object.entries(obj)) {
-          setValue(key as keyof OEEForm, value as string);
+        const eqpId = await getEqpId();
+        const res = await getOEEStatusSwitch({eqpId});
+        if (res.code === 1) {
+          const {statusList, ...obj} = res.data;
+          setStatusSelectList(statusList || []);
+          for (const [key, value] of Object.entries(obj)) {
+            setValue(key as keyof OEEForm, value as string);
+          }
+        } else {
+          toast.show({
+            title: ToastMessage(res),
+          });
         }
       } catch (error) {}
     };
     init();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setValue]);
 
   const getReasonCodeList = async (value: string) => {
@@ -90,23 +92,6 @@ const ChangeOEE: React.FC = () => {
           p={2}
           flexDirection="row"
           flexWrap="wrap">
-          <VStack width="100%" space={4} alignItems="center" mb={2}>
-            <FormControl>
-              <FormControl.Label>设备类型: </FormControl.Label>
-              <Controller
-                control={control}
-                render={({field: {onChange, value}}) => (
-                  <Input
-                    w="100%"
-                    value={value}
-                    onChangeText={onChange}
-                    isDisabled
-                  />
-                )}
-                name="eqpType"
-              />
-            </FormControl>
-          </VStack>
           <VStack width="100%" space={4} alignItems="center" mb={2}>
             <FormControl>
               <FormControl.Label>设备编号: </FormControl.Label>

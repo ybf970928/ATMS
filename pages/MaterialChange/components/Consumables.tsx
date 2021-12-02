@@ -13,7 +13,7 @@ import {View, StyleSheet} from 'react-native';
 import {useForm, Controller, SubmitHandler} from 'react-hook-form';
 import {ConsumablesProps} from '../index';
 import {doUpdate} from '../../../services/materials';
-import {getUserInfo} from '../../../utils/user';
+import {getEqpId} from '../../../utils/user';
 import {ToastMessage} from '../../../utils/errorMessageMap';
 import LoadingButton from '../../../components/LoadingButton';
 type ConsumableType = {
@@ -50,15 +50,16 @@ const Consumables: React.FC<ConsumableType> = ({
   const toast = useToast();
 
   const onSubmit: SubmitHandler<ConsumablesProps> = async data => {
-    const {eqpid} = await getUserInfo();
+    const eqpId = await getEqpId();
     const res = await doUpdate({
       cType: data.consumablesType,
       innerThread: data.innerThread,
-      lotId: lotId!,
+      lotId: lotId,
       stepId,
-      eqpId: eqpid,
+      eqpId: eqpId,
       barCode: data.consumablesBarCode,
       bondingHead: data.bondingHead,
+      oldBondingHead: bondingHead,
       oldBarCode: consumablesBarCode,
       check: data.checked ? 1 : 0,
     });
@@ -169,7 +170,7 @@ const Consumables: React.FC<ConsumableType> = ({
               </Text>
               <View style={styles.checkedView}>
                 <Switch
-                  onToggle={(val: boolean) => onChange(val)}
+                  onToggle={onChange}
                   isChecked={value}
                   isDisabled={isUpdate}
                 />

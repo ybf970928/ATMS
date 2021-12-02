@@ -1,11 +1,11 @@
 import axios from 'axios';
 import {getToken, removeToken} from './auth';
-import {removeUserInfo, removeLotId} from './user';
+import {removeUserInfo} from './user';
 
 export const BASE_API = __DEV__
   ? 'http://10.100.101.22:8100'
-  : // : 'http://10.100.101.22:8100';
-    'http://192.168.20.12:8100';
+  : 'http://10.100.101.22:8100';
+// 'http://192.168.20.12:8100';
 
 const service = axios.create({
   baseURL: BASE_API,
@@ -37,7 +37,6 @@ service.interceptors.response.use(
     if (result >= 1005 && result <= 1013) {
       removeToken();
       removeUserInfo();
-      removeLotId();
     }
     // Any status code that lie within the range of 2xx cause this function to trigger
     // Do something with response data
